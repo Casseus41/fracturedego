@@ -7,7 +7,7 @@
 // Get these from: supabase.com → Your Project → Settings → API
 const SUPABASE_URL = 'https://aoxheyrtxygerkqsveaf.supabase.co/rest/v1/';       // e.g. https://abcdefgh.supabase.co
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFveGhleXJ0eHlnZXJrcXN2ZWFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTYzMTksImV4cCI6MjA5MzA3MjMxOX0.cVqcX9cY_bBWcm1sBGdh21UuQYoT6QWn4tI9ZgKk99Q'; // long string starting with eyJ...
-
+const SITE_URL = 'https://fracturedego.org';
 // ── Initialize Supabase client ──
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
