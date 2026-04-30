@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accept Invitation — fractureD Ego</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body { display:flex; flex-direction:column; min-height:100vh; }</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-wordmark">fracture<span>D</span> Ego</a>
+  </nav>
+
+  <!-- Loading -->
+  <div class="auth-wrap" id="loading-state">
+    <div style="text-align:center;">
+      <div class="loader" style="width:28px;height:28px;margin:0 auto 16px;"></div>
+      <div style="font-size:13px;color:var(--text-dim);">Verifying your invitation...</div>
+    </div>
+  </div>
+
+  <!-- Invalid / expired -->
+  <div class="auth-wrap hidden" id="invalid-state">
+    <div class="auth-card">
+      <div class="auth-icon">⚠️</div>
+      <div class="auth-tag">Invalid Link</div>
+      <h2 class="auth-heading">This link has <em>expired.</em></h2>
+      <p class="auth-sub">Invitation links expire after 24 hours. Please contact your administrator to resend the invitation.</p>
+    </div>
+  </div>
+
+  <!-- Set password form -->
+  <div class="auth-wrap hidden" id="setup-state">
+    <div class="auth-card">
+      <div class="auth-icon">🎉</div>
+      <div class="auth-tag">You're Invited</div>
+      <h2 class="auth-heading">Welcome to <em>fractureD Ego.</em></h2>
+      <p class="auth-sub">You've been granted access. Please set a password to complete your account setup.</p>
+
+      <div id="setup-error" class="alert-banner hidden"></div>
+
+      <div class="field">
+        <div class="field-inner">
+          <label for="first-name">First Name</label>
+          <input type="text" id="first-name" placeholder="Your first name"/>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-inner">
+          <label for="last-name">Last Name</label>
+          <input type="text" id="last-name" placeholder="Your last name"/>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-inner">
+          <label for="new-password">Choose a Password</label>
+          <input type="password" id="new-password" placeholder="At least 8 characters"/>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-inner">
+          <label for="confirm-password">Confirm Password</label>
+          <input type="password" id="confirm-password" placeholder="Repeat your password"/>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="setup-btn" onclick="handleSetup()">Complete Setup</button>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="auth-wrap hidden" id="success-state">
+    <div class="auth-card">
+      <div class="auth-icon">✅</div>
+      <div class="auth-tag">All Set</div>
+      <h2 class="auth-heading">You're <em>in.</em></h2>
+      <p class="auth-sub">Your account is ready. Welcome to the network.</p>
+      <a href="dashboard.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:10px;">Go to Dashboard</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    function show(id) {
+      ['loading-state','invalid-state','setup-state','success-state'].forEach(s => {
+        document.getElementById(s).classList.add('hidden');
+      });
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    // Supabase fires onAuthStateChange with event 'SIGNED_IN' when
+    // an invite or recovery token in the URL hash is processed.
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Pre-fill name if we have it from the profile
+        try {
+          const profile = await getUserProfile(session.user.id);
+          if (profile.first_name) document.getElementById('first-name').value = profile.first_name;
+          if (profile.last_name)  document.getElementById('last-name').value  = profile.last_name;
+        } catch(e) {}
+        show('setup-state');
+      } else if (event === 'PASSWORD_RECOVERY') {
+        // Came from a reset link not an invite — redirect to reset page
+        window.location.href = 'reset-password.html';
+      }
+    });
+
+    // Fallback: check after short delay if no auth event fires
+    setTimeout(async () => {
+      const loadingEl = document.getElementById('loading-state');
+      if (!loadingEl.classList.contains('hidden')) {
+        // Still showing loading — check if there's a session
+        const { data: { session } } = await sb.auth.getSession();
+        if (session) {
+          show('setup-state');
+        } else {
+          show('invalid-state');
+        }
+      }
+    }, 3000);
+
+    async function handleSetup() {
+      const firstName  = document.getElementById('first-name').value.trim();
+      const lastName   = document.getElementById('last-name').value.trim();
+      const newPw      = document.getElementById('new-password').value;
+      const confirmPw  = document.getElementById('confirm-password').value;
+      const err        = document.getElementById('setup-error');
+      const btn        = document.getElementById('setup-btn');
+
+      if (!firstName) {
+        err.textContent = 'Please enter your first name.';
+        err.classList.remove('hidden'); return;
+      }
+      if (newPw.length < 8) {
+        err.textContent = 'Password must be at least 8 characters.';
+        err.classList.remove('hidden'); return;
+      }
+      if (newPw !== confirmPw) {
+        err.textContent = 'Passwords do not match. Please try again.';
+        err.classList.remove('hidden'); return;
+      }
+
+      err.classList.add('hidden');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loader"></span>';
+
+      try {
+        // Update password
+        const { error: pwError } = await sb.auth.updateUser({ password: newPw });
+        if (pwError) throw pwError;
+
+        // Update profile with name
+        await updateProfile({
+          first_name: firstName,
+          last_name: lastName,
+        });
+
+        show('success-state');
+      } catch(e) {
+        err.textContent = 'Something went wrong. Your invitation link may have expired.';
+        err.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Complete Setup';
+      }
+    }
+
+    document.getElementById('confirm-password').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSetup();
+    });
+  </script>
+
+</body>
+</html>
