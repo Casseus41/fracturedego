@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Requests — fractureD Ego</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body { display:flex; flex-direction:column; min-height:100vh; }</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-wordmark">fracture<span>D</span> Ego</a>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-name"></span>
+      <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Overview</div>
+        <a href="dashboard.html" class="sidebar-item"><span class="si-icon">🏠</span> Dashboard</a>
+        <a href="requests.html" class="sidebar-item active"><span class="si-icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Concierge Services</div>
+        <a href="service-travel.html" class="sidebar-item"><span class="si-icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html" class="sidebar-item"><span class="si-icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html" class="sidebar-item"><span class="si-icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html" class="sidebar-item"><span class="si-icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html" class="sidebar-item"><span class="si-icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html" class="sidebar-item"><span class="si-icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-item"><span class="si-icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-item"><span class="si-icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-item"><span class="si-icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Account</div>
+        <a href="account.html" class="sidebar-item"><span class="si-icon">⚙️</span> Account Settings</a>
+      </div>
+    </aside>
+
+    <main class="main-content fade-in">
+      <div class="section-title">My Requests</div>
+      <div class="section-sub">A complete log of everything you've submitted. All records are private to your account.</div>
+
+      <div id="requests-container">
+        <div style="font-size:13px;color:var(--text-dimmer);padding:20px 0;">Loading your requests...</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    const icons = { travel:'✈️', security:'🛡️', legal:'⚖️', medical:'🏥', housing:'🏡', finance:'💳', transport:'🚗', lifestyle:'✨', emergency:'🚨' };
+
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+
+      try {
+        const profile = await getUserProfile(user.id);
+        document.getElementById('nav-name').textContent = 'Hello, ' + (profile.first_name || '');
+
+        const requests = await getUserRequests();
+        const container = document.getElementById('requests-container');
+
+        if (requests.length === 0) {
+          container.innerHTML = `
+            <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px;text-align:center;max-width:500px;">
+              <div style="font-size:32px;margin-bottom:14px;">📋</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:8px;">No requests yet</div>
+              <div style="font-size:13px;color:var(--text-dim);margin-bottom:22px;">Head back to the dashboard to submit your first concierge request.</div>
+              <a href="dashboard.html" class="btn-submit" style="text-decoration:none;display:inline-block;">Go to Dashboard</a>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = `<div class="history-list">` + requests.map(r => `
+          <div class="history-item">
+            <div class="h-icon">${icons[r.service_type] || '📋'}</div>
+            <div class="h-body">
+              <div class="h-title">${formatServiceType(r.service_type)}</div>
+              <div class="h-meta">Submitted ${formatDate(r.created_at)}${r.form_data?.urgency ? ' &nbsp;·&nbsp; ' + r.form_data.urgency : ''}</div>
+            </div>
+            ${statusBadge(r.status)}
+          </div>
+        `).join('') + `</div>`;
+
+      } catch(e) {
+        console.error(e);
+        document.getElementById('requests-container').innerHTML = '<div style="color:#ff7b8a;font-size:13px;">Could not load requests. Please refresh.</div>';
+      }
+    })();
+  </script>
+</body>
+</html>

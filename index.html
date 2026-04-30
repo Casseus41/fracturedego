@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>fractureD Ego</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    /* Landing-specific styles */
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+
+    .landing-wrap {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 2; padding: 60px 24px;
+    }
+    .landing-inner {
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      max-width: 680px; width: 100%;
+    }
+
+    .urgent-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--pink-bg); border: 1px solid var(--border-pink);
+      border-radius: 100px; padding: 8px 20px;
+      font-size: 12px; font-weight: 600; color: var(--pink);
+      margin-bottom: 36px; letter-spacing: 0.02em;
+      opacity: 0; animation: fadeUp 0.7s ease 0.2s forwards;
+    }
+    .urgent-chip .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--pink); animation: pulse 2s infinite;
+    }
+
+    .landing-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 6.5vw, 4.8rem);
+      font-weight: 400; line-height: 1.08; letter-spacing: -0.01em;
+      color: var(--text); margin-bottom: 20px;
+      opacity: 0; animation: fadeUp 0.8s ease 0.38s forwards;
+    }
+    .landing-title em { font-style: italic; color: var(--pink); }
+
+    .landing-sub {
+      font-size: 15px; font-weight: 400; color: var(--text-dim);
+      line-height: 1.8; max-width: 480px; margin-bottom: 48px;
+      opacity: 0; animation: fadeUp 0.8s ease 0.52s forwards;
+    }
+
+    .landing-cards {
+      display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp 0.8s ease 0.66s forwards;
+    }
+
+    .l-card {
+      background: var(--pink-bg-card); border-radius: var(--radius-xl);
+      padding: 32px 28px 28px; width: 240px; text-align: left; cursor: pointer;
+      border: 1px solid transparent;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+      box-shadow: var(--shadow-md); text-decoration: none; display: block;
+    }
+    .l-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: rgba(255,255,255,0.18); }
+
+    .l-card-icon {
+      width: 46px; height: 46px; border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 21px; margin-bottom: 18px; background: rgba(0,0,0,0.1);
+    }
+    .l-card-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; color: var(--black); margin-bottom: 8px; }
+    .l-card-desc { font-size: 12px; color: rgba(0,0,0,0.6); line-height: 1.7; margin-bottom: 22px; }
+    .l-card-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--bg); color: var(--pink);
+      border: none; border-radius: 100px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 12px; font-weight: 700; padding: 8px 18px;
+      pointer-events: none;
+    }
+
+    .notice {
+      margin-top: 40px;
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px 18px; max-width: 520px;
+      opacity: 0; animation: fadeUp 0.8s ease 0.82s forwards;
+    }
+    .notice-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+    .notice-text { font-size: 11.5px; color: var(--text-dimmer); line-height: 1.75; }
+
+    @media (max-width: 560px) {
+      .landing-cards { flex-direction: column; align-items: center; }
+      .l-card { width: 100%; max-width: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="topnav">
+    <a href="index.html" class="nav-wordmark">fracture<span>D</span> Ego</a>
+  </nav>
+
+  <!-- Landing -->
+  <div class="landing-wrap">
+    <div class="landing-inner">
+
+      <div class="urgent-chip">
+        <div class="dot"></div>
+        For Urgent Services / Relocations please contact Sibeth
+      </div>
+
+      <h1 class="landing-title">
+        Welcome to <em>fractureD Ego</em>,<br>
+        let's get you to where<br>you need to be.
+      </h1>
+
+      <p class="landing-sub">
+        Thank you for visiting. If you're here, that means you've been granted access to a network that will aide you in protecting yourself, your family, and those around you.
+      </p>
+
+      <div class="landing-cards">
+        <a href="pages/login.html" class="l-card">
+          <div class="l-card-icon">🔐</div>
+          <div class="l-card-title">Member Login</div>
+          <div class="l-card-desc">Registered members — sign in to access your full concierge dashboard.</div>
+          <div class="l-card-btn">Sign In →</div>
+        </a>
+
+        <a href="pages/access.html" class="l-card">
+          <div class="l-card-icon">✉️</div>
+          <div class="l-card-title">Access Code</div>
+          <div class="l-card-desc">Received an envelope with a code? Enter it here to get started.</div>
+          <div class="l-card-btn">Enter Code →</div>
+        </a>
+      </div>
+
+      <div class="notice">
+        <div class="notice-icon">⚠️</div>
+        <div class="notice-text">
+          If you stumbled upon this site by accident, or you were made aware of this site without authorization from a member, please leave immediately. All I.P. addresses are captured and logged for review.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script>
+    // If already logged in, redirect to dashboard
+    (async () => {
+      const user = await getCurrentUser();
+      if (user) window.location.href = 'pages/dashboard.html';
+    })();
+  </script>
+
+</body>
+</html>

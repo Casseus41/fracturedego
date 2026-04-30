@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Access Code — fractureD Ego</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body { display:flex; flex-direction:column; min-height:100vh; }</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-wordmark">fracture<span>D</span> Ego</a>
+    <div class="nav-right">
+      <a href="../index.html" class="btn-ghost">← Back</a>
+    </div>
+  </nav>
+
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-icon">✉️</div>
+      <div class="auth-tag">Access Code</div>
+      <h2 class="auth-heading">Did you receive an <em>envelope?</em></h2>
+      <p class="auth-sub">If you were given a 4 or 10-digit access code, please enter it below and we'll get you to where you need to be.</p>
+
+      <div id="code-error" class="alert-banner hidden">
+        That code isn't recognized. Please check and try again.
+      </div>
+
+      <div class="field">
+        <div class="field-inner">
+          <label for="code">Your Access Code</label>
+          <input type="text" id="code" placeholder="4 or 10-digit code" maxlength="10"
+            oninput="this.value = this.value.replace(/\D/g,'')"/>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="handleCode()">Continue</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase-config.js"></script>
+  <script>
+    // Valid codes — store these in Supabase for production (see walkthrough)
+    const VALID_CODES = ['2541', '9417472484'];
+
+    function handleCode() {
+      const code = document.getElementById('code').value.trim();
+      const err = document.getElementById('code-error');
+
+      if (VALID_CODES.includes(code)) {
+        err.classList.add('hidden');
+        // Store code in session so the wish page can reference it
+        sessionStorage.setItem('access_code', code);
+        window.location.href = 'wish.html';
+      } else {
+        err.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('code').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleCode();
+    });
+  </script>
+</body>
+</html>
