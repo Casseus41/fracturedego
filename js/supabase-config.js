@@ -5,9 +5,21 @@
 
 // ── STEP 1: Paste your Supabase credentials here ──
 // Get these from: supabase.com → Your Project → Settings → API
-const SUPABASE_URL = 'https://aoxheyrtxygerkqsveaf.supabase.co/rest/v1/';       // e.g. https://abcdefgh.supabase.co
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFveGhleXJ0eHlnZXJrcXN2ZWFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTYzMTksImV4cCI6MjA5MzA3MjMxOX0.cVqcX9cY_bBWcm1sBGdh21UuQYoT6QWn4tI9ZgKk99Q'; // long string starting with eyJ...
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';       // e.g. https://abcdefgh.supabase.co
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // long string starting with eyJ...
+
+// ── Site domain (hardcoded for reliability) ──
 const SITE_URL = 'https://fracturedego.org';
+const RESET_URL = 'https://fracturedego.org/pages/reset-password.html';
+const CONFIRM_URL = 'https://fracturedego.org/pages/confirm.html';
+
+// ── Site domain (used for reference) ──
+// Your live site: https://fracturedego.org
+// Supabase Site URL should be: https://fracturedego.org
+// Supabase Redirect URLs should include:
+//   https://fracturedego.org/pages/confirm.html
+//   https://fracturedego.org/pages/reset-password.html
+
 // ── Initialize Supabase client ──
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
