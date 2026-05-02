@@ -6,12 +6,72 @@
   <title>Admin — fractureD Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
   <style>
-    body{display:flex;flex-direction:column;min-height:100vh;}
-    .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
-    .admin-stat{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;}
-    .admin-stat .val{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--pink);}
-    .admin-stat .lbl{font-size:11px;color:var(--text-3);margin-top:4px;font-weight:600;}
-    .wish-detail{background:var(--bg-3);border-radius:var(--radius-sm);padding:14px;margin-top:10px;font-size:13px;color:var(--text-2);line-height:1.7;border-left:2px solid var(--border-pink);}
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:28px; }
+    .admin-stat { background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; }
+    .admin-stat .val { font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--pink); }
+    .admin-stat .lbl { font-size:11px; color:var(--text-3); margin-top:4px; font-weight:600; }
+    .wish-detail { background:var(--bg-3); border-radius:var(--radius-sm); padding:14px; margin-top:10px; font-size:13px; color:var(--text-2); line-height:1.7; border-left:2px solid var(--border-pink); }
+
+    /* Modal */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500;
+      display:none; align-items:center; justify-content:center; padding:20px;
+      backdrop-filter:blur(4px);
+    }
+    .modal-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
+    .modal {
+      background:var(--bg-2); border:1px solid var(--border-2);
+      border-radius:var(--radius-xl); width:100%; max-width:640px;
+      max-height:90vh; overflow-y:auto; box-shadow:var(--shadow-xl);
+      animation:fadeUp 0.3s ease;
+    }
+    .modal-header {
+      padding:24px 28px 18px; border-bottom:1px solid var(--border);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    }
+    .modal-title-wrap { flex:1; min-width:0; }
+    .modal-eyebrow { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--pink); margin-bottom:4px; }
+    .modal-title { font-family:'Cormorant Garamond',serif; font-size:1.55rem; color:var(--text); line-height:1.2; }
+    .modal-close {
+      background:var(--bg-3); border:1px solid var(--border); color:var(--text-2);
+      width:32px; height:32px; border-radius:50%; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; font-size:16px;
+      transition:all 0.2s; flex-shrink:0;
+    }
+    .modal-close:hover { background:var(--bg-4); color:var(--text); border-color:var(--border-2); }
+    .modal-body { padding:24px 28px; }
+    .modal-body .section { margin-bottom:22px; }
+    .modal-body .section:last-child { margin-bottom:0; }
+    .field-row {
+      display:grid; grid-template-columns:140px 1fr; gap:14px;
+      padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:start;
+    }
+    .field-row:last-of-type { border-bottom:none; }
+    .field-row .k { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3); padding-top:1px; }
+    .field-row .v { font-size:13px; color:var(--text); line-height:1.65; word-break:break-word; }
+    .field-row .v.long { white-space:pre-wrap; background:var(--bg-3); padding:12px; border-radius:var(--radius-sm); border-left:2px solid var(--border-pink); }
+    .modal-footer {
+      padding:18px 28px; border-top:1px solid var(--border);
+      background:var(--bg-3); display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    }
+    @media(max-width:560px){
+      .field-row { grid-template-columns:1fr; gap:4px; }
+      .modal-footer { justify-content:stretch; }
+      .modal-footer .btn { flex:1; }
+    }
+
+    /* Row click affordance */
+    .data-table tbody tr { cursor:pointer; }
+    .data-table tbody tr.no-click { cursor:default; }
+
+    /* Invite controls */
+    .invite-actions {
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-bottom:16px; padding:16px 18px;
+      background:var(--bg-3); border:1px solid var(--border);
+      border-radius:var(--radius-md);
+    }
   </style>
 </head>
 <body>
@@ -38,7 +98,7 @@
         <button class="sidebar-link" onclick="switchTab('members')"><span class="icon">👥</span> Members</button>
         <button class="sidebar-link" onclick="switchTab('requests')"><span class="icon">📋</span> All Requests</button>
         <button class="sidebar-link" onclick="switchTab('wishes')"><span class="icon">🌙</span> Wishes</button>
-        <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invite Member</button>
+        <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invitations</button>
       </div>
       <div class="sidebar-footer">
         <div class="sidebar-user">
@@ -54,7 +114,7 @@
       <div class="page-header">
         <div class="page-eyebrow">Administration</div>
         <h1 class="page-title">Admin <em>Panel</em></h1>
-        <p class="page-subtitle">Manage members, review requests, and oversee all activity. Handle all data with care — this information is strictly confidential.</p>
+        <p class="page-subtitle">Manage members, review requests, and oversee all activity. Click any row to view full details.</p>
       </div>
 
       <div class="tabs" style="margin-bottom:28px;">
@@ -62,19 +122,20 @@
         <button class="tab-btn" data-tab="members" onclick="switchTab('members')">👥 Members</button>
         <button class="tab-btn" data-tab="requests" onclick="switchTab('requests')">📋 Requests</button>
         <button class="tab-btn" data-tab="wishes" onclick="switchTab('wishes')">🌙 Wishes</button>
-        <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invite</button>
+        <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invitations</button>
       </div>
 
       <!-- OVERVIEW -->
       <div class="tab-panel active" id="tab-overview">
-        <div class="admin-grid" id="admin-stats">
+        <div class="admin-grid">
           <div class="admin-stat"><div class="val" id="s-members">—</div><div class="lbl">Total Members</div></div>
           <div class="admin-stat"><div class="val" id="s-requests">—</div><div class="lbl">Total Requests</div></div>
           <div class="admin-stat"><div class="val" id="s-pending">—</div><div class="lbl">Pending Requests</div></div>
           <div class="admin-stat"><div class="val" id="s-wishes">—</div><div class="lbl">Wishes Received</div></div>
+          <div class="admin-stat"><div class="val" id="s-invites">—</div><div class="lbl">Pending Invites</div></div>
         </div>
-        <div id="overview-alert" class="alert alert-info" style="margin-bottom:0;">
-          ℹ️ Use the tabs above to manage members, update request statuses, and review incoming wishes and access code submissions.
+        <div class="alert alert-info">
+          ℹ️ Click into any of the tabs above to manage. Click a row to see full details.
         </div>
       </div>
 
@@ -87,12 +148,10 @@
         <div class="table-wrap">
           <table class="data-table">
             <thead>
-              <tr>
-                <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th>
-              </tr>
+              <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr>
             </thead>
             <tbody id="members-body">
-              <tr><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+              <tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
             </tbody>
           </table>
         </div>
@@ -100,16 +159,14 @@
 
       <!-- REQUESTS -->
       <div class="tab-panel" id="tab-requests">
-        <div style="margin-bottom:16px;" class="page-eyebrow">All Service Requests</div>
+        <div style="margin-bottom:16px;" class="page-eyebrow">All Service Requests · Click any row to view full details</div>
         <div class="table-wrap">
           <table class="data-table">
             <thead>
-              <tr>
-                <th>Member</th><th>Service</th><th>Urgency</th><th>Submitted</th><th>Status</th><th>Update</th>
-              </tr>
+              <tr><th>Member</th><th>Service</th><th>Urgency</th><th>Submitted</th><th>Status</th></tr>
             </thead>
             <tbody id="requests-body">
-              <tr><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+              <tr class="no-click"><td colspan="5" style="color:var(--text-3);">Loading...</td></tr>
             </tbody>
           </table>
         </div>
@@ -117,20 +174,27 @@
 
       <!-- WISHES -->
       <div class="tab-panel" id="tab-wishes">
-        <div style="margin-bottom:16px;" class="page-eyebrow">Access Code Wishes</div>
-        <div id="wishes-container">
-          <div style="color:var(--text-3);font-size:13px;">Loading...</div>
+        <div style="margin-bottom:16px;" class="page-eyebrow">Access Code Wishes · Click any to view full details</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Name</th><th>Contact</th><th>Code</th><th>Urgency</th><th>Submitted</th><th>Status</th></tr>
+            </thead>
+            <tbody id="wishes-body">
+              <tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- INVITE -->
+      <!-- INVITATIONS -->
       <div class="tab-panel" id="tab-invite">
-        <div class="panel-card" style="max-width:500px;">
+
+        <!-- Add new invite -->
+        <div class="panel-card" style="max-width:560px;margin-bottom:24px;">
           <div class="panel-icon">✉️</div>
-          <div class="panel-title">Invite a Member</div>
-          <div class="panel-subtitle">
-            Enter their details below. Then go to <strong>Supabase → Authentication → Users → Invite User</strong> and enter their email — Supabase sends the invitation email with a secure setup link automatically.
-          </div>
+          <div class="panel-title">Add a New Invitation</div>
+          <div class="panel-subtitle">Stage a new member here. Use the Send button below to email them.</div>
           <div id="invite-alert" class="alert hidden" style="margin-bottom:16px;"></div>
           <div class="form-row">
             <div class="field">
@@ -155,166 +219,419 @@
               </select>
             </div>
           </div>
-          <button class="btn btn-primary" id="invite-btn" onclick="handleInvite()">Log Invitation</button>
+          <button class="btn btn-primary" id="add-invite-btn" onclick="handleAddInvite()">Add to Invite List</button>
+        </div>
 
-          <div class="divider"></div>
-          <div style="font-size:12px;color:var(--text-3);line-height:1.75;">
-            <strong style="color:var(--text-2);">Sending the invite email:</strong><br>
-            Go to <strong style="color:var(--text-2);">Supabase → Authentication → Users → Invite User</strong>, enter their email, and set the redirect URL to <code style="color:var(--pink);font-size:11px;">https://fracturedego.org/pages/confirm.html</code>. Supabase will send the invitation automatically.
-          </div>
+        <!-- Bulk send actions -->
+        <div class="invite-actions">
+          <button class="btn btn-primary" id="send-all-btn" onclick="handleSendAll()">📨 Send All Pending Invites</button>
+          <span id="send-status" style="font-size:12px;color:var(--text-3);"></span>
+        </div>
+
+        <!-- Pending invites list -->
+        <div class="page-eyebrow" style="margin-bottom:14px;">Invitation List</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created / Sent</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="invites-body">
+              <tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
     </main>
   </div>
 
+  <!-- ════════════════ MODALS ════════════════ -->
+
+  <!-- Request Detail Modal -->
+  <div class="modal-overlay" id="modal-request" onclick="if(event.target===this)closeModal('modal-request')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow" id="rm-eyebrow">Request Details</div>
+          <div class="modal-title" id="rm-title">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-request')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="section">
+          <div class="page-eyebrow" style="margin-bottom:8px;">Member</div>
+          <div id="rm-member"></div>
+        </div>
+        <div class="section">
+          <div class="page-eyebrow" style="margin-bottom:8px;">Submission Details</div>
+          <div id="rm-fields"></div>
+        </div>
+        <div class="section">
+          <div class="page-eyebrow" style="margin-bottom:8px;">Status & Notes</div>
+          <div class="field-row">
+            <div class="k">Current Status</div>
+            <div class="v">
+              <select id="rm-status" onchange="rmUpdateStatus()" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-xs);padding:6px 10px;font-size:12px;cursor:pointer;">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="complete">Complete</option>
+              </select>
+              <span id="rm-status-msg" style="margin-left:10px;font-size:11px;color:var(--text-3);"></span>
+            </div>
+          </div>
+          <div class="field-row" style="grid-template-columns:140px 1fr;">
+            <div class="k">Admin Notes</div>
+            <div class="v">
+              <textarea id="rm-notes" rows="3" placeholder="Internal notes about this request..."
+                style="width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px;font-family:Inter,sans-serif;font-size:13px;resize:vertical;"></textarea>
+              <button class="btn btn-secondary btn-sm" onclick="rmSaveNotes()" style="margin-top:8px;">Save Notes</button>
+              <span id="rm-notes-msg" style="margin-left:10px;font-size:11px;color:var(--text-3);"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-request')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wish Detail Modal -->
+  <div class="modal-overlay" id="modal-wish" onclick="if(event.target===this)closeModal('modal-wish')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow">🌙 Wish Details</div>
+          <div class="modal-title" id="wm-title">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-wish')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="section">
+          <div id="wm-fields"></div>
+        </div>
+        <div class="section">
+          <div class="page-eyebrow" style="margin-bottom:8px;">The Wish</div>
+          <div class="v long" id="wm-request"></div>
+        </div>
+        <div class="section">
+          <div class="page-eyebrow" style="margin-bottom:8px;">Status & Notes</div>
+          <div class="field-row">
+            <div class="k">Status</div>
+            <div class="v">
+              <select id="wm-status" onchange="wmUpdateStatus()" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-xs);padding:6px 10px;font-size:12px;cursor:pointer;">
+                <option value="new">New</option>
+                <option value="reviewed">Reviewed</option>
+                <option value="actioned">Actioned</option>
+              </select>
+              <span id="wm-status-msg" style="margin-left:10px;font-size:11px;color:var(--text-3);"></span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="k">Admin Notes</div>
+            <div class="v">
+              <textarea id="wm-notes" rows="3" placeholder="Internal notes about this wish..."
+                style="width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px;font-family:Inter,sans-serif;font-size:13px;resize:vertical;"></textarea>
+              <button class="btn btn-secondary btn-sm" onclick="wmSaveNotes()" style="margin-top:8px;">Save Notes</button>
+              <span id="wm-notes-msg" style="margin-left:10px;font-size:11px;color:var(--text-3);"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-wish')">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/app.js"></script>
   <script>
-    let overviewLoaded = false;
+    let currentRequestId = null;
+    let currentWishId = null;
 
     (async () => {
-      const result = await requireAdmin();
-      if (!result) return;
+      const result = await requireAdmin(); if (!result) return;
       const { profile } = result;
-
       const ini = initials(profile.first_name, profile.last_name);
       document.getElementById('nav-name').textContent   = profile.first_name || 'Admin';
       document.getElementById('nav-avatar').textContent = ini;
       document.getElementById('sb-avatar').textContent  = ini;
       document.getElementById('sb-name').textContent    = (profile.first_name||'') + ' ' + (profile.last_name||'');
-
       loadOverview();
     })();
 
     function switchTab(name) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+      if (name === 'overview') loadOverview();
       if (name === 'members')  loadMembers();
       if (name === 'requests') loadRequests();
       if (name === 'wishes')   loadWishes();
+      if (name === 'invite')   loadInvites();
     }
 
     async function loadOverview() {
       try {
-        const [members, requests, wishes] = await Promise.all([getAllProfiles(), getAllRequests(), getAllWishes()]);
+        const [members, requests, wishes, invites] = await Promise.all([
+          getAllProfiles(), getAllRequests(), getAllWishes(), getPendingInvites()
+        ]);
         document.getElementById('s-members').textContent  = members.length;
         document.getElementById('s-requests').textContent = requests.length;
         document.getElementById('s-pending').textContent  = requests.filter(r => r.status === 'pending').length;
         document.getElementById('s-wishes').textContent   = wishes.length;
+        document.getElementById('s-invites').textContent  = invites.filter(i => !i.accepted).length;
       } catch(e) { console.error(e); }
     }
 
+    // ── Members ──
     async function loadMembers() {
       const tbody = document.getElementById('members-body');
       try {
         const members = await getAllProfiles();
-        if (!members.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-3);">No members yet.</td></tr>'; return; }
+        if (!members.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No members yet.</td></tr>'; return; }
         tbody.innerHTML = members.map(m => `
-          <tr>
-            <td class="cell-name">${m.first_name||''} ${m.last_name||''}</td>
-            <td>${m.email||'—'}</td>
+          <tr class="no-click">
+            <td class="cell-name">${escapeHtml((m.first_name||'') + ' ' + (m.last_name||''))}</td>
+            <td>${escapeHtml(m.email||'—')}</td>
             <td>${roleBadge(m.role)}</td>
             <td>${memberStatusBadge(m.status)}</td>
             <td>${formatDate(m.created_at)}</td>
             <td style="display:flex;gap:6px;flex-wrap:wrap;">
               ${m.status !== 'inactive'
-                ? `<button class="btn btn-danger btn-sm" onclick="deactivate('${m.id}')">Deactivate</button>`
-                : `<button class="btn btn-secondary btn-sm" onclick="reactivate('${m.id}')">Reactivate</button>`}
+                ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deactivate('${m.id}')">Deactivate</button>`
+                : `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();reactivate('${m.id}')">Reactivate</button>`}
               ${m.role !== 'admin'
-                ? `<button class="btn btn-secondary btn-sm" onclick="makeAdmin('${m.id}')">Make Admin</button>`
+                ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();makeAdmin('${m.id}')">Make Admin</button>`
                 : ''}
             </td>
           </tr>`).join('');
-      } catch(e) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--red);">Failed to load members.</td></tr>'; }
+      } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load members.</td></tr>'; }
     }
 
+    async function deactivate(id)  { if(!confirm('Deactivate this member?')) return; try{ await setMemberStatus(id,'inactive'); loadMembers(); }catch(e){alert('Failed.');} }
+    async function reactivate(id)  { try{ await setMemberStatus(id,'active'); loadMembers(); }catch(e){alert('Failed.');} }
+    async function makeAdmin(id)   { if(!confirm('Grant admin access?')) return; try{ await setMemberRole(id,'admin'); loadMembers(); }catch(e){alert('Failed.');} }
+
+    // ── Requests ──
     async function loadRequests() {
       const tbody = document.getElementById('requests-body');
       try {
         const requests = await getAllRequests();
-        if (!requests.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-3);">No requests yet.</td></tr>'; return; }
+        if (!requests.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="5" style="color:var(--text-3);">No requests yet.</td></tr>'; return; }
         tbody.innerHTML = requests.map(r => {
           const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
           const memberName = r.profiles ? `${r.profiles.first_name||''} ${r.profiles.last_name||''}`.trim() || r.profiles.email : '—';
-          return `<tr>
-            <td class="cell-name">${memberName}</td>
-            <td>${s.icon} ${s.label}</td>
-            <td style="font-size:12px;">${r.form_data?.urgency||'—'}</td>
+          return `<tr onclick="openRequestModal('${r.id}')">
+            <td class="cell-name">${escapeHtml(memberName)}</td>
+            <td>${s.icon} ${escapeHtml(s.label)}</td>
+            <td style="font-size:12px;">${escapeHtml(r.form_data?.urgency||'—')}</td>
             <td>${formatDate(r.created_at)}</td>
             <td>${statusBadge(r.status)}</td>
-            <td>
-              <select onchange="updateStatus('${r.id}',this.value)" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-xs);padding:4px 8px;font-size:11px;cursor:pointer;">
-                <option value="pending"     ${r.status==='pending'?'selected':''}>Pending</option>
-                <option value="in-progress" ${r.status==='in-progress'?'selected':''}>In Progress</option>
-                <option value="complete"    ${r.status==='complete'?'selected':''}>Complete</option>
-              </select>
-            </td>
           </tr>`;
         }).join('');
-      } catch(e) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--red);">Failed to load requests.</td></tr>'; }
+      } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="5" style="color:var(--red);">Failed to load requests.</td></tr>'; }
     }
 
+    async function openRequestModal(id) {
+      currentRequestId = id;
+      try {
+        const r = await getRequestById(id);
+        const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
+        document.getElementById('rm-eyebrow').textContent = `${s.icon} ${s.label}`;
+
+        const memberName = r.profiles ? `${r.profiles.first_name||''} ${r.profiles.last_name||''}`.trim() || r.profiles.email : '—';
+        document.getElementById('rm-title').textContent = `Request from ${memberName}`;
+
+        // Member info section
+        document.getElementById('rm-member').innerHTML = `
+          <div class="field-row"><div class="k">Name</div><div class="v">${escapeHtml(memberName)}</div></div>
+          <div class="field-row"><div class="k">Email</div><div class="v">${escapeHtml(r.profiles?.email||'—')}</div></div>
+          <div class="field-row"><div class="k">Phone</div><div class="v">${escapeHtml(r.profiles?.phone||'—')}</div></div>
+          <div class="field-row"><div class="k">Pref. Contact</div><div class="v">${escapeHtml(r.profiles?.contact_pref||'—')}</div></div>
+          <div class="field-row"><div class="k">Submitted</div><div class="v">${formatDateTime(r.created_at)}</div></div>
+        `;
+
+        // Form data fields
+        const fields = r.form_data || {};
+        const fieldsHtml = Object.entries(fields).map(([k, v]) => {
+          if (!v) return '';
+          const isLong = String(v).length > 80;
+          const niceKey = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          return `<div class="field-row">
+            <div class="k">${escapeHtml(niceKey)}</div>
+            <div class="v ${isLong ? 'long' : ''}">${escapeHtml(v)}</div>
+          </div>`;
+        }).join('');
+        document.getElementById('rm-fields').innerHTML = fieldsHtml || '<div style="font-size:12px;color:var(--text-3);">No additional details provided.</div>';
+
+        document.getElementById('rm-status').value = r.status || 'pending';
+        document.getElementById('rm-notes').value  = r.admin_notes || '';
+        document.getElementById('rm-status-msg').textContent = '';
+        document.getElementById('rm-notes-msg').textContent  = '';
+
+        document.getElementById('modal-request').classList.add('show');
+      } catch(e) { alert('Could not load request details.'); }
+    }
+
+    async function rmUpdateStatus() {
+      const status = document.getElementById('rm-status').value;
+      const msg = document.getElementById('rm-status-msg');
+      msg.textContent = 'Saving...';
+      try { await setRequestStatus(currentRequestId, status); msg.textContent = '✓ Saved'; setTimeout(()=>msg.textContent='',2000); }
+      catch(e) { msg.textContent = '✕ Failed'; }
+    }
+    async function rmSaveNotes() {
+      const notes = document.getElementById('rm-notes').value;
+      const msg = document.getElementById('rm-notes-msg');
+      msg.textContent = 'Saving...';
+      try { await setRequestNotes(currentRequestId, notes); msg.textContent = '✓ Saved'; setTimeout(()=>msg.textContent='',2000); }
+      catch(e) { msg.textContent = '✕ Failed'; }
+    }
+
+    // ── Wishes ──
     async function loadWishes() {
-      const container = document.getElementById('wishes-container');
+      const tbody = document.getElementById('wishes-body');
       try {
         const wishes = await getAllWishes();
-        if (!wishes.length) {
-          container.innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-title">No wishes yet</div><div class="empty-text">Submissions from access code users will appear here.</div></div>';
-          return;
-        }
-        container.innerHTML = '<div class="request-list">' + wishes.map(w => `
-          <div class="request-item" style="flex-direction:column;align-items:flex-start;gap:10px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:8px;">
-              <div>
-                <div class="r-title">${w.name||'Anonymous'} &nbsp;<span style="color:var(--text-3);font-weight:400;">·</span>&nbsp; <span style="color:var(--text-3);font-size:12px;">${w.contact||'No contact provided'}</span></div>
-                <div class="r-meta">Code: <code style="color:var(--pink);font-size:11px;">${w.access_code||'—'}</code> · ${w.urgency||''} · ${formatDateTime(w.created_at)}</div>
-              </div>
-              ${statusBadge(w.status||'new')}
-            </div>
-            <div class="wish-detail">${w.request||''}</div>
-          </div>`).join('') + '</div>';
-      } catch(e) { container.innerHTML = '<div class="alert alert-error">Failed to load wishes.</div>'; }
+        if (!wishes.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No wishes yet.</td></tr>'; return; }
+        tbody.innerHTML = wishes.map(w => `
+          <tr onclick="openWishModal('${w.id}')">
+            <td class="cell-name">${escapeHtml(w.name||'Anonymous')}</td>
+            <td style="font-size:12px;">${escapeHtml(w.contact||'—')}</td>
+            <td><code style="color:var(--pink);font-size:11px;">${escapeHtml(w.access_code||'—')}</code></td>
+            <td style="font-size:12px;">${escapeHtml(w.urgency||'—')}</td>
+            <td>${formatDate(w.created_at)}</td>
+            <td>${statusBadge(w.status||'new')}</td>
+          </tr>
+        `).join('');
+      } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load wishes.</td></tr>'; }
     }
 
-    async function updateStatus(id, status) {
-      try { await setRequestStatus(id, status); } catch(e) { console.error(e); }
+    async function openWishModal(id) {
+      currentWishId = id;
+      try {
+        const w = await getWishById(id);
+        document.getElementById('wm-title').textContent = `Wish from ${w.name || 'Anonymous'}`;
+        document.getElementById('wm-fields').innerHTML = `
+          <div class="field-row"><div class="k">Name</div><div class="v">${escapeHtml(w.name||'Anonymous')}</div></div>
+          <div class="field-row"><div class="k">Contact</div><div class="v">${escapeHtml(w.contact||'—')}</div></div>
+          <div class="field-row"><div class="k">Access Code</div><div class="v"><code style="color:var(--pink);">${escapeHtml(w.access_code||'—')}</code></div></div>
+          <div class="field-row"><div class="k">Urgency</div><div class="v">${escapeHtml(w.urgency||'—')}</div></div>
+          <div class="field-row"><div class="k">Submitted</div><div class="v">${formatDateTime(w.created_at)}</div></div>
+        `;
+        document.getElementById('wm-request').textContent = w.request || '';
+        document.getElementById('wm-status').value = w.status || 'new';
+        document.getElementById('wm-notes').value  = w.admin_notes || '';
+        document.getElementById('wm-status-msg').textContent = '';
+        document.getElementById('wm-notes-msg').textContent  = '';
+        document.getElementById('modal-wish').classList.add('show');
+      } catch(e) { alert('Could not load wish details.'); }
     }
 
-    async function deactivate(id) {
-      if (!confirm('Deactivate this member? They will lose access immediately.')) return;
-      try { await setMemberStatus(id, 'inactive'); loadMembers(); } catch(e) { alert('Failed to deactivate member.'); }
+    async function wmUpdateStatus() {
+      const status = document.getElementById('wm-status').value;
+      const msg = document.getElementById('wm-status-msg');
+      msg.textContent = 'Saving...';
+      try { await setWishStatus(currentWishId, status); msg.textContent = '✓ Saved'; setTimeout(()=>msg.textContent='',2000); }
+      catch(e) { msg.textContent = '✕ Failed'; }
+    }
+    async function wmSaveNotes() {
+      const notes = document.getElementById('wm-notes').value;
+      const msg = document.getElementById('wm-notes-msg');
+      msg.textContent = 'Saving...';
+      try { await setWishNotes(currentWishId, notes); msg.textContent = '✓ Saved'; setTimeout(()=>msg.textContent='',2000); }
+      catch(e) { msg.textContent = '✕ Failed'; }
     }
 
-    async function reactivate(id) {
-      try { await setMemberStatus(id, 'active'); loadMembers(); } catch(e) { alert('Failed to reactivate member.'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        closeModal('modal-request'); closeModal('modal-wish');
+      }
+    });
+
+    // ── Invitations ──
+    async function loadInvites() {
+      const tbody = document.getElementById('invites-body');
+      try {
+        const invites = await getPendingInvites();
+        if (!invites.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No invitations yet. Add one above.</td></tr>'; return; }
+        tbody.innerHTML = invites.map(i => `
+          <tr class="no-click">
+            <td class="cell-name">${escapeHtml((i.first_name||'') + ' ' + (i.last_name||'').trim())}</td>
+            <td>${escapeHtml(i.email)}</td>
+            <td>${roleBadge(i.role)}</td>
+            <td>${inviteBadge(i.accepted)}</td>
+            <td style="font-size:12px;">${i.accepted ? ('Sent ' + formatDate(i.sent_at)) : ('Added ' + formatDate(i.invited_at))}</td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;">
+              ${!i.accepted ? `<button class="btn btn-primary btn-sm" onclick="handleSendOne('${i.id}','${escapeHtml(i.email)}')">Send Now</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="handleDeleteInvite('${i.id}')">Remove</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load invites.</td></tr>'; }
     }
 
-    async function makeAdmin(id) {
-      if (!confirm('Grant admin access to this member?')) return;
-      try { await setMemberRole(id, 'admin'); loadMembers(); } catch(e) { alert('Failed to update role.'); }
-    }
-
-    async function handleInvite() {
+    async function handleAddInvite() {
       const first = document.getElementById('inv-first').value.trim();
       const last  = document.getElementById('inv-last').value.trim();
       const email = document.getElementById('inv-email').value.trim();
       const role  = document.getElementById('inv-role').value;
-
       if (!email) { showAlert('invite-alert','Please enter an email address.'); return; }
-      setLoading('invite-btn', true); hideAlert('invite-alert');
-
+      setLoading('add-invite-btn', true); hideAlert('invite-alert');
       try {
         await logInvite(email, first, last, role);
-        showAlert('invite-alert', `Invitation logged for ${email}. Now send the invite via Supabase → Authentication → Users → Invite User.`, 'success');
+        showAlert('invite-alert', `Added ${email} to invitation list. Click Send Now or Send All.`, 'success');
         document.getElementById('inv-first').value = '';
         document.getElementById('inv-last').value  = '';
         document.getElementById('inv-email').value = '';
+        loadInvites();
       } catch(e) {
-        showAlert('invite-alert', 'Could not log invite. Check your Supabase connection.');
+        showAlert('invite-alert', 'Could not add invite. ' + (e.message||''));
       }
-      setLoading('invite-btn', false, 'Log Invitation');
+      setLoading('add-invite-btn', false, 'Add to Invite List');
     }
+
+    async function handleSendOne(inviteId, email) {
+      if (!confirm('Send invitation email to ' + email + '?')) return;
+      const status = document.getElementById('send-status');
+      status.textContent = 'Sending...';
+      try {
+        const result = await sendInvites({ invite_id: inviteId });
+        status.textContent = result.sent === 1 ? `✓ Sent to ${email}` : `✕ Failed`;
+        loadInvites();
+      } catch(e) {
+        status.textContent = '✕ ' + e.message;
+      }
+      setTimeout(() => status.textContent = '', 4000);
+    }
+
+    async function handleSendAll() {
+      const invites = await getPendingInvites();
+      const pending = invites.filter(i => !i.accepted);
+      if (!pending.length) { alert('No pending invites to send.'); return; }
+      if (!confirm(`Send invitation emails to ${pending.length} pending invite(s)?`)) return;
+      setLoading('send-all-btn', true);
+      const status = document.getElementById('send-status');
+      status.textContent = 'Sending...';
+      try {
+        const result = await sendInvites({ send_all: true });
+        status.textContent = `✓ ${result.message}`;
+        loadInvites();
+      } catch(e) {
+        status.textContent = '✕ ' + e.message;
+      }
+      setLoading('send-all-btn', false, '📨 Send All Pending Invites');
+      setTimeout(() => status.textContent = '', 6000);
+    }
+
+    async function handleDeleteInvite(id) {
+      if (!confirm('Remove this invitation?')) return;
+      try { await deletePendingInvite(id); loadInvites(); }
+      catch(e) { alert('Failed to remove.'); }
+    }
+
   </script>
 </body>
 </html>
