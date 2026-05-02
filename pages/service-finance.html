@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Financial Services — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Concierge Services</div>
+        <a href="service-travel.html" class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html" class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html" class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html" class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html" class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html" class="sidebar-link active"><span class="icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html" class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info"><div class="name" id="sb-name"></div><div class="role" id="sb-role">Member</div></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+    <main class="main fade-up">
+      <a href="dashboard.html" class="panel-back">← Back to Dashboard</a>
+      <div class="panel-card">
+        <div class="panel-icon">💳</div>
+        <div class="panel-title">Financial Services</div>
+        <div class="panel-subtitle">Emergency financial assistance, account protection, and discreet financial coordination when you need it most.</div>
+        
+        <div id="form-alert" class="alert alert-error hidden"></div>
+        <div class="field">
+          <label class="field-label">Service Type</label>
+          <div class="field-input"><select id="service_type"><option>Emergency Funds Access</option><option>Account Freeze / Protection</option><option>Financial Planning Consultation</option><option>Discreet Transaction Support</option><option>Asset Protection Guidance</option></select></div>
+        </div>
+<div class="field">
+          <label class="field-label">Urgency</label>
+          <div class="field-input"><select id="urgency"><option>Immediate</option><option>Within 24 hours</option><option>This week</option><option>Planning ahead</option></select></div>
+        </div>
+<div class="field">
+          <label class="field-label">Details</label>
+          <div class="field-input"><textarea id="details" rows="5" placeholder="Describe your financial situation and what assistance you need."></textarea></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Best Way to Reach You</label>
+          <div class="field-input"><input type="text" id="contact" placeholder="Phone, email, or Signal"/></div>
+        </div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-primary btn-lg" id="submit-btn" onclick="handleSubmit()">Submit Request</button>
+        </div>
+        <div id="success-msg" class="alert alert-success hidden" style="margin-top:16px;">
+          ✅ Your request has been received. Someone will be in touch with you shortly.
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+      try {
+        const p = await getProfile(user.id);
+        document.getElementById('nav-name').textContent = 'Hello, ' + (p.first_name||'');
+        document.getElementById('nav-avatar').textContent = initials(p.first_name, p.last_name);
+        document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
+        document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
+        document.getElementById('sb-role').textContent    = p.role === 'admin' ? 'Administrator' : 'Member';
+      } catch(e) {}
+    })();
+
+    async function handleSubmit() {
+      const contact = document.getElementById('contact').value.trim();
+      hideAlert('form-alert');
+
+      const formData = {
+        service_type: (document.getElementById("service_type") ? document.getElementById("service_type").value : ""),
+        urgency: (document.getElementById("urgency") ? document.getElementById("urgency").value : ""),
+        details: (document.getElementById("details") ? document.getElementById("details").value : ""),
+        contact,
+      };
+
+      setLoading('submit-btn', true);
+
+      try {
+        await submitRequest('finance', formData);
+        document.getElementById('submit-btn').textContent = 'Submitted ✓';
+        document.getElementById('success-msg').classList.remove('hidden');
+        document.getElementById('submit-btn').disabled = true;
+      } catch(e) {
+        showAlert('form-alert', 'Something went wrong. Please try again.');
+        setLoading('submit-btn', false, 'Submit Request');
+      }
+    }
+  </script>
+</body>
+</html>

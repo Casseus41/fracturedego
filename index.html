@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>fractureD Ego</title>
+  <link rel="stylesheet" href="css/styles.css"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+
+    .landing { flex:1; display:flex; align-items:center; justify-content:center; padding:60px 24px; position:relative; z-index:1; }
+
+    .landing-inner { max-width:660px; width:100%; display:flex; flex-direction:column; align-items:center; text-align:center; }
+
+    /* Eyebrow chip */
+    .chip {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--pink-dim); border:1px solid var(--border-pink);
+      border-radius:var(--radius-full); padding:7px 18px;
+      font-size:11.5px; font-weight:600; color:var(--pink);
+      margin-bottom:36px;
+      opacity:0; animation:fadeUp 0.7s ease 0.15s forwards;
+    }
+
+    /* Hero */
+    .hero-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.8rem,7vw,5.5rem);
+      font-weight:300; line-height:1.06; letter-spacing:0.01em;
+      color:var(--text); margin-bottom:22px;
+      opacity:0; animation:fadeUp 0.8s ease 0.3s forwards;
+    }
+    .hero-title em { font-style:italic; color:var(--pink); }
+    .hero-title .brand { font-weight:500; }
+
+    .hero-sub {
+      font-size:15px; color:var(--text-2); line-height:1.8;
+      max-width:460px; margin-bottom:52px;
+      opacity:0; animation:fadeUp 0.8s ease 0.45s forwards;
+    }
+
+    /* Entry cards */
+    .entry-cards {
+      display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+      opacity:0; animation:fadeUp 0.8s ease 0.6s forwards;
+    }
+
+    .entry-card {
+      background:var(--pink); border-radius:var(--radius-xl);
+      padding:32px 28px 26px; width:232px; text-align:left;
+      text-decoration:none; display:flex; flex-direction:column;
+      border:1px solid transparent;
+      transition:transform 0.25s, box-shadow 0.25s, filter 0.25s;
+      box-shadow:var(--shadow-pink);
+    }
+    .entry-card:hover { transform:translateY(-5px); box-shadow:0 16px 48px rgba(255,182,193,0.3); filter:brightness(1.03); }
+
+    .entry-icon {
+      width:44px; height:44px; border-radius:12px;
+      background:rgba(0,0,0,0.12); display:flex; align-items:center;
+      justify-content:center; font-size:20px; margin-bottom:18px;
+    }
+    .entry-title { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:500; color:#0c0c0e; margin-bottom:7px; }
+    .entry-desc { font-size:12px; color:rgba(0,0,0,0.6); line-height:1.7; margin-bottom:22px; flex:1; }
+    .entry-cta {
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(0,0,0,0.1); color:#0c0c0e;
+      font-size:11px; font-weight:700; letter-spacing:0.04em;
+      padding:7px 16px; border-radius:var(--radius-full);
+      border:none; cursor:pointer; width:fit-content;
+      transition:background 0.2s;
+    }
+    .entry-card:hover .entry-cta { background:rgba(0,0,0,0.18); }
+
+    /* Notice */
+    .notice {
+      margin-top:44px; max-width:500px;
+      display:flex; align-items:flex-start; gap:10px;
+      background:rgba(255,255,255,0.02); border:1px solid var(--border);
+      border-radius:var(--radius-md); padding:14px 18px;
+      opacity:0; animation:fadeUp 0.8s ease 0.78s forwards;
+    }
+    .notice-text { font-size:11.5px; color:var(--text-3); line-height:1.75; }
+
+    /* Ornament */
+    .ornament {
+      display:flex; align-items:center; gap:14px; margin:0 0 50px;
+      opacity:0; animation:fadeUp 0.7s ease 0.52s forwards;
+    }
+    .orn-line { flex:1; max-width:70px; height:1px; background:linear-gradient(90deg,transparent,var(--border-2)); }
+    .orn-line.r { background:linear-gradient(90deg,var(--border-2),transparent); }
+    .orn-diamond { width:5px; height:5px; background:var(--pink); transform:rotate(45deg); flex-shrink:0; }
+
+    @media(max-width:560px){
+      .entry-cards { flex-direction:column; align-items:center; }
+      .entry-card { width:100%; max-width:320px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="topnav">
+    <a href="index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+  </nav>
+
+  <!-- Landing -->
+  <div class="landing">
+    <div class="landing-inner">
+
+      <div class="chip">
+        <span class="dot-live"></span>
+        For urgent services or relocations, please contact Sibeth
+      </div>
+
+      <h1 class="hero-title">
+        Welcome to<br><span class="brand">fracture<em>D</em> Ego</span> —<br>
+        let's get you <em>where you need to be.</em>
+      </h1>
+
+      <p class="hero-sub">
+        Thank you for visiting. If you're here, you've been granted access to a private network dedicated to protecting you, your family, and those around you.
+      </p>
+
+      <div class="ornament">
+        <div class="orn-line"></div>
+        <div class="orn-diamond"></div>
+        <div class="orn-line r"></div>
+      </div>
+
+      <div class="entry-cards">
+
+        <a href="pages/login.html" class="entry-card">
+          <div class="entry-icon">🔐</div>
+          <div class="entry-title">Member Login</div>
+          <div class="entry-desc">Registered members — sign in to access your full concierge dashboard and services.</div>
+          <div class="entry-cta">Sign In →</div>
+        </a>
+
+        <a href="pages/access.html" class="entry-card">
+          <div class="entry-icon">✉️</div>
+          <div class="entry-title">Access Code</div>
+          <div class="entry-desc">Received an envelope with a code? Enter it here to submit your request.</div>
+          <div class="entry-cta">Enter Code →</div>
+        </a>
+
+      </div>
+
+      <div class="notice">
+        <span style="font-size:13px;flex-shrink:0;margin-top:1px;">⚠️</span>
+        <div class="notice-text">If you arrived here by accident or without direct authorization from a member, please leave immediately. All IP addresses are captured and logged for review.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Redirect to dashboard if already logged in
+    (async () => { await redirectIfAuthed(); })();
+  </script>
+</body>
+</html>

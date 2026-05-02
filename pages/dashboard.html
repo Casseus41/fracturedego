@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <div class="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-name">Loading...</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Concierge Services</div>
+        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html"   class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"     class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info">
+            <div class="name" id="sb-name">Loading...</div>
+            <div class="role" id="sb-role">Member</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div>
+          <div class="wb-title">Welcome back, <em id="first-name">friend.</em></div>
+          <div class="wb-sub">Your private concierge network is standing by. How can we help you today?</div>
+        </div>
+        <span class="badge badge-gold">Active Member</span>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-open">—</div>
+          <div class="stat-label">Open Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-label">Total Requests</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">24/7</div>
+          <div class="stat-label">Network Access</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Confidential</div>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="page-header">
+        <div class="page-eyebrow">Concierge Services</div>
+        <h2 class="page-title">What can we <em>help with?</em></h2>
+        <p class="page-subtitle">Select a category below to submit a request. All requests are handled with absolute discretion.</p>
+      </div>
+
+      <div class="services-grid" style="margin-bottom:36px;">
+        <a href="service-travel.html"    class="service-tile"><span class="tile-icon">✈️</span><div class="tile-title">Travel & Relocation</div><div class="tile-desc">Flights, hotels, safe houses, international relocation.</div></a>
+        <a href="service-security.html"  class="service-tile"><span class="tile-icon">🛡️</span><div class="tile-title">Security & Protection</div><div class="tile-desc">Protective detail, threat assessment, safety planning.</div></a>
+        <a href="service-legal.html"     class="service-tile"><span class="tile-icon">⚖️</span><div class="tile-title">Legal Assistance</div><div class="tile-desc">Attorney referrals, document prep, legal guidance.</div></a>
+        <a href="service-medical.html"   class="service-tile"><span class="tile-icon">🏥</span><div class="tile-title">Medical & Wellness</div><div class="tile-desc">Private appointments, mental health, prescriptions.</div></a>
+        <a href="service-housing.html"   class="service-tile"><span class="tile-icon">🏡</span><div class="tile-title">Housing & Lodging</div><div class="tile-desc">Emergency shelter, safe accommodations, long-term housing.</div></a>
+        <a href="service-finance.html"   class="service-tile"><span class="tile-icon">💳</span><div class="tile-title">Financial Services</div><div class="tile-desc">Emergency funds, account protection, financial planning.</div></a>
+        <a href="service-transport.html" class="service-tile"><span class="tile-icon">🚗</span><div class="tile-title">Transport & Logistics</div><div class="tile-desc">Private drivers, vehicle sourcing, discreet logistics.</div></a>
+        <a href="service-lifestyle.html" class="service-tile"><span class="tile-icon">✨</span><div class="tile-title">Lifestyle & Personal</div><div class="tile-desc">Childcare, shopping, scheduling, daily life support.</div></a>
+        <a href="service-emergency.html" class="service-tile" style="border-color:rgba(248,113,113,0.15);"><span class="tile-icon">🚨</span><div class="tile-title">Emergency Services</div><div class="tile-desc">Crisis response, immediate coordination, urgent assistance.</div></a>
+      </div>
+
+      <!-- Recent requests -->
+      <div class="page-header">
+        <div class="page-eyebrow">Activity</div>
+        <h2 class="page-title">Recent <em>Requests</em></h2>
+      </div>
+      <div id="recent-list">
+        <div style="color:var(--text-3);font-size:13px;padding:8px 0;">Loading...</div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+
+      try {
+        const profile = await getProfile(user.id);
+        const name = profile.first_name || 'friend';
+        const ini  = initials(profile.first_name, profile.last_name);
+
+        document.getElementById('first-name').textContent = name + '.';
+        document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+        document.getElementById('nav-avatar').textContent = ini;
+        document.getElementById('sb-avatar').textContent  = ini;
+        document.getElementById('sb-name').textContent    = (profile.first_name || '') + ' ' + (profile.last_name || '');
+        document.getElementById('sb-role').textContent    = profile.role === 'admin' ? 'Administrator' : 'Member';
+
+        if (profile.role === 'admin') {
+          document.getElementById('admin-link').classList.remove('hidden');
+        }
+
+        const requests = await getMyRequests();
+        document.getElementById('stat-open').textContent  = requests.filter(r => r.status !== 'complete').length;
+        document.getElementById('stat-total').textContent = requests.length;
+
+        const list = document.getElementById('recent-list');
+        if (!requests.length) {
+          list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No requests yet</div><div class="empty-text">Submit your first concierge request above.</div></div>`;
+        } else {
+          list.innerHTML = `<div class="request-list">` + requests.slice(0, 5).map(r => {
+            const s = SERVICE_MAP[r.service_type] || { icon: '📋', label: r.service_type };
+            return `<div class="request-item">
+              <div class="r-icon">${s.icon}</div>
+              <div class="r-body">
+                <div class="r-title">${s.label}</div>
+                <div class="r-meta">Submitted ${formatDate(r.created_at)}${r.form_data?.urgency ? ' · ' + r.form_data.urgency : ''}</div>
+              </div>
+              <div class="r-status">${statusBadge(r.status)}</div>
+            </div>`;
+          }).join('') + `</div>
+          <div style="margin-top:14px;"><a href="requests.html" class="btn btn-secondary btn-sm">View All Requests →</a></div>`;
+        }
+      } catch(e) { console.error(e); }
+    })();
+  </script>
+</body>
+</html>

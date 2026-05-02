@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Access Code — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right"><a href="../index.html" class="btn btn-ghost">← Back</a></div>
+  </nav>
+
+  <div class="auth-page">
+    <a href="../index.html" class="auth-logo">fracture<span>D</span> Ego</a>
+
+    <div class="auth-card">
+      <div class="auth-icon-wrap">✉️</div>
+      <div class="auth-eyebrow">Access Code</div>
+      <h1 class="auth-title">Did you receive an <em>envelope?</em></h1>
+      <p class="auth-subtitle">If you were given a 4 or 10-digit access code, please enter it below and we'll get you to where you need to be.</p>
+
+      <div id="alert" class="alert alert-error hidden"></div>
+
+      <div class="field">
+        <label class="field-label">Your Access Code</label>
+        <div class="field-input">
+          <input type="text" id="code" placeholder="4 or 10-digit code"
+            maxlength="10" inputmode="numeric"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+            style="font-size:20px;letter-spacing:0.18em;text-align:center;padding:16px;"/>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-lg" id="code-btn" onclick="handleCode()" style="margin-top:8px;">
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    // Valid codes
+    const VALID = ['2541', '9417472484'];
+
+    function handleCode() {
+      const code = document.getElementById('code').value.trim();
+      hideAlert('alert');
+
+      if (!VALID.includes(code)) {
+        showAlert('alert', 'That code isn\'t recognized. Please check and try again.');
+        return;
+      }
+
+      sessionStorage.setItem('fe_access_code', code);
+      window.location.href = 'https://fracturedego.org/pages/wish.html';
+    }
+
+    document.getElementById('code').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleCode();
+    });
+  </script>
+</body>
+</html>

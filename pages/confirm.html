@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Accept Invitation — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+  </nav>
+  <div class="auth-page">
+    <a href="../index.html" class="auth-logo">fracture<span>D</span> Ego</a>
+
+    <div class="auth-card" id="loading-card">
+      <div style="text-align:center;padding:20px 0;">
+        <span class="spinner lg"></span>
+        <p style="font-size:13px;color:var(--text-2);margin-top:16px;">Verifying your invitation...</p>
+      </div>
+    </div>
+
+    <div class="auth-card hidden" id="setup-card">
+      <div class="auth-icon-wrap">🎉</div>
+      <div class="auth-eyebrow">You've Been Invited</div>
+      <h1 class="auth-title">Welcome to <em>fractureD Ego.</em></h1>
+      <p class="auth-subtitle">You've been granted access. Please complete your profile and set a password to get started.</p>
+      <div id="alert" class="alert alert-error hidden"></div>
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label">First Name</label>
+          <div class="field-input"><input type="text" id="first-name" placeholder="First name"/></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Last Name</label>
+          <div class="field-input"><input type="text" id="last-name" placeholder="Last name"/></div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Phone / Signal (Optional)</label>
+        <div class="field-input"><input type="text" id="phone" placeholder="Best number to reach you"/></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Choose a Password</label>
+        <div class="field-input"><input type="password" id="pw1" placeholder="At least 8 characters"/></div>
+      </div>
+      <div class="field">
+        <label class="field-label">Confirm Password</label>
+        <div class="field-input"><input type="password" id="pw2" placeholder="Repeat your password"/></div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" id="setup-btn" onclick="handleSetup()" style="margin-top:8px;">Complete Account Setup</button>
+    </div>
+
+    <div class="auth-card hidden" id="expired-card">
+      <div class="auth-icon-wrap">⚠️</div>
+      <div class="auth-eyebrow">Link Expired</div>
+      <h1 class="auth-title">This link has <em>expired.</em></h1>
+      <p class="auth-subtitle">Invitation links expire after 24 hours. Please contact your administrator to resend the invitation.</p>
+    </div>
+
+    <div class="auth-card hidden" id="success-card">
+      <div class="auth-icon-wrap">✅</div>
+      <div class="auth-eyebrow">Welcome Aboard</div>
+      <h1 class="auth-title">You're <em>in.</em></h1>
+      <p class="auth-subtitle">Your account is set up and ready. Welcome to the network.</p>
+      <a href="https://fracturedego.org/pages/dashboard.html" class="btn btn-primary btn-full btn-lg" style="display:flex;margin-top:8px;">Go to Dashboard</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    function show(id) {
+      ['loading-card','setup-card','expired-card','success-card'].forEach(s =>
+        document.getElementById(s).classList.toggle('hidden', s !== id)
+      );
+    }
+
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // Pre-fill if profile has name
+        try {
+          const p = await getProfile(session.user.id);
+          if (p?.first_name) document.getElementById('first-name').value = p.first_name;
+          if (p?.last_name)  document.getElementById('last-name').value  = p.last_name;
+        } catch(e) {}
+        show('setup-card');
+      } else if (event === 'PASSWORD_RECOVERY') {
+        window.location.href = 'https://fracturedego.org/pages/reset-password.html';
+      }
+    });
+
+    setTimeout(async () => {
+      if (!document.getElementById('loading-card').classList.contains('hidden')) {
+        const session = await getSession();
+        show(session ? 'setup-card' : 'expired-card');
+      }
+    }, 3500);
+
+    async function handleSetup() {
+      const firstName = document.getElementById('first-name').value.trim();
+      const lastName  = document.getElementById('last-name').value.trim();
+      const phone     = document.getElementById('phone').value.trim();
+      const pw1       = document.getElementById('pw1').value;
+      const pw2       = document.getElementById('pw2').value;
+
+      if (!firstName)    { showAlert('alert','Please enter your first name.'); return; }
+      if (pw1.length < 8){ showAlert('alert','Password must be at least 8 characters.'); return; }
+      if (pw1 !== pw2)   { showAlert('alert','Passwords do not match.'); return; }
+
+      setLoading('setup-btn', true); hideAlert('alert');
+
+      try {
+        await updatePassword(pw1);
+        await updateProfile({ first_name: firstName, last_name: lastName, phone });
+        show('success-card');
+      } catch(e) {
+        console.error(e);
+        showAlert('alert','Something went wrong. Your link may have expired.');
+        setLoading('setup-btn', false, 'Complete Account Setup');
+      }
+    }
+
+    document.getElementById('pw2').addEventListener('keydown', e => { if(e.key==='Enter') handleSetup(); });
+  </script>
+</body>
+</html>

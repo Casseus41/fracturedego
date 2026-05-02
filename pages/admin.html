@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    body{display:flex;flex-direction:column;min-height:100vh;}
+    .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+    .admin-stat{background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;}
+    .admin-stat .val{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--pink);}
+    .admin-stat .lbl{font-size:11px;color:var(--text-3);margin-top:4px;font-weight:600;}
+    .wish-detail{background:var(--bg-3);border-radius:var(--radius-sm);padding:14px;margin-top:10px;font-size:13px;color:var(--text-2);line-height:1.7;border-left:2px solid var(--border-pink);}
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <span class="badge badge-pink">Admin</span>
+      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">← Dashboard</a>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Admin</div>
+        <a href="admin.html" class="sidebar-link active"><span class="icon">🔧</span> Admin Panel</a>
+        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Manage</div>
+        <button class="sidebar-link" onclick="switchTab('overview')"><span class="icon">📊</span> Overview</button>
+        <button class="sidebar-link" onclick="switchTab('members')"><span class="icon">👥</span> Members</button>
+        <button class="sidebar-link" onclick="switchTab('requests')"><span class="icon">📋</span> All Requests</button>
+        <button class="sidebar-link" onclick="switchTab('wishes')"><span class="icon">🌙</span> Wishes</button>
+        <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invite Member</button>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info"><div class="name" id="sb-name"></div><div class="role">Administrator</div></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+
+      <div class="page-header">
+        <div class="page-eyebrow">Administration</div>
+        <h1 class="page-title">Admin <em>Panel</em></h1>
+        <p class="page-subtitle">Manage members, review requests, and oversee all activity. Handle all data with care — this information is strictly confidential.</p>
+      </div>
+
+      <div class="tabs" style="margin-bottom:28px;">
+        <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">📊 Overview</button>
+        <button class="tab-btn" data-tab="members" onclick="switchTab('members')">👥 Members</button>
+        <button class="tab-btn" data-tab="requests" onclick="switchTab('requests')">📋 Requests</button>
+        <button class="tab-btn" data-tab="wishes" onclick="switchTab('wishes')">🌙 Wishes</button>
+        <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invite</button>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div class="tab-panel active" id="tab-overview">
+        <div class="admin-grid" id="admin-stats">
+          <div class="admin-stat"><div class="val" id="s-members">—</div><div class="lbl">Total Members</div></div>
+          <div class="admin-stat"><div class="val" id="s-requests">—</div><div class="lbl">Total Requests</div></div>
+          <div class="admin-stat"><div class="val" id="s-pending">—</div><div class="lbl">Pending Requests</div></div>
+          <div class="admin-stat"><div class="val" id="s-wishes">—</div><div class="lbl">Wishes Received</div></div>
+        </div>
+        <div id="overview-alert" class="alert alert-info" style="margin-bottom:0;">
+          ℹ️ Use the tabs above to manage members, update request statuses, and review incoming wishes and access code submissions.
+        </div>
+      </div>
+
+      <!-- MEMBERS -->
+      <div class="tab-panel" id="tab-members">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div class="page-eyebrow" style="margin:0;">All Members</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('invite')">+ Invite Member</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="members-body">
+              <tr><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REQUESTS -->
+      <div class="tab-panel" id="tab-requests">
+        <div style="margin-bottom:16px;" class="page-eyebrow">All Service Requests</div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Member</th><th>Service</th><th>Urgency</th><th>Submitted</th><th>Status</th><th>Update</th>
+              </tr>
+            </thead>
+            <tbody id="requests-body">
+              <tr><td colspan="6" style="color:var(--text-3);">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- WISHES -->
+      <div class="tab-panel" id="tab-wishes">
+        <div style="margin-bottom:16px;" class="page-eyebrow">Access Code Wishes</div>
+        <div id="wishes-container">
+          <div style="color:var(--text-3);font-size:13px;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- INVITE -->
+      <div class="tab-panel" id="tab-invite">
+        <div class="panel-card" style="max-width:500px;">
+          <div class="panel-icon">✉️</div>
+          <div class="panel-title">Invite a Member</div>
+          <div class="panel-subtitle">
+            Enter their details below. Then go to <strong>Supabase → Authentication → Users → Invite User</strong> and enter their email — Supabase sends the invitation email with a secure setup link automatically.
+          </div>
+          <div id="invite-alert" class="alert hidden" style="margin-bottom:16px;"></div>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">First Name</label>
+              <div class="field-input"><input type="text" id="inv-first" placeholder="First name"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Last Name</label>
+              <div class="field-input"><input type="text" id="inv-last" placeholder="Last name"/></div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Email Address</label>
+            <div class="field-input"><input type="email" id="inv-email" placeholder="their@email.com"/></div>
+          </div>
+          <div class="field">
+            <label class="field-label">Role</label>
+            <div class="field-input">
+              <select id="inv-role">
+                <option value="member">Member</option>
+                <option value="admin">Administrator</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="invite-btn" onclick="handleInvite()">Log Invitation</button>
+
+          <div class="divider"></div>
+          <div style="font-size:12px;color:var(--text-3);line-height:1.75;">
+            <strong style="color:var(--text-2);">Sending the invite email:</strong><br>
+            Go to <strong style="color:var(--text-2);">Supabase → Authentication → Users → Invite User</strong>, enter their email, and set the redirect URL to <code style="color:var(--pink);font-size:11px;">https://fracturedego.org/pages/confirm.html</code>. Supabase will send the invitation automatically.
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    let overviewLoaded = false;
+
+    (async () => {
+      const result = await requireAdmin();
+      if (!result) return;
+      const { profile } = result;
+
+      const ini = initials(profile.first_name, profile.last_name);
+      document.getElementById('nav-name').textContent   = profile.first_name || 'Admin';
+      document.getElementById('nav-avatar').textContent = ini;
+      document.getElementById('sb-avatar').textContent  = ini;
+      document.getElementById('sb-name').textContent    = (profile.first_name||'') + ' ' + (profile.last_name||'');
+
+      loadOverview();
+    })();
+
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+      if (name === 'members')  loadMembers();
+      if (name === 'requests') loadRequests();
+      if (name === 'wishes')   loadWishes();
+    }
+
+    async function loadOverview() {
+      try {
+        const [members, requests, wishes] = await Promise.all([getAllProfiles(), getAllRequests(), getAllWishes()]);
+        document.getElementById('s-members').textContent  = members.length;
+        document.getElementById('s-requests').textContent = requests.length;
+        document.getElementById('s-pending').textContent  = requests.filter(r => r.status === 'pending').length;
+        document.getElementById('s-wishes').textContent   = wishes.length;
+      } catch(e) { console.error(e); }
+    }
+
+    async function loadMembers() {
+      const tbody = document.getElementById('members-body');
+      try {
+        const members = await getAllProfiles();
+        if (!members.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-3);">No members yet.</td></tr>'; return; }
+        tbody.innerHTML = members.map(m => `
+          <tr>
+            <td class="cell-name">${m.first_name||''} ${m.last_name||''}</td>
+            <td>${m.email||'—'}</td>
+            <td>${roleBadge(m.role)}</td>
+            <td>${memberStatusBadge(m.status)}</td>
+            <td>${formatDate(m.created_at)}</td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;">
+              ${m.status !== 'inactive'
+                ? `<button class="btn btn-danger btn-sm" onclick="deactivate('${m.id}')">Deactivate</button>`
+                : `<button class="btn btn-secondary btn-sm" onclick="reactivate('${m.id}')">Reactivate</button>`}
+              ${m.role !== 'admin'
+                ? `<button class="btn btn-secondary btn-sm" onclick="makeAdmin('${m.id}')">Make Admin</button>`
+                : ''}
+            </td>
+          </tr>`).join('');
+      } catch(e) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--red);">Failed to load members.</td></tr>'; }
+    }
+
+    async function loadRequests() {
+      const tbody = document.getElementById('requests-body');
+      try {
+        const requests = await getAllRequests();
+        if (!requests.length) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--text-3);">No requests yet.</td></tr>'; return; }
+        tbody.innerHTML = requests.map(r => {
+          const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
+          const memberName = r.profiles ? `${r.profiles.first_name||''} ${r.profiles.last_name||''}`.trim() || r.profiles.email : '—';
+          return `<tr>
+            <td class="cell-name">${memberName}</td>
+            <td>${s.icon} ${s.label}</td>
+            <td style="font-size:12px;">${r.form_data?.urgency||'—'}</td>
+            <td>${formatDate(r.created_at)}</td>
+            <td>${statusBadge(r.status)}</td>
+            <td>
+              <select onchange="updateStatus('${r.id}',this.value)" style="background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-xs);padding:4px 8px;font-size:11px;cursor:pointer;">
+                <option value="pending"     ${r.status==='pending'?'selected':''}>Pending</option>
+                <option value="in-progress" ${r.status==='in-progress'?'selected':''}>In Progress</option>
+                <option value="complete"    ${r.status==='complete'?'selected':''}>Complete</option>
+              </select>
+            </td>
+          </tr>`;
+        }).join('');
+      } catch(e) { tbody.innerHTML = '<tr><td colspan="6" style="color:var(--red);">Failed to load requests.</td></tr>'; }
+    }
+
+    async function loadWishes() {
+      const container = document.getElementById('wishes-container');
+      try {
+        const wishes = await getAllWishes();
+        if (!wishes.length) {
+          container.innerHTML = '<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-title">No wishes yet</div><div class="empty-text">Submissions from access code users will appear here.</div></div>';
+          return;
+        }
+        container.innerHTML = '<div class="request-list">' + wishes.map(w => `
+          <div class="request-item" style="flex-direction:column;align-items:flex-start;gap:10px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;flex-wrap:wrap;gap:8px;">
+              <div>
+                <div class="r-title">${w.name||'Anonymous'} &nbsp;<span style="color:var(--text-3);font-weight:400;">·</span>&nbsp; <span style="color:var(--text-3);font-size:12px;">${w.contact||'No contact provided'}</span></div>
+                <div class="r-meta">Code: <code style="color:var(--pink);font-size:11px;">${w.access_code||'—'}</code> · ${w.urgency||''} · ${formatDateTime(w.created_at)}</div>
+              </div>
+              ${statusBadge(w.status||'new')}
+            </div>
+            <div class="wish-detail">${w.request||''}</div>
+          </div>`).join('') + '</div>';
+      } catch(e) { container.innerHTML = '<div class="alert alert-error">Failed to load wishes.</div>'; }
+    }
+
+    async function updateStatus(id, status) {
+      try { await setRequestStatus(id, status); } catch(e) { console.error(e); }
+    }
+
+    async function deactivate(id) {
+      if (!confirm('Deactivate this member? They will lose access immediately.')) return;
+      try { await setMemberStatus(id, 'inactive'); loadMembers(); } catch(e) { alert('Failed to deactivate member.'); }
+    }
+
+    async function reactivate(id) {
+      try { await setMemberStatus(id, 'active'); loadMembers(); } catch(e) { alert('Failed to reactivate member.'); }
+    }
+
+    async function makeAdmin(id) {
+      if (!confirm('Grant admin access to this member?')) return;
+      try { await setMemberRole(id, 'admin'); loadMembers(); } catch(e) { alert('Failed to update role.'); }
+    }
+
+    async function handleInvite() {
+      const first = document.getElementById('inv-first').value.trim();
+      const last  = document.getElementById('inv-last').value.trim();
+      const email = document.getElementById('inv-email').value.trim();
+      const role  = document.getElementById('inv-role').value;
+
+      if (!email) { showAlert('invite-alert','Please enter an email address.'); return; }
+      setLoading('invite-btn', true); hideAlert('invite-alert');
+
+      try {
+        await logInvite(email, first, last, role);
+        showAlert('invite-alert', `Invitation logged for ${email}. Now send the invite via Supabase → Authentication → Users → Invite User.`, 'success');
+        document.getElementById('inv-first').value = '';
+        document.getElementById('inv-last').value  = '';
+        document.getElementById('inv-email').value = '';
+      } catch(e) {
+        showAlert('invite-alert', 'Could not log invite. Check your Supabase connection.');
+      }
+      setLoading('invite-btn', false, 'Log Invitation');
+    }
+  </script>
+</body>
+</html>

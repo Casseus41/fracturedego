@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account Settings — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Concierge Services</div>
+        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html" class="sidebar-link active"><span class="icon">⚙️</span> Settings</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info"><div class="name" id="sb-name"></div><div class="role" id="sb-role">Member</div></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+      <div class="page-header">
+        <div class="page-eyebrow">Account</div>
+        <h1 class="page-title">Your <em>Settings</em></h1>
+        <p class="page-subtitle">Manage your profile, contact preferences, notifications, and security settings.</p>
+      </div>
+
+      <div class="settings-stack">
+
+        <!-- Profile -->
+        <div class="settings-card">
+          <div class="settings-title">👤 Profile Information</div>
+          <div id="profile-alert" class="alert hidden" style="margin-bottom:16px;"></div>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">First Name</label>
+              <div class="field-input"><input type="text" id="first-name" placeholder="First name"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Last Name</label>
+              <div class="field-input"><input type="text" id="last-name" placeholder="Last name"/></div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Email Address</label>
+            <div class="field-input" style="opacity:0.5;">
+              <input type="email" id="email" placeholder="your@email.com" disabled/>
+            </div>
+            <div class="field-hint">To change your email, please contact your administrator.</div>
+          </div>
+          <div class="field">
+            <label class="field-label">Phone / Signal</label>
+            <div class="field-input"><input type="text" id="phone" placeholder="Best number to reach you"/></div>
+          </div>
+          <div class="field">
+            <label class="field-label">Preferred Contact Method</label>
+            <div class="field-input">
+              <select id="contact-pref">
+                <option>Email</option>
+                <option>Phone / SMS</option>
+                <option>Signal</option>
+                <option>WhatsApp</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="profile-btn" onclick="saveProfile()">Save Profile</button>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-card">
+          <div class="settings-title">🔔 Notification Preferences</div>
+          <div id="notif-alert" class="alert hidden" style="margin-bottom:16px;"></div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Request status updates</div>
+              <div class="toggle-desc">Get notified when your request status changes</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-status" checked/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">SMS alerts for urgent matters</div>
+              <div class="toggle-desc">Text notifications for time-sensitive updates</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-sms" checked/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Weekly check-in reminders</div>
+              <div class="toggle-desc">A gentle reminder that support is available</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-weekly"/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">New service announcements</div>
+              <div class="toggle-desc">Updates on new services and capabilities</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="notif-announce"/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <button class="btn btn-primary" id="notif-btn" style="margin-top:18px;" onclick="saveNotifs()">Save Preferences</button>
+        </div>
+
+        <!-- Password -->
+        <div class="settings-card">
+          <div class="settings-title">🔒 Change Password</div>
+          <div id="pw-alert" class="alert hidden" style="margin-bottom:16px;"></div>
+          <div class="field">
+            <label class="field-label">New Password</label>
+            <div class="field-input"><input type="password" id="pw1" placeholder="At least 8 characters"/></div>
+          </div>
+          <div class="field">
+            <label class="field-label">Confirm New Password</label>
+            <div class="field-input"><input type="password" id="pw2" placeholder="Repeat your new password"/></div>
+          </div>
+          <button class="btn btn-primary" id="pw-btn" onclick="savePw()">Update Password</button>
+        </div>
+
+        <!-- Privacy & data -->
+        <div class="settings-card">
+          <div class="settings-title">🛡️ Privacy & Data</div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Activity logging</div>
+              <div class="toggle-desc">Keep a log of your login activity for security purposes</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="priv-activity" checked/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <div class="toggle-label">Request history retention</div>
+              <div class="toggle-desc">Store your request history for reference and continuity</div>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="priv-history" checked/>
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Account actions -->
+        <div class="settings-card" style="border-color:rgba(248,113,113,0.12);">
+          <div class="settings-title">⚠️ Account Actions</div>
+          <p style="font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:18px;">
+            To deactivate your account or request deletion of your data, please contact your administrator directly. These actions require administrator authorization to ensure your account security.
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-danger" onclick="signOut()">Sign Out of All Sessions</button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    let currentUser = null;
+
+    (async () => {
+      currentUser = await requireAuth();
+      if (!currentUser) return;
+
+      try {
+        const p = await getProfile(currentUser.id);
+        document.getElementById('nav-name').textContent   = 'Hello, ' + (p.first_name||'');
+        document.getElementById('nav-avatar').textContent = initials(p.first_name, p.last_name);
+        document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
+        document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
+        document.getElementById('sb-role').textContent    = p.role === 'admin' ? 'Administrator' : 'Member';
+
+        document.getElementById('first-name').value = p.first_name || '';
+        document.getElementById('last-name').value  = p.last_name  || '';
+        document.getElementById('email').value      = p.email || currentUser.email || '';
+        document.getElementById('phone').value      = p.phone || '';
+        if (p.contact_pref) document.getElementById('contact-pref').value = p.contact_pref;
+        if (p.notification_prefs) {
+          const n = p.notification_prefs;
+          if (n.status   !== undefined) document.getElementById('notif-status').checked   = n.status;
+          if (n.sms      !== undefined) document.getElementById('notif-sms').checked      = n.sms;
+          if (n.weekly   !== undefined) document.getElementById('notif-weekly').checked   = n.weekly;
+          if (n.announce !== undefined) document.getElementById('notif-announce').checked = n.announce;
+        }
+      } catch(e) { console.error(e); }
+    })();
+
+    async function saveProfile() {
+      setLoading('profile-btn', true); hideAlert('profile-alert');
+      try {
+        await updateProfile({
+          first_name:   document.getElementById('first-name').value.trim(),
+          last_name:    document.getElementById('last-name').value.trim(),
+          phone:        document.getElementById('phone').value.trim(),
+          contact_pref: document.getElementById('contact-pref').value,
+        });
+        showAlert('profile-alert', 'Profile saved successfully.', 'success');
+      } catch(e) {
+        showAlert('profile-alert', 'Could not save profile. Please try again.', 'error');
+      }
+      setLoading('profile-btn', false, 'Save Profile');
+    }
+
+    async function saveNotifs() {
+      setLoading('notif-btn', true); hideAlert('notif-alert');
+      try {
+        await updateProfile({ notification_prefs: {
+          status:   document.getElementById('notif-status').checked,
+          sms:      document.getElementById('notif-sms').checked,
+          weekly:   document.getElementById('notif-weekly').checked,
+          announce: document.getElementById('notif-announce').checked,
+        }});
+        showAlert('notif-alert', 'Preferences saved.', 'success');
+      } catch(e) {
+        showAlert('notif-alert', 'Could not save preferences.', 'error');
+      }
+      setLoading('notif-btn', false, 'Save Preferences');
+    }
+
+    async function savePw() {
+      const pw1 = document.getElementById('pw1').value;
+      const pw2 = document.getElementById('pw2').value;
+      hideAlert('pw-alert');
+      if (pw1.length < 8) { showAlert('pw-alert','Password must be at least 8 characters.'); return; }
+      if (pw1 !== pw2)    { showAlert('pw-alert','Passwords do not match.'); return; }
+      setLoading('pw-btn', true);
+      try {
+        await updatePassword(pw1);
+        showAlert('pw-alert','Password updated successfully.','success');
+        document.getElementById('pw1').value = '';
+        document.getElementById('pw2').value = '';
+      } catch(e) {
+        showAlert('pw-alert','Could not update password. Please try again.');
+      }
+      setLoading('pw-btn', false, 'Update Password');
+    }
+  </script>
+</body>
+</html>

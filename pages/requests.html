@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Requests — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"  class="sidebar-link active"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Concierge Services</div>
+        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html" class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info"><div class="name" id="sb-name"></div><div class="role" id="sb-role">Member</div></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+      <div class="page-header">
+        <div class="page-eyebrow">History</div>
+        <h1 class="page-title">My <em>Requests</em></h1>
+        <p class="page-subtitle">A complete log of all your submitted requests. All records are private to your account.</p>
+      </div>
+
+      <div id="requests-container">
+        <div style="color:var(--text-3);font-size:13px;">Loading your requests...</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+
+      try {
+        const p = await getProfile(user.id);
+        document.getElementById('nav-name').textContent   = 'Hello, ' + (p.first_name||'');
+        document.getElementById('nav-avatar').textContent = initials(p.first_name, p.last_name);
+        document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
+        document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
+
+        const requests = await getMyRequests();
+        const container = document.getElementById('requests-container');
+
+        if (!requests.length) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">No requests yet</div>
+              <div class="empty-text">When you submit a concierge request, it will appear here along with its status.</div>
+              <a href="dashboard.html" class="btn btn-primary">Browse Services</a>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = `<div class="request-list">` + requests.map(r => {
+          const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
+          const details = r.form_data ? Object.entries(r.form_data)
+            .filter(([k,v]) => v && k !== 'contact' && !k.startsWith('_'))
+            .slice(0,3)
+            .map(([k,v]) => `<span style="color:var(--text-3);font-size:11px;">${v}</span>`)
+            .join(' · ') : '';
+          return `<div class="request-item">
+            <div class="r-icon">${s.icon}</div>
+            <div class="r-body">
+              <div class="r-title">${s.label}</div>
+              <div class="r-meta">${formatDateTime(r.created_at)}${details ? ' · ' + details : ''}</div>
+            </div>
+            <div class="r-status">${statusBadge(r.status)}</div>
+          </div>`;
+        }).join('') + `</div>`;
+
+      } catch(e) {
+        document.getElementById('requests-container').innerHTML =
+          '<div class="alert alert-error">Could not load requests. Please refresh.</div>';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Housing & Lodging — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+  <div class="app-wrap">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Concierge Services</div>
+        <a href="service-travel.html" class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
+        <a href="service-security.html" class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
+        <a href="service-legal.html" class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
+        <a href="service-medical.html" class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
+        <a href="service-housing.html" class="sidebar-link active"><span class="icon">🏡</span> Housing & Lodging</a>
+        <a href="service-finance.html" class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
+        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
+        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
+        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html" class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="sb-avatar">?</div>
+          <div class="info"><div class="name" id="sb-name"></div><div class="role" id="sb-role">Member</div></div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+      </div>
+    </aside>
+    <main class="main fade-up">
+      <a href="dashboard.html" class="panel-back">← Back to Dashboard</a>
+      <div class="panel-card">
+        <div class="panel-icon">🏡</div>
+        <div class="panel-title">Housing & Lodging</div>
+        <div class="panel-subtitle">From emergency accommodations to long-term housing solutions — we'll find you a safe, comfortable place to land.</div>
+        
+        <div id="form-alert" class="alert alert-error hidden"></div>
+        <div class="field">
+          <label class="field-label">Housing Need</label>
+          <div class="field-input"><select id="housing_need"><option>Emergency Shelter (tonight)</option><option>Short-term Stay (1–4 weeks)</option><option>Medium-term (1–3 months)</option><option>Permanent Housing</option><option>Safe House / Discreet Location</option></select></div>
+        </div>
+<div class="field">
+          <label class="field-label">Location Preference</label>
+          <div class="field-input"><input type="text" id="location_preference" placeholder="City, state, or region"/></div>
+        </div>
+<div class="field">
+          <label class="field-label">Number of Occupants</label>
+          <div class="field-input"><select id="number_of_occupants"><option>Just me</option><option>Me + 1</option><option>Me + children</option><option>Full family</option><option>Other</option></select></div>
+        </div>
+<div class="field">
+          <label class="field-label">Special Requirements</label>
+          <div class="field-input"><textarea id="special_requirements" rows="5" placeholder="Accessibility needs, school proximity, anonymity requirements, pets, etc."></textarea></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Best Way to Reach You</label>
+          <div class="field-input"><input type="text" id="contact" placeholder="Phone, email, or Signal"/></div>
+        </div>
+        <div style="margin-top:8px;">
+          <button class="btn btn-primary btn-lg" id="submit-btn" onclick="handleSubmit()">Submit Request</button>
+        </div>
+        <div id="success-msg" class="alert alert-success hidden" style="margin-top:16px;">
+          ✅ Your request has been received. Someone will be in touch with you shortly.
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    (async () => {
+      const user = await requireAuth();
+      if (!user) return;
+      try {
+        const p = await getProfile(user.id);
+        document.getElementById('nav-name').textContent = 'Hello, ' + (p.first_name||'');
+        document.getElementById('nav-avatar').textContent = initials(p.first_name, p.last_name);
+        document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
+        document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
+        document.getElementById('sb-role').textContent    = p.role === 'admin' ? 'Administrator' : 'Member';
+      } catch(e) {}
+    })();
+
+    async function handleSubmit() {
+      const contact = document.getElementById('contact').value.trim();
+      hideAlert('form-alert');
+
+      const formData = {
+        housing_need: (document.getElementById("housing_need") ? document.getElementById("housing_need").value : ""),
+        location_preference: (document.getElementById("location_preference") ? document.getElementById("location_preference").value : ""),
+        number_of_occupants: (document.getElementById("number_of_occupants") ? document.getElementById("number_of_occupants").value : ""),
+        special_requirements: (document.getElementById("special_requirements") ? document.getElementById("special_requirements").value : ""),
+        contact,
+      };
+
+      setLoading('submit-btn', true);
+
+      try {
+        await submitRequest('housing', formData);
+        document.getElementById('submit-btn').textContent = 'Submitted ✓';
+        document.getElementById('success-msg').classList.remove('hidden');
+        document.getElementById('submit-btn').disabled = true;
+      } catch(e) {
+        showAlert('form-alert', 'Something went wrong. Please try again.');
+        setLoading('submit-btn', false, 'Submit Request');
+      }
+    }
+  </script>
+</body>
+</html>

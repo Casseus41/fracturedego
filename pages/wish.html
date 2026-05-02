@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Your Request — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right"><a href="../index.html" class="btn btn-ghost">← Exit</a></div>
+  </nav>
+
+  <div class="wish-wrap">
+    <div class="wish-card">
+
+      <div style="font-size:36px;margin-bottom:16px;">🌙</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink);margin-bottom:10px;">Access Granted</div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:400;color:var(--text);margin-bottom:10px;line-height:1.1;">
+        What is your <em style="font-style:italic;color:var(--pink);">wish?</em>
+      </h1>
+      <p style="font-size:14px;color:var(--text-2);line-height:1.8;margin-bottom:28px;">
+        You have one request. Share it honestly and in full detail. We will review it personally and respond with complete discretion. There are no limitations on what you may ask — nothing is too big, nothing too small.
+      </p>
+
+      <div class="divider"></div>
+
+      <div id="form-alert" class="alert alert-error hidden" style="margin-bottom:20px;"></div>
+
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label">Your Name <span style="color:var(--text-4);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <div class="field-input"><input type="text" id="wish-name" placeholder="How should we address you?"/></div>
+        </div>
+        <div class="field">
+          <label class="field-label">Best Way to Reach You</label>
+          <div class="field-input"><input type="text" id="wish-contact" placeholder="Email, phone, or Signal"/></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Your Request</label>
+        <div class="field-input">
+          <textarea id="wish-text" maxlength="2000" rows="9"
+            placeholder="Write your request, wish, or need here. Be as detailed as you like — everything shared here is private and confidential."
+            oninput="updateCount(this)"></textarea>
+        </div>
+        <div class="char-count"><span id="char-count">2000</span> characters remaining</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">How Urgent Is This?</label>
+        <div class="field-input">
+          <select id="wish-urgency">
+            <option>I need help immediately</option>
+            <option>Within the next 24 hours</option>
+            <option>Within the next few days</option>
+            <option>No immediate rush</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p style="font-size:11.5px;color:var(--text-3);line-height:1.8;margin-bottom:22px;">
+        By submitting this form you acknowledge this is a private, confidential communication. Your information will not be shared with any third party without your consent. All submissions are reviewed by a real person.
+      </p>
+
+      <button class="btn btn-primary btn-full btn-lg" id="wish-btn" onclick="handleWish()">
+        Submit My Request
+      </button>
+
+      <div id="wish-success" class="alert alert-success hidden" style="margin-top:16px;">
+        ✅ Your request has been received. Someone will be in touch with you very soon.
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+    // Guard — must come from access page
+    const accessCode = sessionStorage.getItem('fe_access_code');
+    if (!accessCode) window.location.href = 'https://fracturedego.org/pages/access.html';
+
+    function updateCount(el) {
+      document.getElementById('char-count').textContent = 2000 - el.value.length;
+    }
+
+    async function handleWish() {
+      const contact = document.getElementById('wish-contact').value.trim();
+      const text    = document.getElementById('wish-text').value.trim();
+
+      if (!contact || !text) {
+        showAlert('form-alert', 'Please fill in your contact information and your request before submitting.');
+        return;
+      }
+
+      hideAlert('form-alert');
+      setLoading('wish-btn', true);
+
+      try {
+        await submitWish({
+          name:        document.getElementById('wish-name').value.trim() || 'Anonymous',
+          contact,
+          request:     text,
+          urgency:     document.getElementById('wish-urgency').value,
+          access_code: accessCode,
+          status:      'new',
+        });
+
+        document.getElementById('wish-btn').textContent = 'Submitted ✓';
+        document.getElementById('wish-btn').disabled = true;
+        document.getElementById('wish-success').classList.remove('hidden');
+        sessionStorage.removeItem('fe_access_code');
+
+      } catch(e) {
+        showAlert('form-alert', 'Something went wrong. Please try again.');
+        setLoading('wish-btn', false, 'Submit My Request');
+      }
+    }
+  </script>
+</body>
+</html>
