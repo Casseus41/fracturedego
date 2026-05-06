@@ -142,9 +142,14 @@ h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; line-he
   font-size: 1.25rem; font-weight: 500;
   color: var(--text); text-decoration: none;
   letter-spacing: 0.02em;
-  display: flex; align-items: center; gap: 2px;
+  display: inline-flex; align-items: center;
 }
 .nav-brand .accent { color: var(--pink); }
+.nav-brand .brand-logo {
+  width: 32px; height: 32px; object-fit: contain;
+  flex-shrink: 0; display: block;
+  margin-right: 8px;
+}
 
 .nav-right { display: flex; align-items: center; gap: 10px; }
 
@@ -447,10 +452,16 @@ h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; line-he
 .auth-logo {
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.1rem; font-weight: 500; color: var(--text);
-  text-decoration: none; display: block;
-  text-align: center; margin-bottom: 32px; letter-spacing: 0.02em;
+  text-decoration: none;
+  display: inline-flex; align-items: center;
+  margin-bottom: 32px; letter-spacing: 0.02em;
 }
 .auth-logo span { color: var(--pink); }
+.auth-logo .brand-logo {
+  width: 28px; height: 28px; object-fit: contain;
+  flex-shrink: 0; display: block;
+  margin-right: 8px;
+}
 
 .auth-icon-wrap {
   width: 52px; height: 52px; border-radius: var(--radius-md);
