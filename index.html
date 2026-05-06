@@ -8,149 +8,337 @@
   <meta name="robots" content="noindex, nofollow"/>
   <title>fractured Ego</title>
   <link rel="stylesheet" href="css/styles.css"/>
+
   <style>
-    body { display:flex; flex-direction:column; min-height:100vh; }
-    .landing { flex:1; display:flex; align-items:center; justify-content:center; padding:60px 24px; position:relative; z-index:1; }
-    .landing-inner { max-width:660px; width:100%; display:flex; flex-direction:column; align-items:center; text-align:center; }
+    /* ===== Animated Background ===== */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    body {
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
+      background:#0c0c0e;
+      overflow-x:hidden;
+    }
+
+    .landing {
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:60px 24px;
+      position:relative;
+      z-index:1;
+    }
+
+    .landing-inner {
+      max-width:660px;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+    }
 
     .chip {
-      display:inline-flex; align-items:center; gap:8px;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      border-radius:var(--radius-full); padding:7px 18px;
-      font-size:11.5px; font-weight:600; color:var(--pink);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:var(--pink-dim);
+      border:1px solid var(--border-pink);
+      border-radius:var(--radius-full);
+      padding:7px 18px;
+      font-size:11.5px;
+      font-weight:600;
+      color:var(--pink);
       margin-bottom:36px;
-      opacity:0; animation:fadeUp 0.7s ease 0.15s forwards;
+      opacity:0;
+      animation:fadeUp 0.7s ease 0.15s forwards;
     }
 
     .hero-title {
       font-family:'Cormorant Garamond',serif;
       font-size:clamp(2.8rem,7vw,5.5rem);
-      font-weight:300; line-height:1.06; letter-spacing:0.01em;
-      color:var(--text); margin-bottom:22px;
-      opacity:0; animation:fadeUp 0.8s ease 0.3s forwards;
+      font-weight:300;
+      line-height:1.06;
+      letter-spacing:0.01em;
+      color:var(--text);
+      margin-bottom:22px;
+      opacity:0;
+      animation:fadeUp 0.8s ease 0.3s forwards;
     }
-    .hero-title em { font-style:italic; color:var(--pink); }
-    .hero-title .brand { font-weight:500; }
+
+    .hero-title em {
+      font-style:italic;
+      color:var(--pink);
+    }
+
+    .hero-title .brand {
+      font-weight:500;
+    }
 
     .hero-sub {
-      font-size:15px; color:var(--text-2); line-height:1.8;
-      max-width:460px; margin-bottom:52px;
-      opacity:0; animation:fadeUp 0.8s ease 0.45s forwards;
+      font-size:15px;
+      color:var(--text-2);
+      line-height:1.8;
+      max-width:460px;
+      margin-bottom:52px;
+      opacity:0;
+      animation:fadeUp 0.8s ease 0.45s forwards;
+    }
+
+    /* ===== LOGO INSERT ===== */
+    .mid-logo {
+      width:120px;
+      margin:10px 0 40px;
+      opacity:0.85;
+      filter:drop-shadow(0 0 12px rgba(255,182,193,0.35));
     }
 
     .entry-cards {
-      display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
-      opacity:0; animation:fadeUp 0.8s ease 0.6s forwards;
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      justify-content:center;
+      opacity:0;
+      animation:fadeUp 0.8s ease 0.6s forwards;
     }
 
     .entry-card {
-      background:var(--pink); border-radius:var(--radius-xl);
-      padding:32px 28px 26px; width:232px; text-align:left;
-      text-decoration:none; display:flex; flex-direction:column;
+      background:var(--pink);
+      border-radius:var(--radius-xl);
+      padding:32px 28px 26px;
+      width:232px;
+      text-align:left;
+      text-decoration:none;
+      display:flex;
+      flex-direction:column;
       border:1px solid transparent;
       transition:transform 0.25s, box-shadow 0.25s, filter 0.25s;
       box-shadow:var(--shadow-pink);
     }
-    .entry-card:hover { transform:translateY(-5px); box-shadow:0 16px 48px rgba(255,182,193,0.3); filter:brightness(1.03); }
+
+    .entry-card:hover {
+      transform:translateY(-5px);
+      box-shadow:0 16px 48px rgba(255,182,193,0.3);
+      filter:brightness(1.03);
+    }
 
     .entry-icon {
-      width:44px; height:44px; border-radius:12px;
-      background:rgba(0,0,0,0.12); display:flex; align-items:center;
-      justify-content:center; font-size:20px; margin-bottom:18px;
+      width:44px;
+      height:44px;
+      border-radius:12px;
+      background:rgba(0,0,0,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+      margin-bottom:18px;
     }
-    .entry-title { font-family:'Cormorant Garamond',serif; font-size:1.25rem; font-weight:500; color:#0c0c0e; margin-bottom:7px; }
-    .entry-desc { font-size:12px; color:rgba(0,0,0,0.6); line-height:1.7; margin-bottom:22px; flex:1; }
+
+    .entry-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.25rem;
+      font-weight:500;
+      color:#0c0c0e;
+      margin-bottom:7px;
+    }
+
+    .entry-desc {
+      font-size:12px;
+      color:rgba(0,0,0,0.6);
+      line-height:1.7;
+      margin-bottom:22px;
+      flex:1;
+    }
+
     .entry-cta {
-      display:inline-flex; align-items:center; gap:5px;
-      background:rgba(0,0,0,0.1); color:#0c0c0e;
-      font-size:11px; font-weight:700; letter-spacing:0.04em;
-      padding:7px 16px; border-radius:var(--radius-full);
-      width:fit-content; transition:background 0.2s;
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      background:rgba(0,0,0,0.1);
+      color:#0c0c0e;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:0.04em;
+      padding:7px 16px;
+      border-radius:var(--radius-full);
+      width:fit-content;
+      transition:background 0.2s;
     }
-    .entry-card:hover .entry-cta { background:rgba(0,0,0,0.18); }
+
+    .entry-card:hover .entry-cta {
+      background:rgba(0,0,0,0.18);
+    }
 
     .notice {
-      margin-top:44px; max-width:500px;
-      display:flex; align-items:flex-start; gap:10px;
-      background:rgba(255,255,255,0.02); border:1px solid var(--border);
-      border-radius:var(--radius-md); padding:14px 18px;
-      opacity:0; animation:fadeUp 0.8s ease 0.78s forwards;
+      margin-top:44px;
+      max-width:500px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      background:rgba(255,255,255,0.02);
+      border:1px solid var(--border);
+      border-radius:var(--radius-md);
+      padding:14px 18px;
+      opacity:0;
+      animation:fadeUp 0.8s ease 0.78s forwards;
     }
-    .notice-text { font-size:11.5px; color:var(--text-3); line-height:1.75; }
 
-    .ornament {
-      display:flex; align-items:center; gap:14px; margin:0 0 50px;
-      opacity:0; animation:fadeUp 0.7s ease 0.52s forwards;
+    .notice-text {
+      font-size:11.5px;
+      color:var(--text-3);
+      line-height:1.75;
     }
-    .orn-line { flex:1; max-width:70px; height:1px; background:linear-gradient(90deg,transparent,var(--border-2)); }
-    .orn-line.r { background:linear-gradient(90deg,var(--border-2),transparent); }
-    .orn-diamond { width:5px; height:5px; background:var(--pink); transform:rotate(45deg); flex-shrink:0; }
 
     @media(max-width:560px){
-      .entry-cards { flex-direction:column; align-items:center; }
-      .entry-card { width:100%; max-width:320px; }
+      .entry-cards {
+        flex-direction:column;
+        align-items:center;
+      }
+      .entry-card {
+        width:100%;
+        max-width:320px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <nav class="topnav">
-    <a href="index.html" class="nav-brand"><img src="logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
-  </nav>
+<canvas id="bg-canvas"></canvas>
 
-  <div class="landing">
-    <div class="landing-inner">
+<nav class="topnav">
+  <a href="index.html" class="nav-brand">
+    <img src="logo.svg" class="brand-logo"/>
+    fractured <span class="accent">E</span>go
+  </a>
+</nav>
 
-      <div class="chip">
-        <span class="dot-live"></span>
-        Members: Please call Sibeth directly for same-day requests.
-      </div>
+<div class="landing">
+  <div class="landing-inner">
 
-      <h1 class="hero-title">
-        Welcome to<br><span class="brand">fractured <em>E</em>go</span> —<br>
-        let's get you to where<em> you need to be.</em>
-      </h1>
+    <div class="chip">
+      <span class="dot-live"></span>
+      Members: Please call Sibeth directly for same-day requests.
+    </div>
 
-      <p class="hero-sub">
-        If you're here that means one of our memebers has seen the light of life within you.  We want to help nurture that light.  You are not alone.
-      </p>
+    <h1 class="hero-title">
+      <br><span class="brand">fractured <em>E</em>go</span> —<br>
+      let's get you to where<em> you need to be.</em>
+    </h1>
 
-      <div class="ornament">
-        <div class="orn-line"></div>
-        <div class="orn-diamond"></div>
-        <div class="orn-line r"></div>
-      </div>
+    <p class="hero-sub">
+      You are not alone. 
+    </p>
 
-      <div class="entry-cards">
+    <!-- LOGO INSERTED HERE -->
+    <img src="logo.svg" class="mid-logo"/>
 
-        <a href="pages/login.html" class="entry-card">
-          <div class="entry-icon">🔐</div>
-          <div class="entry-title">Member Login</div>
-          <div class="entry-desc">Registered members — sign in to access your full dashboard and services.</div>
-          <div class="entry-cta">Sign In →</div>
-        </a>
+    <div class="entry-cards">
 
-        <a href="pages/access-info.html" class="entry-card">
-          <div class="entry-icon">✉️</div>
-          <div class="entry-title">Access Code</div>
-          <div class="entry-desc">Received a code from a member? Start here to learn what's available.</div>
-          <div class="entry-cta">Enter Code →</div>
-        </a>
+      <a href="pages/login.html" class="entry-card">
+        <div class="entry-icon">🔐</div>
+        <div class="entry-title">Member Login</div>
+        <div class="entry-desc">Registered members — sign in to access your full dashboard and services.</div>
+        <div class="entry-cta">Sign In →</div>
+      </a>
 
-      </div>
-
-      <div class="notice">
-        <span style="font-size:13px;flex-shrink:0;margin-top:1px;">⚠️</span>
-        <div class="notice-text">If you arrived here by accident or without direct authorization from a member, please leave immediately. All IP addresses are captured and logged for review.</div>
-      </div>
+      <a href="pages/access-info.html" class="entry-card">
+        <div class="entry-icon">✉️</div>
+        <div class="entry-title">Access Code</div>
+        <div class="entry-desc">Received a code from a member? Start here to learn what's available.</div>
+        <div class="entry-cta">Enter Code →</div>
+      </a>
 
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/app.js"></script>
-  <script>
-    (async () => { await redirectIfAuthed(); })();
-  </script>
+    <div class="notice">
+      <span style="font-size:13px;">⚠️</span>
+      <div class="notice-text">
+        If you arrived here by accident or without direct authorization from a member, please leave immediately. All IP addresses are captured and logged for review.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/app.js"></script>
+
+<script>
+(async () => { await redirectIfAuthed(); })();
+
+const canvas = document.getElementById("bg-canvas");
+const ctx = canvas.getContext("2d");
+
+let w,h,mouse={x:null,y:null};
+
+function resize(){
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize",resize);
+resize();
+
+window.addEventListener("mousemove",e=>{
+  mouse.x = e.x;
+  mouse.y = e.y;
+});
+
+const particles=[];
+const COUNT=90;
+
+for(let i=0;i<COUNT;i++){
+  particles.push({
+    x:Math.random()*w,
+    y:Math.random()*h,
+    z:Math.random()*2,
+    vx:(Math.random()-0.5)*0.2,
+    vy:(Math.random()-0.5)*0.2
+  });
+}
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+
+  particles.forEach(p=>{
+    p.x+=p.vx*(1+p.z);
+    p.y+=p.vy*(1+p.z);
+
+    // mouse interaction (repel)
+    if(mouse.x){
+      let dx=p.x-mouse.x;
+      let dy=p.y-mouse.y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        p.x+=dx*0.02;
+        p.y+=dy*0.02;
+      }
+    }
+
+    if(p.x<0||p.x>w) p.vx*=-1;
+    if(p.y<0||p.y>h) p.vy*=-1;
+
+    let size=1.2*(1+p.z);
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,size,0,Math.PI*2);
+    ctx.fillStyle="rgba(255,182,193,0.35)";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
 </body>
 </html>
