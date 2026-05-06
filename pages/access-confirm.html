@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Final Confirmation — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+
+    .confirm-wrap {
+      flex:1; padding:60px 24px; position:relative; z-index:1;
+      display:flex; align-items:center; justify-content:center;
+      animation:fadeUp 0.5s ease both;
+    }
+    .confirm-card {
+      max-width:580px; width:100%;
+      background:var(--bg-2);
+      border:1px solid rgba(248,113,113,0.18);
+      border-radius:var(--radius-xl);
+      padding:44px 40px;
+      box-shadow:var(--shadow-xl);
+      position:relative; overflow:hidden;
+    }
+    .confirm-card::before {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:3px;
+      background:linear-gradient(90deg, transparent, rgba(248,113,113,0.5), transparent);
+    }
+
+    .confirm-eyebrow {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(248,113,113,0.1);
+      border:1px solid rgba(248,113,113,0.25);
+      border-radius:var(--radius-full);
+      padding:6px 16px;
+      font-size:11px; font-weight:700; color:#ffa5a5;
+      letter-spacing:0.04em;
+      margin-bottom:22px;
+    }
+
+    .confirm-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(1.9rem,4.5vw,2.7rem); font-weight:300;
+      line-height:1.15; letter-spacing:0.01em; color:var(--text);
+      margin-bottom:14px;
+    }
+    .confirm-title em { font-style:italic; color:var(--pink); }
+    .confirm-title strong { font-weight:500; color:#ffa5a5; }
+
+    .confirm-lead {
+      font-size:14px; color:var(--text-2); line-height:1.8;
+      margin-bottom:26px;
+    }
+
+    .checklist {
+      background:var(--bg-3);
+      border:1px solid var(--border);
+      border-radius:var(--radius-md);
+      padding:20px 22px;
+      margin-bottom:28px;
+    }
+    .checklist-title {
+      font-size:11px; font-weight:700;
+      letter-spacing:0.12em; text-transform:uppercase;
+      color:var(--pink); margin-bottom:14px;
+    }
+    .checklist ul {
+      list-style:none; padding:0; margin:0;
+    }
+    .checklist li {
+      font-size:13.5px; color:var(--text-2); line-height:1.75;
+      padding:7px 0 7px 26px; position:relative;
+    }
+    .checklist li::before {
+      content:'⚠'; position:absolute; left:0; top:7px;
+      color:#ffa5a5; font-size:14px;
+    }
+    .checklist li strong { color:var(--text); font-weight:600; }
+
+    .agree-box {
+      background:rgba(255,182,193,0.06);
+      border:1.5px solid rgba(255,182,193,0.2);
+      border-radius:var(--radius-md);
+      padding:18px 20px;
+      margin-bottom:22px;
+      transition:border-color 0.25s, background 0.25s;
+      cursor:pointer;
+    }
+    .agree-box.checked {
+      border-color:var(--pink);
+      background:rgba(255,182,193,0.1);
+    }
+
+    .agree-row {
+      display:flex; align-items:flex-start; gap:14px;
+    }
+
+    /* Custom checkbox */
+    .agree-check {
+      width:24px; height:24px; flex-shrink:0; margin-top:1px;
+      border:2px solid var(--border-pink);
+      border-radius:6px;
+      background:var(--bg-3);
+      transition:all 0.2s; position:relative;
+      cursor:pointer;
+    }
+    .agree-check.checked {
+      background:var(--pink);
+      border-color:var(--pink);
+    }
+    .agree-check.checked::after {
+      content:'✓'; position:absolute;
+      top:50%; left:50%; transform:translate(-50%,-50%);
+      color:#0c0c0e; font-weight:700; font-size:14px;
+    }
+    .agree-check input { position:absolute; opacity:0; }
+
+    .agree-text {
+      font-size:13.5px; color:var(--text); line-height:1.7;
+      flex:1;
+    }
+    .agree-text strong { color:var(--pink); font-weight:600; }
+
+    .actions {
+      display:flex; gap:12px; flex-wrap:wrap;
+    }
+    .actions .btn { flex:1; }
+
+    @media(max-width:480px){
+      .confirm-card { padding:32px 24px; }
+      .actions { flex-direction:column-reverse; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <a href="access-info.html" class="btn btn-ghost">← Back</a>
+    </div>
+  </nav>
+
+  <div class="confirm-wrap">
+    <div class="confirm-card">
+
+      <div class="confirm-eyebrow">
+        ⚠ Step 2 of 4 · Final Confirmation
+      </div>
+
+      <h1 class="confirm-title">
+        Before you proceed —<br>
+        <strong>read this carefully.</strong>
+      </h1>
+
+      <p class="confirm-lead">
+        Once you enter your access code on the next page, your code is consumed immediately. You will have one continuous session to complete the form. <strong style="color:var(--text);">If you exit before submitting, the code is gone.</strong>
+      </p>
+
+      <div class="checklist">
+        <div class="checklist-title">Before you continue, ensure:</div>
+        <ul>
+          <li>You are on a <strong>stable, reliable internet connection.</strong></li>
+          <li>You are in a <strong>private setting</strong> where you will not be interrupted.</li>
+          <li>You have <strong>20–30 minutes</strong> available to complete the form fully.</li>
+          <li>You have <strong>decided which option</strong> (A, B, or C) you intend to choose.</li>
+          <li>You have any <strong>contact details, currency preferences, or recipient information</strong> ready as needed.</li>
+          <li>You will <strong>complete and submit the form before closing the browser</strong> or navigating away.</li>
+        </ul>
+      </div>
+
+      <div class="agree-box" id="agree-box" onclick="toggleAgree()">
+        <div class="agree-row">
+          <div class="agree-check" id="agree-check">
+            <input type="checkbox" id="agree-input"/>
+          </div>
+          <div class="agree-text">
+            <strong>I understand.</strong> I confirm I have read the available options, I am ready to complete the form in one session, and I accept that my access code will be permanently consumed when I enter it on the next page.
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a href="access-info.html" class="btn btn-secondary btn-lg">Go Back</a>
+        <button class="btn btn-primary btn-lg" id="continue-btn" disabled onclick="proceed()">Proceed to Code Entry →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let agreed = false;
+
+    function toggleAgree() {
+      agreed = !agreed;
+      const box = document.getElementById('agree-box');
+      const check = document.getElementById('agree-check');
+      const input = document.getElementById('agree-input');
+      const btn = document.getElementById('continue-btn');
+
+      box.classList.toggle('checked', agreed);
+      check.classList.toggle('checked', agreed);
+      input.checked = agreed;
+      btn.disabled = !agreed;
+    }
+
+    function proceed() {
+      if (!agreed) return;
+      // Mark that user has agreed (used by next pages)
+      sessionStorage.setItem('fe_access_agreed', '1');
+      window.location.href = 'access.html';
+    }
+  </script>
+</body>
+</html>

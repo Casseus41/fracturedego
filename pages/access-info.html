@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <title>Access Information — fractureD Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .info-wrap {
+      flex:1; padding:50px 24px 80px; position:relative; z-index:1;
+      animation:fadeUp 0.5s ease both;
+    }
+    .info-container { max-width:760px; margin:0 auto; }
+
+    .info-eyebrow {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--pink-dim); border:1px solid var(--border-pink);
+      border-radius:var(--radius-full); padding:6px 16px;
+      font-size:11px; font-weight:600; color:var(--pink);
+      margin-bottom:24px;
+    }
+
+    .info-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(2.2rem,5vw,3.6rem); font-weight:300;
+      line-height:1.1; letter-spacing:0.01em; color:var(--text);
+      margin-bottom:16px;
+    }
+    .info-title em { font-style:italic; color:var(--pink); }
+
+    .info-lead {
+      font-size:15px; color:var(--text-2); line-height:1.8;
+      margin-bottom:36px; max-width:600px;
+    }
+
+    .warning-card {
+      background:rgba(248,113,113,0.06);
+      border:1px solid rgba(248,113,113,0.2);
+      border-radius:var(--radius-lg);
+      padding:18px 22px; margin-bottom:48px;
+      display:flex; align-items:flex-start; gap:12px;
+    }
+    .warning-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .warning-text {
+      font-size:13px; color:#ffa5a5; line-height:1.7;
+    }
+    .warning-text strong { color:var(--red); font-weight:700; }
+
+    .options-heading {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.6rem; color:var(--text);
+      margin-bottom:6px;
+    }
+    .options-sub {
+      font-size:13px; color:var(--text-3);
+      margin-bottom:28px; letter-spacing:0.02em;
+    }
+
+    .option-card {
+      background:var(--bg-2);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:32px 32px 28px;
+      margin-bottom:18px;
+      transition:border-color 0.3s, transform 0.3s;
+      position:relative; overflow:hidden;
+    }
+    .option-card:hover {
+      border-color:var(--border-pink);
+      transform:translateY(-2px);
+    }
+    .option-card::before {
+      content:''; position:absolute; top:0; left:0;
+      width:3px; height:100%; background:var(--pink);
+      opacity:0.5;
+    }
+
+    .option-header {
+      display:flex; align-items:center; gap:14px; margin-bottom:14px;
+    }
+    .option-letter {
+      width:42px; height:42px; border-radius:50%;
+      background:var(--pink); color:#0c0c0e;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.4rem; font-weight:600; flex-shrink:0;
+    }
+    .option-title {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.5rem; font-weight:400; color:var(--text);
+      line-height:1.2;
+    }
+    .option-title em { font-style:italic; color:var(--pink); }
+
+    .option-body { color:var(--text-2); font-size:14px; line-height:1.75; }
+    .option-body p { margin-bottom:10px; }
+    .option-body p:last-child { margin-bottom:0; }
+    .option-body strong { color:var(--text); font-weight:600; }
+
+    .option-detail-list {
+      list-style:none; padding:0;
+      margin:14px 0 0;
+      background:var(--bg-3);
+      border-radius:var(--radius-md);
+      padding:16px 18px;
+      border-left:2px solid var(--border-pink);
+    }
+    .option-detail-list li {
+      font-size:13px; color:var(--text-2); line-height:1.7;
+      padding:5px 0; padding-left:20px; position:relative;
+    }
+    .option-detail-list li::before {
+      content:'◇'; position:absolute; left:0; top:5px;
+      color:var(--pink); font-size:9px;
+    }
+
+    .restriction-tag {
+      display:inline-block; margin-top:10px;
+      background:var(--amber-dim); color:var(--amber);
+      border:1px solid rgba(251,191,36,0.25);
+      font-size:10px; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase;
+      padding:4px 10px; border-radius:var(--radius-full);
+    }
+
+    .continue-bar {
+      margin-top:40px;
+      display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap;
+    }
+
+    @media(max-width:560px){
+      .option-card { padding:24px 22px; }
+      .option-letter { width:36px; height:36px; font-size:1.2rem; }
+      .option-title { font-size:1.3rem; }
+      .continue-bar { flex-direction:column-reverse; }
+      .continue-bar .btn { width:100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand">fracture<span class="accent">D</span> Ego</a>
+    <div class="nav-right">
+      <a href="../index.html" class="btn btn-ghost">← Back to Home</a>
+    </div>
+  </nav>
+
+  <div class="info-wrap">
+    <div class="info-container">
+
+      <div class="info-eyebrow">
+        <span class="dot-live"></span>
+        Step 1 of 4 · Information
+      </div>
+
+      <h1 class="info-title">
+        Before you continue,<br>
+        please <em>read carefully.</em>
+      </h1>
+
+      <p class="info-lead">
+        You have received an invitation that grants a single, one-time opportunity. Please review the three available options below in full before entering your code. The choice you make is final.
+      </p>
+
+      <div class="warning-card">
+        <span class="warning-icon">⚠️</span>
+        <div class="warning-text">
+          <strong>This is a one-time-use access code.</strong> The moment you enter your code, it will be consumed and cannot be used again — not by you, and not by anyone else. Do not enter your code until you are fully prepared to complete the form.
+        </div>
+      </div>
+
+      <h2 class="options-heading">What's <em style="font-style:italic;color:var(--pink);">available</em></h2>
+      <p class="options-sub">Choose one of the following three options after entering your code.</p>
+
+      <!-- OPTION A — Money -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-letter">A</div>
+          <h3 class="option-title">Financial <em>Assistance</em></h3>
+        </div>
+        <div class="option-body">
+          <p>You may receive a one-time monetary gift in your choice of currency.</p>
+          <ul class="option-detail-list">
+            <li>Maximum amount: <strong>up to 10,000 USD</strong> equivalent</li>
+            <li>You select the amount and your preferred currency</li>
+            <li>Funds delivered through the discreet method of your choosing</li>
+            <li>No questions asked about its intended use</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- OPTION B — Relocation -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-letter">B</div>
+          <h3 class="option-title">One-Time <em>Relocation Service</em></h3>
+        </div>
+        <div class="option-body">
+          <p>A complete, fully-coordinated relocation handled on your behalf.</p>
+          <ul class="option-detail-list">
+            <li>Professional packing and full move of furniture and belongings</li>
+            <li><strong>Six months of living expenses</strong> covered (rent, utilities, essentials)</li>
+            <li>Safe-house or new residence arranged confidentially</li>
+            <li>Travel and transport coordinated end-to-end</li>
+          </ul>
+          <p style="margin-top:12px;">
+            <span class="restriction-tag">⚐ U.S. residents only</span>
+            <span style="font-size:12px;color:var(--text-3);margin-left:8px;">Additional countries coming soon.</span>
+          </p>
+          <p style="margin-top:12px;font-size:13px;color:var(--text-3);">
+            <strong style="color:var(--text-2);">Note:</strong> No direct cash is provided with this option — all expenses are paid on your behalf.
+          </p>
+        </div>
+      </div>
+
+      <!-- OPTION C — Transfer -->
+      <div class="option-card">
+        <div class="option-header">
+          <div class="option-letter">C</div>
+          <h3 class="option-title">Transfer to <em>Someone Else</em></h3>
+        </div>
+        <div class="option-body">
+          <p>You may transfer this opportunity to another person. Two ways:</p>
+          <ul class="option-detail-list">
+            <li><strong>Method 1 — Direct hand-off.</strong> Give your unused code and this website link to the person of your choosing. They visit, enter the code, and choose their own option.</li>
+            <li><strong>Method 2 — Anonymous referral.</strong> Provide their contact information here. We will reach out to them anonymously and offer the opportunity.</li>
+          </ul>
+          <p style="margin-top:12px;font-size:13px;color:var(--text-3);">
+            <strong style="color:var(--text-2);">Important:</strong> If you choose Method 2 and the recipient does not consent, we will email you to let you know. The opportunity will remain unused until consent is received or it expires.
+          </p>
+        </div>
+      </div>
+
+      <div class="continue-bar">
+        <a href="../index.html" class="btn btn-ghost">Cancel & Exit</a>
+        <a href="access-confirm.html" class="btn btn-primary btn-lg">I Understand · Continue →</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════
-//   fractureD Ego — Supabase Config v2.1
-//   Adds: invite sending, request/wish detail views
+//   fractureD Ego — Supabase Config v2.2
+//   Adds: atomic access code redemption + admin
 // ═══════════════════════════════════════════════
 
 // ── YOUR CREDENTIALS — fill these in ──────────
@@ -108,6 +108,56 @@ async function setRequestNotes(id, notes) {
 }
 
 // ═══════════════════════════════════════════════
+//   ACCESS CODES (public flow)
+// ═══════════════════════════════════════════════
+
+// Atomically validate and consume an access code.
+// Returns { success: true, session_id, code_type } on success,
+// or { success: false, reason } on failure.
+async function redeemAccessCode(code) {
+  const { data, error } = await sb.rpc('redeem_access_code', { p_code: code });
+  if (error) throw error;
+  return data;
+}
+
+// ═══════════════════════════════════════════════
+//   ACCESS CODES (admin)
+// ═══════════════════════════════════════════════
+async function getAllAccessCodes() {
+  const { data, error } = await sb.from('access_codes').select('*').order('created_at', { ascending: false });
+  if (error) throw error; return data || [];
+}
+
+async function generateBulkCodes(count, codeType, notes) {
+  const { data, error } = await sb.rpc('bulk_generate_codes', {
+    p_count: count, p_type: codeType, p_notes: notes
+  });
+  if (error) throw error; return data || [];
+}
+
+async function addManualCode(code, codeType, notes) {
+  const { error } = await sb.from('access_codes').insert({
+    code, code_type: codeType, status: 'unused', notes
+  });
+  if (error) throw error;
+}
+
+async function setAccessCodeStatus(id, status) {
+  const updates = { status };
+  if (status === 'unused') {
+    updates.used_at = null;
+    updates.used_session = null;
+  }
+  const { error } = await sb.from('access_codes').update(updates).eq('id', id);
+  if (error) throw error;
+}
+
+async function deleteAccessCode(id) {
+  const { error } = await sb.from('access_codes').delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ═══════════════════════════════════════════════
 //   WISHES
 // ═══════════════════════════════════════════════
 async function submitWish(wishData) {
@@ -155,22 +205,17 @@ async function logInvite(email, firstName, lastName, role) {
   });
   if (error) throw error;
 }
-
 async function getPendingInvites() {
   const { data, error } = await sb.from('pending_invites').select('*').order('invited_at', { ascending: false });
   if (error) throw error; return data || [];
 }
-
 async function deletePendingInvite(id) {
   const { error } = await sb.from('pending_invites').delete().eq('id', id);
   if (error) throw error;
 }
-
-// Send invitations via the Edge Function
 async function sendInvites(opts = {}) {
   const session = await getSession();
   if (!session) throw new Error('Not authenticated');
-
   const response = await fetch(`${SUPABASE_URL}/functions/v1/send-invite`, {
     method: 'POST',
     headers: {
@@ -179,7 +224,6 @@ async function sendInvites(opts = {}) {
     },
     body: JSON.stringify(opts),
   });
-
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || 'Failed to send invites');
   return result;
@@ -232,6 +276,12 @@ const SERVICE_MAP = {
   emergency: { icon: '🚨', label: 'Emergency Services' },
 };
 
+const OPTION_MAP = {
+  money:      { icon: '💰', label: 'Financial Assistance' },
+  relocation: { icon: '🏡', label: 'Relocation Service' },
+  transfer:   { icon: '🔄', label: 'Transfer to Another' },
+};
+
 function statusBadge(status) {
   const map = {
     pending:       `<span class="badge badge-amber">Pending</span>`,
@@ -251,4 +301,13 @@ function memberStatusBadge(status) {
 }
 function inviteBadge(accepted) {
   return accepted ? `<span class="badge badge-green">Sent</span>` : `<span class="badge badge-amber">Pending</span>`;
+}
+function codeStatusBadge(status) {
+  const map = {
+    unused:  `<span class="badge badge-green">Unused</span>`,
+    used:    `<span class="badge badge-neutral">Used</span>`,
+    revoked: `<span class="badge badge-red">Revoked</span>`,
+    expired: `<span class="badge badge-amber">Expired</span>`,
+  };
+  return map[status] || `<span class="badge badge-neutral">${status}</span>`;
 }
