@@ -5,114 +5,221 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
-  <title>My Requests — </title>
+  <title>My Requests — fractured Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
   <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
 </head>
 <body>
+
   <nav class="topnav">
     <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
     <div class="nav-right">
-      <div class="nav-user-pill"><div class="avatar" id="nav-avatar">?</div><span id="nav-name"></span></div>
+      <div class="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-name">Loading…</span>
+      </div>
       <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
     </div>
   </nav>
 
   <div class="app-wrap">
+
     <aside class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-heading">Overview</div>
-        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
-        <a href="requests.html"  class="sidebar-link active"><span class="icon">📋</span> My Requests</a>
+        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link active"><span class="icon">📋</span> My Requests</a>
       </div>
       <div class="sidebar-section">
-        <div class="sidebar-heading">Concierge Services</div>
-        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
-        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
-        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
-        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
-        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
-        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
-        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
-        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
-        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-heading">Account</div>
-        <a href="account.html" class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
-      </div>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <div class="avatar" id="sb-avatar">?</div>
-          <div class="info"><div class="name" id="sb-name"></div><div class="role" id="sb-role">Member</div></div>
-        </div>
-        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
+        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
       </div>
     </aside>
 
     <main class="main fade-up">
-      <div class="page-header">
-        <div class="page-eyebrow">History</div>
-        <h1 class="page-title">My <em>Requests</em></h1>
-        <p class="page-subtitle">A complete log of all your submitted requests. All records are private to your account.</p>
+
+      <div class="page-header" style="margin-bottom:18px;">
+        <div class="page-eyebrow">Concierge Activity</div>
+        <h2 class="page-title">My <em>Requests</em></h2>
+        <p class="page-subtitle">A complete history of every request you've submitted. Click any row to see the full details and status updates.</p>
       </div>
 
-      <div id="requests-container">
-        <div style="color:var(--text-3);font-size:13px;">Loading your requests...</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+        <a href="request.html" class="btn btn-primary btn-sm"><span style="margin-right:6px;">✨</span> Submit a new request</a>
+        <select id="status-filter" class="btn btn-ghost btn-sm" style="padding:8px 12px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);" onchange="renderList()">
+          <option value="all">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="in_progress">In progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
       </div>
+
+      <div id="list-area">
+        <div class="loading-state"><div class="spinner"></div><span>Loading your requests…</span></div>
+      </div>
+
+      <!-- Detail modal -->
+      <div class="modal-overlay" id="detail-modal" onclick="closeDetail(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+          <button class="modal-close" onclick="closeDetail()">×</button>
+          <div id="detail-body"></div>
+        </div>
+      </div>
+
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script src="../js/app.js"></script>
   <script>
-    (async () => {
-      const user = await requireAuth();
-      if (!user) return;
+  let allRequests = [];
+  let myProfile = null;
 
-      try {
-        const p = await getProfile(user.id);
-        document.getElementById('nav-name').textContent   = 'Hello, ' + (p.first_name||'');
-        document.getElementById('nav-avatar').textContent = initials(p.first_name, p.last_name);
-        document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
-        document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = await requireAuth();
+    if (!user) return;
+    try {
+      myProfile = await getProfile(user.id);
+      const name = myProfile.first_name || 'friend';
+      const ini  = initials(myProfile.first_name, myProfile.last_name);
+      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+      document.getElementById('nav-avatar').textContent = ini;
+      if (myProfile.is_admin || myProfile.role === 'admin') document.getElementById('admin-link')?.classList.remove('hidden');
+    } catch (e) { console.error(e); }
+    await loadRequests();
+  });
 
-        const requests = await getMyRequests();
-        const container = document.getElementById('requests-container');
+  async function loadRequests() {
+    try {
+      allRequests = await getMyRequests();
+      renderList();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('list-area').innerHTML = `<div class="alert alert-warn">Could not load your requests.</div>`;
+    }
+  }
 
-        if (!requests.length) {
-          container.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-icon">📋</div>
-              <div class="empty-title">No requests yet</div>
-              <div class="empty-text">When you submit a concierge request, it will appear here along with its status.</div>
-              <a href="dashboard.html" class="btn btn-primary">Browse Services</a>
-            </div>`;
-          return;
-        }
+  function renderList() {
+    const filter = document.getElementById('status-filter').value;
+    const list = filter === 'all' ? allRequests : allRequests.filter(r => r.status === filter);
+    const target = document.getElementById('list-area');
 
-        container.innerHTML = `<div class="request-list">` + requests.map(r => {
-          const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
-          const details = r.form_data ? Object.entries(r.form_data)
-            .filter(([k,v]) => v && k !== 'contact' && !k.startsWith('_'))
-            .slice(0,3)
-            .map(([k,v]) => `<span style="color:var(--text-3);font-size:11px;">${v}</span>`)
-            .join(' · ') : '';
-          return `<div class="request-item">
-            <div class="r-icon">${s.icon}</div>
-            <div class="r-body">
-              <div class="r-title">${s.label}</div>
-              <div class="r-meta">${formatDateTime(r.created_at)}${details ? ' · ' + details : ''}</div>
-            </div>
-            <div class="r-status">${statusBadge(r.status)}</div>
-          </div>`;
-        }).join('') + `</div>`;
+    if (!list.length) {
+      target.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">${filter === 'all' ? 'No requests yet' : 'No requests in this status'}</div>
+        <div class="empty-text">${filter === 'all' ? 'When you submit a request, it\'ll appear here.' : 'Try a different filter.'}</div>
+        ${filter === 'all' ? '<a href="request.html" class="btn btn-primary btn-sm" style="margin-top:14px;">Submit your first request</a>' : ''}
+      </div>`;
+      return;
+    }
 
-      } catch(e) {
-        document.getElementById('requests-container').innerHTML =
-          '<div class="alert alert-error">Could not load requests. Please refresh.</div>';
-      }
-    })();
+    target.innerHTML = `<div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Date</th><th>Service</th><th>Urgency</th><th>Status</th><th>Last update</th></tr></thead>
+      <tbody>${list.map(r => `<tr onclick="openDetail('${r.id}')" style="cursor:pointer;">
+        <td>${formatDate(r.created_at)}</td>
+        <td>${escapeHtml(formatServiceType(r.service_type))}</td>
+        <td>${escapeHtml(formatUrgency(r))}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td>${r.updated_at && r.updated_at !== r.created_at ? formatDate(r.updated_at) : '—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  function formatServiceType(t) {
+    const map = {
+      travel:'Travel & Relocation', security:'Security & Protection',
+      legal:'Legal Assistance', medical:'Medical & Wellness',
+      housing:'Housing & Lodging', finance:'Financial Services',
+      transport:'Transport & Logistics', lifestyle:'Lifestyle & Personal',
+      emergency:'Emergency Services', other:'Other',
+    };
+    return map[t] || (t || 'Request');
+  }
+
+  function formatUrgency(r) {
+    return r.form_data?.urgency || '—';
+  }
+
+  function openDetail(id) {
+    const r = allRequests.find(x => x.id === id);
+    if (!r) return;
+    const fd = r.form_data || {};
+    const fields = Object.entries(fd).filter(([k]) => !['urgency','contact_pref','notes'].includes(k));
+
+    const body = `
+      <div style="margin-bottom:18px;">
+        <div class="page-eyebrow" style="margin-bottom:6px;">${escapeHtml(formatServiceType(r.service_type))}</div>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--text);margin:0 0 8px;">Request <em style="color:var(--pink);">details</em></h3>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--text-3);">
+          <span>${formatDate(r.created_at)}</span>
+          <span>·</span>
+          <span>${statusBadge(r.status)}</span>
+          ${fd.urgency ? `<span>·</span><span><strong style="color:var(--text-2);">Urgency:</strong> ${escapeHtml(fd.urgency)}</span>` : ''}
+        </div>
+      </div>
+
+      <div style="background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Submitted details</div>
+        ${fields.length ? fields.map(([k,v]) => `
+          <div style="margin-bottom:10px;">
+            <div style="font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:3px;">${escapeHtml(prettyKey(k))}</div>
+            <div style="font-size:13px;color:var(--text-2);line-height:1.6;white-space:pre-wrap;">${escapeHtml(String(v ?? '—'))}</div>
+          </div>
+        `).join('') : '<div style="font-size:13px;color:var(--text-3);">No additional details.</div>'}
+      </div>
+
+      ${fd.notes ? `<div style="background:var(--bg-3);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Your notes</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.7;white-space:pre-wrap;">${escapeHtml(fd.notes)}</div>
+      </div>` : ''}
+
+      ${r.admin_notes ? `<div style="background:var(--pink-dim-2);border:1px solid var(--border-pink);border-radius:12px;padding:18px 20px;margin-bottom:14px;">
+        <div style="font-size:11px;color:var(--pink);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Update from us</div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.7;white-space:pre-wrap;">${escapeHtml(r.admin_notes)}</div>
+      </div>` : ''}
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px;">
+        ${r.status === 'pending' ? `<button class="btn btn-ghost btn-sm" onclick="cancelMine('${r.id}')">Cancel this request</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="closeDetail()">Close</button>
+      </div>
+    `;
+    document.getElementById('detail-body').innerHTML = body;
+    document.getElementById('detail-modal').classList.add('active');
+  }
+
+  function prettyKey(k) {
+    return k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  function closeDetail(e) {
+    if (e && e.target.id !== 'detail-modal' && !e.target.classList.contains('modal-close')) return;
+    document.getElementById('detail-modal').classList.remove('active');
+  }
+
+  async function cancelMine(id) {
+    if (!confirm('Cancel this request? You can always submit a new one.')) return;
+    try {
+      await setRequestStatus(id, 'cancelled');
+      closeDetail();
+      await loadRequests();
+    } catch (e) {
+      alert('Could not cancel: ' + (e.message || 'Unknown error'));
+    }
+  }
   </script>
 </body>
 </html>

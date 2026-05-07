@@ -126,7 +126,10 @@
         <button class="sidebar-link" onclick="switchTab('requests')"><span class="icon">📋</span> Requests</button>
         <button class="sidebar-link" onclick="switchTab('wishes')"><span class="icon">🌙</span> Wishes</button>
         <button class="sidebar-link" onclick="switchTab('codes')"><span class="icon">🔑</span> Access Codes</button>
+        <button class="sidebar-link" onclick="switchTab('code-requests')"><span class="icon">📨</span> Code Requests</button>
+        <button class="sidebar-link" onclick="switchTab('invite-requests')"><span class="icon">💌</span> Invite Requests</button>
         <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invitations</button>
+        <button class="sidebar-link" onclick="switchTab('login-activity')"><span class="icon">🛡️</span> Login Activity</button>
       </div>
       <div class="sidebar-footer">
         <div class="sidebar-user">
@@ -151,7 +154,10 @@
         <button class="tab-btn" data-tab="requests" onclick="switchTab('requests')">📋 Requests</button>
         <button class="tab-btn" data-tab="wishes" onclick="switchTab('wishes')">🌙 Wishes</button>
         <button class="tab-btn" data-tab="codes" onclick="switchTab('codes')">🔑 Access Codes</button>
+        <button class="tab-btn" data-tab="code-requests" onclick="switchTab('code-requests')">📨 Code Requests <span class="tab-pill" id="cr-pill"></span></button>
+        <button class="tab-btn" data-tab="invite-requests" onclick="switchTab('invite-requests')">💌 Invite Requests <span class="tab-pill" id="ir-pill"></span></button>
         <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invitations</button>
+        <button class="tab-btn" data-tab="login-activity" onclick="switchTab('login-activity')">🛡️ Login Activity</button>
       </div>
 
       <!-- OVERVIEW -->
@@ -313,7 +319,155 @@
         </div>
       </div>
 
+      <!-- CODE REQUESTS -->
+      <div class="tab-panel" id="tab-code-requests">
+        <div style="margin-bottom:16px;">
+          <div class="page-eyebrow" style="margin-bottom:6px;">Member Code Requests</div>
+          <p style="font-size:13px;color:var(--text-3);line-height:1.7;margin:0;max-width:680px;">Members request access codes from their dashboard. When you approve a request, you assign one of your unused inventory codes to it — the member sees the code on their <strong>My Access Codes</strong> page where they can copy it and share with the recipient. The code itself stays unused until the recipient redeems it.</p>
+        </div>
+
+        <div class="code-tabs-row" style="margin-bottom:16px;">
+          <button class="code-filter-btn active" data-cr-filter="pending" onclick="setCRFilter('pending')">Pending</button>
+          <button class="code-filter-btn" data-cr-filter="approved" onclick="setCRFilter('approved')">Approved</button>
+          <button class="code-filter-btn" data-cr-filter="denied" onclick="setCRFilter('denied')">Denied</button>
+          <button class="code-filter-btn" data-cr-filter="cancelled" onclick="setCRFilter('cancelled')">Cancelled</button>
+          <button class="code-filter-btn" data-cr-filter="all" onclick="setCRFilter('all')">All</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Member</th><th>Submitted</th><th>Allowance</th><th>Member Note</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="code-requests-body"><tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- INVITE REQUESTS -->
+      <div class="tab-panel" id="tab-invite-requests">
+        <div style="margin-bottom:16px;">
+          <div class="page-eyebrow" style="margin-bottom:6px;">Member Invitation Requests</div>
+          <p style="font-size:13px;color:var(--text-3);line-height:1.7;margin:0;max-width:680px;">Members nominate people to be invited. Review the request, then if you approve, copy the email and use the existing <strong>Invitations</strong> tab to send the invite. After sending, mark the request as <strong>Sent</strong>.</p>
+        </div>
+
+        <div class="code-tabs-row" style="margin-bottom:16px;">
+          <button class="code-filter-btn active" data-ir-filter="pending" onclick="setIRFilter('pending')">Pending</button>
+          <button class="code-filter-btn" data-ir-filter="approved" onclick="setIRFilter('approved')">Approved</button>
+          <button class="code-filter-btn" data-ir-filter="sent" onclick="setIRFilter('sent')">Sent</button>
+          <button class="code-filter-btn" data-ir-filter="denied" onclick="setIRFilter('denied')">Denied</button>
+          <button class="code-filter-btn" data-ir-filter="all" onclick="setIRFilter('all')">All</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Submitted by</th><th>Recipient</th><th>Email</th><th>Relationship</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="invite-requests-body"><tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- LOGIN ACTIVITY -->
+      <div class="tab-panel" id="tab-login-activity">
+        <div style="margin-bottom:16px;">
+          <div class="page-eyebrow" style="margin-bottom:6px;">Member Login Activity</div>
+          <p style="font-size:13px;color:var(--text-3);line-height:1.7;margin:0;max-width:680px;">Recent successful sign-ins, newest first. Use this to spot unusual activity or confirm someone's been active.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>When</th><th>Member</th><th>Email</th><th>Browser / OS</th><th>IP</th></tr></thead>
+            <tbody id="login-activity-body"><tr class="no-click"><td colspan="5" style="color:var(--text-3);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
     </main>
+  </div>
+
+  <!-- Assign-Code Modal (used by Code Requests) -->
+  <div class="modal-overlay" id="modal-assign" onclick="if(event.target===this)closeModal('modal-assign')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow">📨 Approve Code Request</div>
+          <div class="modal-title" id="am-title">Assign a code</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-assign')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="am-context" style="margin-bottom:18px;font-size:13px;color:var(--text-2);line-height:1.7;"></div>
+        <div class="field">
+          <label class="field-label">Pick an unused code from inventory</label>
+          <div class="field-input">
+            <select id="am-code-select" style="width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px;font-family:Inter,sans-serif;font-size:13px;">
+              <option value="">Loading…</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Note (optional, internal)</label>
+          <div class="field-input">
+            <input type="text" id="am-note" placeholder="e.g. for sister; for emergency contact" style="width:100%;"/>
+          </div>
+        </div>
+        <div id="am-alert" class="alert hidden" style="margin-top:12px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-assign')">Cancel</button>
+        <button class="btn btn-primary" id="am-confirm" onclick="confirmAssignCode()">Approve &amp; Assign</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deny Code Request Modal -->
+  <div class="modal-overlay" id="modal-deny" onclick="if(event.target===this)closeModal('modal-deny')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow">Deny Code Request</div>
+          <div class="modal-title">Reason for denial</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-deny')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label class="field-label">Tell the member why (visible to them)</label>
+          <div class="field-input">
+            <textarea id="dm-reason" rows="4" placeholder="e.g. You've already used your allowance for this year — it resets in January." style="width:100%;background:var(--bg-3);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-sm);padding:10px;font-family:Inter,sans-serif;font-size:13px;resize:vertical;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-deny')">Cancel</button>
+        <button class="btn btn-danger" id="dm-confirm" onclick="confirmDenyCode()">Deny request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Adjust Allowance Modal (Members tab) -->
+  <div class="modal-overlay" id="modal-allowance" onclick="if(event.target===this)closeModal('modal-allowance')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow">Adjust Allowance</div>
+          <div class="modal-title" id="al-title">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-allowance')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="al-context" style="margin-bottom:14px;font-size:13px;color:var(--text-2);line-height:1.7;"></div>
+        <div class="field">
+          <label class="field-label">Annual allowance (codes per year)</label>
+          <div class="field-input">
+            <input type="number" id="al-total" min="0" max="100" style="width:120px;"/>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-3);line-height:1.65;margin-top:6px;">Default is <strong>2</strong>. Increase if this member should be able to share more codes per year.</p>
+        <div id="al-alert" class="alert hidden" style="margin-top:12px;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modal-allowance')">Cancel</button>
+        <button class="btn btn-primary" id="al-confirm" onclick="confirmAdjustAllowance()">Save</button>
+      </div>
+    </div>
   </div>
 
   <!-- Request Detail Modal -->
@@ -452,6 +606,9 @@
       if (name === 'wishes')   loadWishes();
       if (name === 'codes')    loadCodes();
       if (name === 'invite')   loadInvites();
+      if (name === 'code-requests')   loadCodeRequests();
+      if (name === 'invite-requests') loadInviteRequests();
+      if (name === 'login-activity')  loadLoginActivity();
     }
 
     async function loadOverview() {
@@ -474,20 +631,25 @@
       try {
         const members = await getAllProfiles();
         if (!members.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No members yet.</td></tr>'; return; }
-        tbody.innerHTML = members.map(m => `
+        tbody.innerHTML = members.map(m => {
+          const total = m.codes_allowance_total ?? 2;
+          const used  = m.codes_used_this_year ?? 0;
+          return `
           <tr class="no-click">
-            <td class="cell-name">${escapeHtml((m.first_name||'') + ' ' + (m.last_name||''))}</td>
+            <td class="cell-name">${escapeHtml((m.first_name||'') + ' ' + (m.last_name||''))}<div style="font-size:11px;color:var(--text-3);margin-top:3px;">Codes: ${used} / ${total} this year</div></td>
             <td>${escapeHtml(m.email||'—')}</td>
             <td>${roleBadge(m.role)}</td>
             <td>${memberStatusBadge(m.status)}</td>
             <td>${formatDate(m.created_at)}</td>
             <td style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openAdjustAllowance('${m.id}','${escapeHtml((m.first_name||'') + ' ' + (m.last_name||''))}',${total},${used})">Adjust Allowance</button>
               ${m.status !== 'inactive'
                 ? `<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deactivate('${m.id}')">Deactivate</button>`
                 : `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();reactivate('${m.id}')">Reactivate</button>`}
               ${m.role !== 'admin' ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();makeAdmin('${m.id}')">Make Admin</button>` : ''}
             </td>
-          </tr>`).join('');
+          </tr>`;
+        }).join('');
       } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load members.</td></tr>'; }
     }
 
@@ -824,6 +986,313 @@
       if (!confirm('Remove this invitation?')) return;
       try { await deletePendingInvite(id); loadInvites(); } catch(e) { alert('Failed.'); }
     }
+
+    // ════════════════════════════════════════════════
+    // CODE REQUESTS
+    // ════════════════════════════════════════════════
+    let allCodeRequests = [];
+    let crFilter = 'pending';
+    let currentCRForAssign = null;
+    let currentCRForDeny = null;
+
+    async function loadCodeRequests() {
+      const tbody = document.getElementById('code-requests-body');
+      try {
+        allCodeRequests = await getAllCodeRequests();
+        renderCodeRequests();
+        updatePillBadges();
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load. Make sure you ran the v3 migration.</td></tr>';
+      }
+    }
+
+    function setCRFilter(f) {
+      crFilter = f;
+      document.querySelectorAll('[data-cr-filter]').forEach(b => b.classList.toggle('active', b.dataset.crFilter === f));
+      renderCodeRequests();
+    }
+
+    function renderCodeRequests() {
+      const tbody = document.getElementById('code-requests-body');
+      const list = crFilter === 'all' ? allCodeRequests : allCodeRequests.filter(r => r.status === crFilter);
+      if (!list.length) {
+        tbody.innerHTML = `<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No ${crFilter === 'all' ? '' : crFilter + ' '}code requests.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(r => {
+        const p = r.profiles || {};
+        const memberName = `${p.first_name||''} ${p.last_name||''}`.trim() || p.email || '—';
+        const total = p.codes_allowance_total ?? 2;
+        const used  = p.codes_used_this_year ?? 0;
+        const remaining = Math.max(0, total - used);
+        return `<tr class="no-click">
+          <td class="cell-name">${escapeHtml(memberName)}<div style="font-size:11px;color:var(--text-3);margin-top:3px;">${escapeHtml(p.email||'')}</div></td>
+          <td>${formatDate(r.created_at)}</td>
+          <td style="font-size:12px;">${remaining} of ${total} left</td>
+          <td style="font-size:12px;color:var(--text-2);max-width:300px;">${escapeHtml(r.member_notes || '—')}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${r.status === 'pending'
+              ? `<button class="btn btn-primary btn-sm" onclick="openAssignModal('${r.id}','${escapeHtml(memberName)}')">Approve &amp; Assign</button>
+                 <button class="btn btn-danger btn-sm" onclick="openDenyModal('${r.id}')">Deny</button>`
+              : r.status === 'approved' && r.assigned_code_id
+              ? `<span style="font-size:12px;color:var(--text-3);">Assigned ${formatDate(r.resolved_at)}</span>`
+              : `<span style="font-size:12px;color:var(--text-3);">${r.resolved_at ? formatDate(r.resolved_at) : ''}</span>`}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function openAssignModal(reqId, memberName) {
+      currentCRForAssign = reqId;
+      document.getElementById('am-title').textContent = 'Assign code to ' + memberName;
+      const req = allCodeRequests.find(r => r.id === reqId);
+      const p = req?.profiles || {};
+      const total = p.codes_allowance_total ?? 2;
+      const used  = p.codes_used_this_year ?? 0;
+      document.getElementById('am-context').innerHTML = `
+        <strong>Member note:</strong> ${escapeHtml(req?.member_notes || '(none)')}
+        <div style="margin-top:8px;font-size:12px;color:var(--text-3);">Submitted ${formatDate(req?.created_at)} · ${used}/${total} used this year</div>
+      `;
+      document.getElementById('am-note').value = '';
+      hideAlert('am-alert');
+
+      // Populate unused codes select
+      const sel = document.getElementById('am-code-select');
+      sel.innerHTML = '<option value="">Loading…</option>';
+      try {
+        const codes = await getAllAccessCodes();
+        const unused = codes.filter(c => c.status === 'unused');
+        if (!unused.length) {
+          sel.innerHTML = '<option value="">No unused codes — generate some first</option>';
+        } else {
+          sel.innerHTML = '<option value="">— Choose a code —</option>' + unused.map(c =>
+            `<option value="${c.id}">${escapeHtml(c.code)} (${c.code_type}${c.notes ? ' — ' + escapeHtml(c.notes) : ''})</option>`
+          ).join('');
+        }
+      } catch (e) { sel.innerHTML = '<option value="">Could not load codes</option>'; }
+
+      document.getElementById('modal-assign').classList.add('show');
+    }
+
+    async function confirmAssignCode() {
+      const codeId = document.getElementById('am-code-select').value;
+      const note   = document.getElementById('am-note').value.trim();
+      if (!codeId) { showAlert('am-alert', 'Please pick a code.'); return; }
+      setLoading('am-confirm', true);
+      try {
+        const result = await approveCodeRequest(currentCRForAssign, codeId);
+        if (result && result.success === false) {
+          throw new Error(result.reason || 'unknown');
+        }
+        // Append the optional internal note to the code's notes field for tracking
+        if (note) {
+          try {
+            const codes = await getAllAccessCodes();
+            const c = codes.find(x => x.id === codeId);
+            const existing = c?.notes ? c.notes + ' · ' : '';
+            await sb.from('access_codes').update({ notes: existing + note }).eq('id', codeId);
+          } catch(_) { /* non-fatal */ }
+        }
+        closeModal('modal-assign');
+        await loadCodeRequests();
+      } catch (e) {
+        showAlert('am-alert', 'Failed: ' + (e.message || 'unknown'));
+      }
+      setLoading('am-confirm', false, 'Approve & Assign');
+    }
+
+    function openDenyModal(reqId) {
+      currentCRForDeny = reqId;
+      document.getElementById('dm-reason').value = '';
+      document.getElementById('modal-deny').classList.add('show');
+    }
+
+    async function confirmDenyCode() {
+      const reason = document.getElementById('dm-reason').value.trim();
+      if (!reason) { alert('Please enter a reason.'); return; }
+      setLoading('dm-confirm', true);
+      try {
+        await denyCodeRequest(currentCRForDeny, reason);
+        closeModal('modal-deny');
+        await loadCodeRequests();
+      } catch (e) {
+        alert('Failed: ' + (e.message || 'unknown'));
+      }
+      setLoading('dm-confirm', false, 'Deny request');
+    }
+
+    // ════════════════════════════════════════════════
+    // INVITE REQUESTS
+    // ════════════════════════════════════════════════
+    let allInviteRequests = [];
+    let irFilter = 'pending';
+
+    async function loadInviteRequests() {
+      const tbody = document.getElementById('invite-requests-body');
+      try {
+        allInviteRequests = await getAllInviteRequests();
+        renderInviteRequests();
+        updatePillBadges();
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load. Make sure you ran the v3 migration.</td></tr>';
+      }
+    }
+
+    function setIRFilter(f) {
+      irFilter = f;
+      document.querySelectorAll('[data-ir-filter]').forEach(b => b.classList.toggle('active', b.dataset.irFilter === f));
+      renderInviteRequests();
+    }
+
+    function renderInviteRequests() {
+      const tbody = document.getElementById('invite-requests-body');
+      const list = irFilter === 'all' ? allInviteRequests : allInviteRequests.filter(r => r.status === irFilter);
+      if (!list.length) {
+        tbody.innerHTML = `<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No ${irFilter === 'all' ? '' : irFilter + ' '}invite requests.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(r => {
+        const p = r.profiles || {};
+        const submittedBy = `${p.first_name||''} ${p.last_name||''}`.trim() || p.email || '—';
+        const recipient = [r.first_name, r.last_name].filter(Boolean).join(' ') || '(no name)';
+        const relMap = {friend:'Close friend', family:'Family', partner:'Partner', colleague:'Colleague', acquaintance:'Acquaintance', community:'Community', online:'Online', other:'Other', prefer_not:'—'};
+        return `<tr class="no-click">
+          <td class="cell-name">${escapeHtml(submittedBy)}<div style="font-size:11px;color:var(--text-3);margin-top:3px;">${escapeHtml(p.email||'')}</div></td>
+          <td>${escapeHtml(recipient)}</td>
+          <td><a href="mailto:${escapeHtml(r.email)}" style="color:var(--pink);">${escapeHtml(r.email)}</a></td>
+          <td style="font-size:12px;color:var(--text-2);">${escapeHtml(relMap[r.relationship] || r.relationship || '—')}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="viewInviteRequestReason('${r.id}')">Reason</button>
+            ${r.status === 'pending' ? `
+              <button class="btn btn-primary btn-sm" onclick="setIRStatus('${r.id}','approved')">Approve</button>
+              <button class="btn btn-danger btn-sm" onclick="setIRStatus('${r.id}','denied')">Deny</button>
+            ` : ''}
+            ${r.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="setIRStatus('${r.id}','sent')">Mark as sent</button>` : ''}
+            <button class="btn btn-ghost btn-sm" onclick="copyInviteEmail('${escapeHtml(r.email)}')">Copy email</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function viewInviteRequestReason(id) {
+      const r = allInviteRequests.find(x => x.id === id);
+      if (!r) return;
+      alert(`Reason from ${r.profiles?.first_name || 'member'}:\n\n${r.reason || '(none)'}`);
+    }
+
+    async function setIRStatus(id, status) {
+      try {
+        await setInviteRequestStatus(id, status);
+        await loadInviteRequests();
+      } catch (e) { alert('Failed: ' + (e.message || 'unknown')); }
+    }
+
+    async function copyInviteEmail(email) {
+      try { await navigator.clipboard.writeText(email); }
+      catch (e) {}
+    }
+
+    // ════════════════════════════════════════════════
+    // LOGIN ACTIVITY
+    // ════════════════════════════════════════════════
+    async function loadLoginActivity() {
+      const tbody = document.getElementById('login-activity-body');
+      try {
+        const events = await getAllLoginActivity(200);
+        if (!events.length) {
+          tbody.innerHTML = '<tr class="no-click"><td colspan="5" style="color:var(--text-3);">No login activity recorded yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = events.map(ev => {
+          const p = ev.profiles || {};
+          const name = `${p.first_name||''} ${p.last_name||''}`.trim() || '—';
+          return `<tr class="no-click">
+            <td style="font-size:12px;">${formatDateTime(ev.occurred_at)}</td>
+            <td class="cell-name">${escapeHtml(name)}</td>
+            <td style="font-size:12px;">${escapeHtml(p.email || '')}</td>
+            <td style="font-size:11px;color:var(--text-3);font-family:monospace;max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(ev.user_agent||'')}">${escapeHtml(simplifyUA(ev.user_agent))}</td>
+            <td style="font-size:12px;color:var(--text-3);font-family:monospace;">${escapeHtml(ev.ip_address || '—')}</td>
+          </tr>`;
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = '<tr class="no-click"><td colspan="5" style="color:var(--red);">Failed to load. Make sure you ran the v3 migration.</td></tr>';
+      }
+    }
+
+    function simplifyUA(ua) {
+      if (!ua) return '—';
+      // Quick & dirty UA simplification — readable summary instead of the raw string
+      let browser = 'Browser';
+      let os = '';
+      if (/Edg\//.test(ua)) browser = 'Edge';
+      else if (/Chrome\//.test(ua) && !/Edg\//.test(ua)) browser = 'Chrome';
+      else if (/Firefox\//.test(ua)) browser = 'Firefox';
+      else if (/Safari\//.test(ua) && !/Chrome\//.test(ua)) browser = 'Safari';
+      if (/Windows/.test(ua)) os = 'Windows';
+      else if (/Mac OS X/.test(ua)) os = 'macOS';
+      else if (/iPhone|iPad/.test(ua)) os = 'iOS';
+      else if (/Android/.test(ua)) os = 'Android';
+      else if (/Linux/.test(ua)) os = 'Linux';
+      return os ? `${browser} · ${os}` : browser;
+    }
+
+    // ════════════════════════════════════════════════
+    // ALLOWANCE ADJUSTMENT
+    // ════════════════════════════════════════════════
+    let currentAllowanceMember = null;
+
+    function openAdjustAllowance(memberId, memberName, total, used) {
+      currentAllowanceMember = memberId;
+      document.getElementById('al-title').textContent = memberName.trim() || 'Member';
+      document.getElementById('al-context').innerHTML = `Currently <strong>${used}</strong> used of <strong>${total}</strong> this year.`;
+      document.getElementById('al-total').value = total;
+      hideAlert('al-alert');
+      document.getElementById('modal-allowance').classList.add('show');
+    }
+
+    async function confirmAdjustAllowance() {
+      const total = parseInt(document.getElementById('al-total').value, 10);
+      if (isNaN(total) || total < 0 || total > 100) {
+        showAlert('al-alert', 'Please enter a number between 0 and 100.');
+        return;
+      }
+      setLoading('al-confirm', true);
+      try {
+        await adjustMemberAllowance(currentAllowanceMember, total);
+        closeModal('modal-allowance');
+        await loadMembers();
+      } catch (e) {
+        showAlert('al-alert', 'Failed: ' + (e.message || 'unknown'));
+      }
+      setLoading('al-confirm', false, 'Save');
+    }
+
+    // ════════════════════════════════════════════════
+    // PILL BADGES (pending counts on tab buttons)
+    // ════════════════════════════════════════════════
+    async function updatePillBadges() {
+      try {
+        const [crs, irs] = await Promise.all([
+          getAllCodeRequests().catch(() => []),
+          getAllInviteRequests().catch(() => []),
+        ]);
+        const crPending = crs.filter(r => r.status === 'pending').length;
+        const irPending = irs.filter(r => r.status === 'pending').length;
+        const crPill = document.getElementById('cr-pill');
+        const irPill = document.getElementById('ir-pill');
+        crPill.textContent = crPending ? crPending : '';
+        crPill.style.display = crPending ? '' : 'none';
+        irPill.textContent = irPending ? irPending : '';
+        irPill.style.display = irPending ? '' : 'none';
+      } catch (e) { /* silent */ }
+    }
+    // Refresh pill badges on initial load
+    setTimeout(updatePillBadges, 800);
   </script>
 </body>
 </html>

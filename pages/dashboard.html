@@ -5,9 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
-  <title>Dashboard — </title>
+  <title>Dashboard — fractured Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
-  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    /* Profile completeness mini-bar */
+    .profile-bar {
+      height: 6px; background: var(--bg-4); border-radius: 3px;
+      overflow: hidden; margin-top: 10px;
+    }
+    .profile-bar > span {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, var(--pink) 0%, var(--gold) 100%);
+      border-radius: 3px; transition: width 0.5s ease;
+    }
+  </style>
 </head>
 <body>
 
@@ -16,7 +28,7 @@
     <div class="nav-right">
       <div class="nav-user-pill">
         <div class="avatar" id="nav-avatar">?</div>
-        <span id="nav-name">Loading...</span>
+        <span id="nav-name">Loading…</span>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
     </div>
@@ -27,31 +39,25 @@
     <aside class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-heading">Overview</div>
-        <a href="dashboard.html" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
-        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+        <a href="dashboard.html"      class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
       </div>
       <div class="sidebar-section">
-        <div class="sidebar-heading">Concierge Services</div>
-        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
-        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
-        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
-        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
-        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
-        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
-        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
-        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
-        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-heading">Account</div>
-        <a href="account.html"   class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
-        <a href="admin.html"     class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
+        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
       </div>
       <div class="sidebar-footer">
         <div class="sidebar-user">
           <div class="avatar" id="sb-avatar">?</div>
           <div class="info">
-            <div class="name" id="sb-name">Loading...</div>
+            <div class="name" id="sb-name">Loading…</div>
             <div class="role" id="sb-role">Member</div>
           </div>
         </div>
@@ -67,11 +73,51 @@
           <div class="wb-title">Welcome back, <em id="first-name">friend.</em></div>
           <div class="wb-sub">Your private concierge network is standing by. How can we help you today?</div>
         </div>
-        <span class="badge badge-gold">Active Member</span>
+        <span class="badge badge-gold" id="status-badge">Active Member</span>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-grid" id="stats-grid">
+      <!-- Quick actions -->
+      <div class="quick-actions">
+        <a href="request.html" class="quick-action">
+          <div class="qa-icon">✨</div>
+          <div class="qa-title">New Request</div>
+          <div class="qa-desc">Submit a concierge request across nine service categories.</div>
+        </a>
+        <a href="my-codes.html" class="quick-action">
+          <div class="qa-icon">🔑</div>
+          <div class="qa-title">My Access Codes</div>
+          <div class="qa-desc">Request from your yearly allowance and view assigned codes.</div>
+        </a>
+        <a href="invite-request.html" class="quick-action">
+          <div class="qa-icon">✉️</div>
+          <div class="qa-title">Invite Someone</div>
+          <div class="qa-desc">Ask the team to extend an invitation to someone you trust.</div>
+        </a>
+        <a href="account.html" class="quick-action">
+          <div class="qa-icon">⚙️</div>
+          <div class="qa-title">Account Settings</div>
+          <div class="qa-desc">Update your profile, contact preferences, and notifications.</div>
+        </a>
+      </div>
+
+      <!-- Allowance card -->
+      <div class="allowance-card">
+        <div class="allowance-head">
+          <div>
+            <div class="allowance-title">Your <em>Code Allowance</em></div>
+            <div class="allowance-sub" id="allowance-sub">Each member receives 2 access codes per calendar year.</div>
+          </div>
+          <a href="my-codes.html" class="btn btn-secondary btn-sm">Manage codes</a>
+        </div>
+        <div class="pip-meter" id="pip-meter">
+          <div class="pip"></div>
+          <div class="pip"></div>
+        </div>
+        <div class="allowance-meta" id="allowance-meta">— remaining</div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid" style="margin-bottom:28px;">
         <div class="stat-card">
           <div class="stat-value" id="stat-open">—</div>
           <div class="stat-label">Open Requests</div>
@@ -81,41 +127,37 @@
           <div class="stat-label">Total Requests</div>
         </div>
         <div class="stat-card">
+          <div class="stat-value" id="stat-codes">—</div>
+          <div class="stat-label">Codes This Year</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-value">24/7</div>
           <div class="stat-label">Network Access</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">100%</div>
-          <div class="stat-label">Confidential</div>
+      </div>
+
+      <!-- Profile completeness card -->
+      <div class="activity-card" id="profile-card">
+        <div class="ac-head">
+          <div>
+            <div class="ac-title">Profile <em>Completeness</em></div>
+            <div style="font-size:11.5px;color:var(--text-3);margin-top:3px;" id="profile-pct">Loading…</div>
+          </div>
+          <a href="account.html" class="ac-link">Update profile →</a>
         </div>
-      </div>
-
-      <!-- Services -->
-      <div class="page-header">
-        <div class="page-eyebrow">Concierge Services</div>
-        <h2 class="page-title">What can we <em>help with?</em></h2>
-        <p class="page-subtitle">Select a category below to submit a request. All requests are handled with absolute discretion.</p>
-      </div>
-
-      <div class="services-grid" style="margin-bottom:36px;">
-        <a href="service-travel.html"    class="service-tile"><span class="tile-icon">✈️</span><div class="tile-title">Travel & Relocation</div><div class="tile-desc">Flights, hotels, safe houses, international relocation.</div></a>
-        <a href="service-security.html"  class="service-tile"><span class="tile-icon">🛡️</span><div class="tile-title">Security & Protection</div><div class="tile-desc">Protective detail, threat assessment, safety planning.</div></a>
-        <a href="service-legal.html"     class="service-tile"><span class="tile-icon">⚖️</span><div class="tile-title">Legal Assistance</div><div class="tile-desc">Attorney referrals, document prep, legal guidance.</div></a>
-        <a href="service-medical.html"   class="service-tile"><span class="tile-icon">🏥</span><div class="tile-title">Medical & Wellness</div><div class="tile-desc">Private appointments, mental health, prescriptions.</div></a>
-        <a href="service-housing.html"   class="service-tile"><span class="tile-icon">🏡</span><div class="tile-title">Housing & Lodging</div><div class="tile-desc">Emergency shelter, safe accommodations, long-term housing.</div></a>
-        <a href="service-finance.html"   class="service-tile"><span class="tile-icon">💳</span><div class="tile-title">Financial Services</div><div class="tile-desc">Emergency funds, account protection, financial planning.</div></a>
-        <a href="service-transport.html" class="service-tile"><span class="tile-icon">🚗</span><div class="tile-title">Transport & Logistics</div><div class="tile-desc">Private drivers, vehicle sourcing, discreet logistics.</div></a>
-        <a href="service-lifestyle.html" class="service-tile"><span class="tile-icon">✨</span><div class="tile-title">Lifestyle & Personal</div><div class="tile-desc">Childcare, shopping, scheduling, daily life support.</div></a>
-        <a href="service-emergency.html" class="service-tile" style="border-color:rgba(248,113,113,0.15);"><span class="tile-icon">🚨</span><div class="tile-title">Emergency Services</div><div class="tile-desc">Crisis response, immediate coordination, urgent assistance.</div></a>
+        <div class="profile-bar"><span id="profile-bar-fill" style="width:0%"></span></div>
+        <div id="profile-missing" style="margin-top:12px;font-size:12px;color:var(--text-3);line-height:1.7;"></div>
       </div>
 
       <!-- Recent requests -->
-      <div class="page-header">
-        <div class="page-eyebrow">Activity</div>
-        <h2 class="page-title">Recent <em>Requests</em></h2>
-      </div>
-      <div id="recent-list">
-        <div style="color:var(--text-3);font-size:13px;padding:8px 0;">Loading...</div>
+      <div class="activity-card">
+        <div class="ac-head">
+          <div class="ac-title">Recent <em>Requests</em></div>
+          <a href="requests.html" class="ac-link">View all →</a>
+        </div>
+        <div id="recent-list">
+          <div style="color:var(--text-3);font-size:13px;padding:6px 0;">Loading…</div>
+        </div>
       </div>
 
     </main>
@@ -124,49 +166,91 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/app.js"></script>
   <script>
-    (async () => {
-      const user = await requireAuth();
-      if (!user) return;
+  (async () => {
+    const user = await requireAuth();
+    if (!user) return;
 
-      try {
-        const profile = await getProfile(user.id);
-        const name = profile.first_name || 'friend';
-        const ini  = initials(profile.first_name, profile.last_name);
+    try {
+      // Roll over allowance year if needed (no-op otherwise)
+      await refreshAllowance();
 
-        document.getElementById('first-name').textContent = name + '.';
-        document.getElementById('nav-name').textContent   = 'Hello, ' + name;
-        document.getElementById('nav-avatar').textContent = ini;
-        document.getElementById('sb-avatar').textContent  = ini;
-        document.getElementById('sb-name').textContent    = (profile.first_name || '') + ' ' + (profile.last_name || '');
-        document.getElementById('sb-role').textContent    = profile.role === 'admin' ? 'Administrator' : 'Member';
+      const profile = await getProfile(user.id);
+      const name = profile.first_name || 'friend';
+      const ini  = initials(profile.first_name, profile.last_name);
 
-        if (profile.role === 'admin') {
-          document.getElementById('admin-link').classList.remove('hidden');
-        }
+      document.getElementById('first-name').textContent = name + '.';
+      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+      document.getElementById('nav-avatar').textContent = ini;
+      document.getElementById('sb-avatar').textContent  = ini;
+      document.getElementById('sb-name').textContent    = (profile.first_name || '') + ' ' + (profile.last_name || '');
+      document.getElementById('sb-role').textContent    = profile.role === 'admin' ? 'Administrator' : 'Member';
+      if (profile.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
 
-        const requests = await getMyRequests();
-        document.getElementById('stat-open').textContent  = requests.filter(r => r.status !== 'complete').length;
-        document.getElementById('stat-total').textContent = requests.length;
+      // ── Allowance pip meter
+      const total = profile.codes_allowance_total ?? 2;
+      const used  = profile.codes_used_this_year ?? 0;
+      const remaining = Math.max(0, total - used);
+      const meter = document.getElementById('pip-meter');
+      meter.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const d = document.createElement('div');
+        d.className = 'pip ' + (i < remaining ? 'filled' : 'used');
+        meter.appendChild(d);
+      }
+      document.getElementById('allowance-meta').textContent =
+        `${remaining} of ${total} remaining · year ${profile.codes_allowance_year || new Date().getFullYear()}`;
+      document.getElementById('stat-codes').textContent = `${used}/${total}`;
 
-        const list = document.getElementById('recent-list');
-        if (!requests.length) {
-          list.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No requests yet</div><div class="empty-text">Submit your first concierge request above.</div></div>`;
-        } else {
-          list.innerHTML = `<div class="request-list">` + requests.slice(0, 5).map(r => {
-            const s = SERVICE_MAP[r.service_type] || { icon: '📋', label: r.service_type };
-            return `<div class="request-item">
-              <div class="r-icon">${s.icon}</div>
-              <div class="r-body">
-                <div class="r-title">${s.label}</div>
-                <div class="r-meta">Submitted ${formatDate(r.created_at)}${r.form_data?.urgency ? ' · ' + r.form_data.urgency : ''}</div>
-              </div>
-              <div class="r-status">${statusBadge(r.status)}</div>
-            </div>`;
-          }).join('') + `</div>
-          <div style="margin-top:14px;"><a href="requests.html" class="btn btn-secondary btn-sm">View All Requests →</a></div>`;
-        }
-      } catch(e) { console.error(e); }
-    })();
+      // ── Requests stats
+      const requests = await getMyRequests();
+      document.getElementById('stat-open').textContent  = requests.filter(r => r.status !== 'complete').length;
+      document.getElementById('stat-total').textContent = requests.length;
+
+      // ── Recent list
+      const list = document.getElementById('recent-list');
+      if (!requests.length) {
+        list.innerHTML = `<div style="text-align:center;padding:18px 0;">
+          <div style="font-size:30px;opacity:0.5;margin-bottom:6px;">📋</div>
+          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;">No requests yet.</div>
+          <a href="request.html" class="btn btn-secondary btn-sm">Submit your first →</a>
+        </div>`;
+      } else {
+        list.innerHTML = `<div class="request-list">` + requests.slice(0, 5).map(r => {
+          const s = SERVICE_MAP[r.service_type] || { icon: '📋', label: r.service_type };
+          return `<div class="request-item">
+            <div class="r-icon">${s.icon}</div>
+            <div class="r-body">
+              <div class="r-title">${escapeHtml(s.label)}</div>
+              <div class="r-meta">Submitted ${formatDate(r.created_at)}${r.form_data?.urgency ? ' · ' + escapeHtml(r.form_data.urgency) : ''}</div>
+            </div>
+            <div class="r-status">${statusBadge(r.status)}</div>
+          </div>`;
+        }).join('') + `</div>`;
+      }
+
+      // ── Profile completeness
+      const fields = [
+        { k: 'first_name',   label: 'First name' },
+        { k: 'last_name',    label: 'Last name' },
+        { k: 'phone',        label: 'Phone number' },
+        { k: 'contact_pref', label: 'Preferred contact method' },
+      ];
+      const filled = fields.filter(f => profile[f.k] && String(profile[f.k]).trim().length > 0);
+      const missing = fields.filter(f => !profile[f.k] || String(profile[f.k]).trim().length === 0);
+      const pct = Math.round((filled.length / fields.length) * 100);
+      document.getElementById('profile-pct').textContent =
+        pct === 100 ? 'Profile complete — thank you.' : `${pct}% complete · ${missing.length} item${missing.length === 1 ? '' : 's'} remaining`;
+      document.getElementById('profile-bar-fill').style.width = pct + '%';
+      document.getElementById('profile-missing').innerHTML = missing.length
+        ? 'Missing: ' + missing.map(m => `<span style="color:var(--text-2);">${escapeHtml(m.label)}</span>`).join(' · ')
+        : '';
+
+      if (pct === 100) document.getElementById('profile-card').style.display = 'none';
+
+    } catch (e) {
+      console.error(e);
+    }
+  })();
   </script>
 </body>
 </html>

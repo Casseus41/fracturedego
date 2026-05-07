@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>My Access Codes — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
+    <div class="nav-right">
+      <div class="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-name">Loading…</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link active"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+
+      <div class="page-header" style="margin-bottom:18px;">
+        <div class="page-eyebrow">Access Code Allowance</div>
+        <h2 class="page-title">My <em>Access Codes</em></h2>
+        <p class="page-subtitle">Each member receives <strong>two access codes per calendar year</strong> to share with people who need help. Codes are delivered through this site only — they're never emailed.</p>
+      </div>
+
+      <!-- Allowance card -->
+      <div class="allowance-card">
+        <div class="allowance-head">
+          <div>
+            <div class="allowance-title">Your <em>Allowance</em></div>
+            <div class="allowance-sub" id="allowance-sub">Resets each January.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="request-btn" onclick="openRequestPanel()">Request a code</button>
+        </div>
+        <div class="pip-meter" id="pip-meter"></div>
+        <div class="allowance-meta" id="allowance-meta">— remaining</div>
+      </div>
+
+      <!-- Request panel (hidden by default) -->
+      <div class="form-section" id="request-panel" style="display:none;margin-top:0;">
+        <h2 class="section-heading">Request a <em>Code</em></h2>
+        <p class="section-desc">Tell us briefly who you're hoping to help. Once approved, the code will appear below — copy it and pass it to them along with the website (<strong>fracturedego.org</strong>).</p>
+
+        <div class="alert hidden" id="req-alert"></div>
+
+        <div class="field">
+          <label class="field-label">Notes for the team <span class="field-optional">(Optional but appreciated)</span></label>
+          <div class="field-input">
+            <textarea id="req-notes" rows="4" placeholder="A few sentences about who this is for and any context that's relevant. We won't share this with the recipient."></textarea>
+          </div>
+          <div class="helper-line">Examples: "For my younger sister — she's leaving a difficult situation." · "An old friend in financial trouble." · "Coworker dealing with a family emergency."</div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn btn-primary" id="req-submit" onclick="doRequest()">Submit request</button>
+          <button class="btn btn-ghost" onclick="closeRequestPanel()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs" style="margin-top:32px;">
+        <button class="tab-btn active" data-tab="active" onclick="switchTab('active')">Active &amp; assigned</button>
+        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">History</button>
+      </div>
+
+      <!-- Active tab -->
+      <div class="tab-panel active" id="tab-active">
+        <div id="active-list">
+          <div style="font-size:13px;color:var(--text-3);padding:14px 0;">Loading…</div>
+        </div>
+      </div>
+
+      <!-- History tab -->
+      <div class="tab-panel" id="tab-history">
+        <div id="history-list">
+          <div style="font-size:13px;color:var(--text-3);padding:14px 0;">Loading…</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+  let allCodes = [];
+  let myProfile = null;
+
+  (async () => {
+    const user = await requireAuth();
+    if (!user) return;
+
+    try {
+      await refreshAllowance();
+      myProfile = await getProfile(user.id);
+      const name = myProfile.first_name || 'friend';
+      const ini  = initials(myProfile.first_name, myProfile.last_name);
+      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+      document.getElementById('nav-avatar').textContent = ini;
+      if (myProfile.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
+
+      renderAllowance();
+      await loadCodes();
+    } catch (e) { console.error(e); }
+  })();
+
+  function renderAllowance() {
+    const total = myProfile.codes_allowance_total ?? 2;
+    const used  = myProfile.codes_used_this_year ?? 0;
+    const remaining = Math.max(0, total - used);
+    const meter = document.getElementById('pip-meter');
+    meter.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement('div');
+      d.className = 'pip ' + (i < remaining ? 'filled' : 'used');
+      meter.appendChild(d);
+    }
+    document.getElementById('allowance-meta').textContent =
+      `${remaining} of ${total} remaining · year ${myProfile.codes_allowance_year || new Date().getFullYear()}`;
+
+    document.getElementById('request-btn').disabled = remaining <= 0;
+    if (remaining <= 0) {
+      document.getElementById('request-btn').textContent = 'No remaining';
+    }
+  }
+
+  async function loadCodes() {
+    try {
+      allCodes = await getMyAssignedCodes();
+      renderActive();
+      renderHistory();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('active-list').innerHTML = `<div class="alert alert-error">Could not load codes.</div>`;
+    }
+  }
+
+  function renderActive() {
+    const active = allCodes.filter(c => c.request_status === 'pending' || (c.request_status === 'approved' && c.code_status === 'unused'));
+    const target = document.getElementById('active-list');
+    if (!active.length) {
+      target.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔑</div>
+          <div class="empty-title">No active codes</div>
+          <div class="empty-text">When you request a code, it will appear here once an admin approves it. You'll then share the code and the website link with whoever you're helping.</div>
+        </div>`;
+      return;
+    }
+
+    target.innerHTML = active.map(c => {
+      if (c.request_status === 'pending') {
+        return `<div class="assigned-code-card">
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:12px;color:var(--text-3);letter-spacing:0.1em;text-transform:uppercase;">Pending review</div>
+            <div style="margin-top:6px;color:var(--text);font-size:14px;">Awaiting admin approval.</div>
+            <div class="code-meta">Requested ${formatDateTime(c.request_created)}</div>
+            ${c.member_notes ? `<div style="margin-top:10px;font-size:12px;color:var(--text-2);background:var(--bg-3);padding:10px 12px;border-radius:8px;border-left:2px solid var(--border-pink);">${escapeHtml(c.member_notes)}</div>` : ''}
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="cancelRequest('${c.request_id}')">Cancel</button>
+        </div>`;
+      }
+      // Approved + code is unused → it's ready to share
+      return `<div class="assigned-code-card">
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:12px;color:var(--pink);letter-spacing:0.1em;text-transform:uppercase;font-weight:700;">Ready to share</div>
+          <div style="margin-top:8px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+            <div class="code-block">${escapeHtml(c.code || '—')}</div>
+            <div style="font-size:11px;color:var(--text-3);">${c.code_type || ''}</div>
+          </div>
+          <div class="code-meta">Approved ${formatDate(c.request_resolved)}. Send the code together with the website link: <strong style="color:var(--text-2);">fracturedego.org</strong></div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="copyCode('${escapeHtml(c.code)}')">Copy</button>
+      </div>`;
+    }).join('');
+  }
+
+  function renderHistory() {
+    const past = allCodes.filter(c =>
+      (c.request_status === 'approved' && c.code_status !== 'unused') ||
+      c.request_status === 'denied' ||
+      c.request_status === 'cancelled'
+    );
+    const target = document.getElementById('history-list');
+    if (!past.length) {
+      target.innerHTML = `<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-title">No history yet</div><div class="empty-text">Past code activity will appear here.</div></div>`;
+      return;
+    }
+    target.innerHTML = `<div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Date</th><th>Status</th><th>Code</th><th>Outcome</th></tr></thead>
+      <tbody>${past.map(c => `<tr class="no-click">
+        <td>${formatDate(c.request_created)}</td>
+        <td>${statusBadge(c.request_status)}</td>
+        <td>${c.code ? `<span class="code-mono used">${escapeHtml(c.code)}</span>` : '—'}</td>
+        <td>${c.code_status === 'used' ? 'Code redeemed by recipient' : (c.request_status === 'denied' ? 'Denied' : c.request_status === 'cancelled' ? 'Cancelled' : '—')}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  }
+
+  function openRequestPanel() {
+    document.getElementById('request-panel').style.display = 'block';
+    document.getElementById('request-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function closeRequestPanel() {
+    document.getElementById('request-panel').style.display = 'none';
+    document.getElementById('req-notes').value = '';
+    hideAlert('req-alert');
+  }
+
+  async function doRequest() {
+    hideAlert('req-alert');
+    const notes = document.getElementById('req-notes').value.trim();
+    setLoading('req-submit', true);
+    try {
+      const res = await requestCode(notes);
+      if (!res?.success) {
+        const reasons = {
+          not_authenticated: 'Please sign in.',
+          no_profile: 'Profile not found.',
+          inactive_member: 'Your account is currently inactive — please contact us.',
+          no_allowance_remaining: 'You\'ve already used your allowance for this year.',
+          pending_already_maxed: 'You already have a pending request — wait for it to be reviewed first.',
+        };
+        showAlert('req-alert', reasons[res?.reason] || 'Could not submit request.');
+        setLoading('req-submit', false, 'Submit request');
+        return;
+      }
+      // Success — reload data
+      myProfile = await getProfile((await getUser()).id);
+      renderAllowance();
+      await loadCodes();
+      closeRequestPanel();
+      setLoading('req-submit', false, 'Submit request');
+    } catch (e) {
+      console.error(e);
+      showAlert('req-alert', 'Could not submit. Please try again.');
+      setLoading('req-submit', false, 'Submit request');
+    }
+  }
+
+  async function cancelRequest(id) {
+    if (!confirm('Cancel this pending request? Your allowance will not be charged.')) return;
+    try {
+      await cancelMyCodeRequest(id);
+      await loadCodes();
+    } catch (e) { alert('Could not cancel: ' + e.message); }
+  }
+
+  async function copyCode(code) {
+    try {
+      await navigator.clipboard.writeText(code);
+      // Tiny ephemeral toast
+      const t = document.createElement('div');
+      t.textContent = 'Copied — share with care.';
+      Object.assign(t.style, {
+        position:'fixed', left:'50%', bottom:'40px', transform:'translateX(-50%)',
+        background:'var(--pink)', color:'#0c0c0e', fontWeight:'600', fontSize:'12px',
+        padding:'8px 16px', borderRadius:'999px', zIndex:9999,
+        boxShadow:'0 8px 24px rgba(0,0,0,0.5)',
+      });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1800);
+    } catch (e) {
+      alert('Could not copy. Manually copy: ' + code);
+    }
+  }
+  </script>
+</body>
+</html>

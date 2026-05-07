@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>Invite Someone — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
+    <div class="nav-right">
+      <div class="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-name">Loading…</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link active"><span class="icon">✉️</span> Invite Someone</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+
+      <div class="page-header" style="margin-bottom:18px;">
+        <div class="page-eyebrow">Personal Invitation</div>
+        <h2 class="page-title">Invite <em>Someone</em></h2>
+        <p class="page-subtitle">If you know someone who could benefit from this network, request that we send them an invitation. We review every request personally — invitations come from us directly, not from you, so the recipient never knows who referred them.</p>
+      </div>
+
+      <div class="info-tip" style="margin-bottom:24px;">
+        <strong>How this works:</strong> Submit the person's contact details and a brief reason. We'll review the request, and if approved, an invitation email will be sent on your behalf. The recipient receives an access link with no mention of who suggested them — protecting both you and them.
+      </div>
+
+      <!-- Submit form -->
+      <section class="card" style="margin-bottom:32px;">
+        <div class="card-head">
+          <h3 class="card-title">New <em>Invitation Request</em></h3>
+          <p class="card-sub">Tell us about the person you'd like us to reach out to.</p>
+        </div>
+
+        <div id="invite-alert" class="alert hidden" style="margin-bottom:20px;"></div>
+
+        <div class="form-section">
+
+          <div class="form-row">
+            <div class="field">
+              <label for="inv-first">First name <span class="field-optional">optional</span></label>
+              <input id="inv-first" type="text" placeholder="Their first name" autocomplete="off"/>
+            </div>
+            <div class="field">
+              <label for="inv-last">Last name <span class="field-optional">optional</span></label>
+              <input id="inv-last" type="text" placeholder="Their last name" autocomplete="off"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="inv-email">Email address <span class="field-required">required</span></label>
+            <input id="inv-email" type="email" placeholder="them@example.com" autocomplete="off"/>
+            <div class="field-hint">The invitation will be sent to this address. Please double-check spelling.</div>
+          </div>
+
+          <div class="field">
+            <label for="inv-relationship">Your relationship to this person</label>
+            <select id="inv-relationship">
+              <option value="">— Select one —</option>
+              <option value="friend">Close friend</option>
+              <option value="family">Family member</option>
+              <option value="partner">Partner / Spouse</option>
+              <option value="colleague">Colleague / Coworker</option>
+              <option value="acquaintance">Acquaintance</option>
+              <option value="community">Community connection</option>
+              <option value="online">Met online</option>
+              <option value="other">Other</option>
+              <option value="prefer_not">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="inv-reason">Why are you inviting them? <span class="field-required">required</span></label>
+            <textarea id="inv-reason" rows="5" placeholder="Briefly tell us why you'd like to invite this person. What might they need? What's their situation? This helps us tailor our outreach and assess fit."></textarea>
+            <div class="field-hint">Anything you share here is private — only the admin team sees it. The recipient never sees this note.</div>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary btn-lg" id="inv-submit" onclick="submitInvite()">Submit invitation request</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabs: pending vs history -->
+      <div class="tabs-bar" style="margin-bottom:18px;">
+        <button class="tab-btn active" data-tab="pending" onclick="switchTab('pending')">Pending requests</button>
+        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">History</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-pending">
+        <div id="pending-list">
+          <div class="loading-state"><div class="spinner"></div><span>Loading…</span></div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="tab-history">
+        <div id="history-list">
+          <div class="loading-state"><div class="spinner"></div><span>Loading…</span></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+  let allInvites = [];
+  let myProfile = null;
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = await requireAuth();
+    if (!user) return;
+    try {
+      myProfile = await getProfile(user.id);
+      const name = myProfile.first_name || 'friend';
+      const ini  = initials(myProfile.first_name, myProfile.last_name);
+      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+      document.getElementById('nav-avatar').textContent = ini;
+      if (myProfile.is_admin || myProfile.role === 'admin') document.getElementById('admin-link')?.classList.remove('hidden');
+    } catch (e) { console.error(e); }
+    await loadInvites();
+  });
+
+  async function loadInvites() {
+    try {
+      allInvites = await getMyInviteRequests();
+      renderPending();
+      renderHistory();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('pending-list').innerHTML = `<div class="alert alert-warn">Could not load your requests.</div>`;
+      document.getElementById('history-list').innerHTML = '';
+    }
+  }
+
+  function renderPending() {
+    const pending = allInvites.filter(i => i.status === 'pending');
+    const target = document.getElementById('pending-list');
+    if (!pending.length) {
+      target.innerHTML = `<div class="empty-state"><div class="empty-icon">✉️</div><div class="empty-title">No pending requests</div><div class="empty-text">When you submit an invitation request, it'll appear here while we review it.</div></div>`;
+      return;
+    }
+    target.innerHTML = pending.map(inv => `
+      <div class="assigned-code-card">
+        <div class="acc-head">
+          <div>
+            <div class="acc-label">${escapeHtml(formatName(inv))}</div>
+            <div class="acc-meta">${escapeHtml(inv.email || '')}</div>
+            <div class="acc-meta">Submitted ${formatDate(inv.created_at)}</div>
+          </div>
+          <div>${statusBadge(inv.status)}</div>
+        </div>
+        ${inv.relationship ? `<div class="acc-foot"><span class="acc-foot-label">Relationship:</span> ${escapeHtml(formatRelationship(inv.relationship))}</div>` : ''}
+        ${inv.reason ? `<div class="acc-foot" style="margin-top:8px;"><span class="acc-foot-label">Note:</span> ${escapeHtml(inv.reason)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function renderHistory() {
+    const past = allInvites.filter(i => i.status !== 'pending');
+    const target = document.getElementById('history-list');
+    if (!past.length) {
+      target.innerHTML = `<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-title">No history yet</div><div class="empty-text">Past invitation activity will appear here.</div></div>`;
+      return;
+    }
+    target.innerHTML = `<div class="table-wrap"><table class="data-table">
+      <thead><tr><th>Submitted</th><th>Recipient</th><th>Email</th><th>Status</th><th>Resolved</th></tr></thead>
+      <tbody>${past.map(inv => `<tr class="no-click">
+        <td>${formatDate(inv.created_at)}</td>
+        <td>${escapeHtml(formatName(inv))}</td>
+        <td>${escapeHtml(inv.email || '')}</td>
+        <td>${statusBadge(inv.status)}</td>
+        <td>${inv.resolved_at ? formatDate(inv.resolved_at) : '—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+
+  function formatName(inv) {
+    const f = (inv.first_name || '').trim();
+    const l = (inv.last_name || '').trim();
+    if (f || l) return [f, l].filter(Boolean).join(' ');
+    return '(name not provided)';
+  }
+
+  function formatRelationship(r) {
+    const map = {
+      friend: 'Close friend', family: 'Family member', partner: 'Partner / Spouse',
+      colleague: 'Colleague / Coworker', acquaintance: 'Acquaintance',
+      community: 'Community connection', online: 'Met online', other: 'Other',
+      prefer_not: 'Prefer not to say',
+    };
+    return map[r] || r;
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+  }
+
+  async function submitInvite() {
+    hideAlert('invite-alert');
+    const email = document.getElementById('inv-email').value.trim();
+    const first = document.getElementById('inv-first').value.trim();
+    const last  = document.getElementById('inv-last').value.trim();
+    const rel   = document.getElementById('inv-relationship').value;
+    const reason= document.getElementById('inv-reason').value.trim();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showAlert('invite-alert', 'Please enter a valid email address.');
+      return;
+    }
+    if (!reason || reason.length < 10) {
+      showAlert('invite-alert', 'Please share a few sentences about why you\'re inviting this person.');
+      return;
+    }
+
+    setLoading('inv-submit', true);
+    try {
+      await submitInviteRequest({ email, firstName: first, lastName: last, relationship: rel, reason });
+      // Reset form
+      document.getElementById('inv-email').value = '';
+      document.getElementById('inv-first').value = '';
+      document.getElementById('inv-last').value = '';
+      document.getElementById('inv-relationship').value = '';
+      document.getElementById('inv-reason').value = '';
+      showAlert('invite-alert', 'Invitation request submitted. We\'ll review it shortly.', 'success');
+      await loadInvites();
+      switchTab('pending');
+    } catch (e) {
+      console.error(e);
+      showAlert('invite-alert', 'Could not submit. Please try again.');
+    }
+    setLoading('inv-submit', false, 'Submit invitation request');
+  }
+  </script>
+</body>
+</html>

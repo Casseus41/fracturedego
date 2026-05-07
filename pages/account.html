@@ -22,24 +22,19 @@
     <aside class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-heading">Overview</div>
-        <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
-        <a href="requests.html"  class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
       </div>
       <div class="sidebar-section">
-        <div class="sidebar-heading">Concierge Services</div>
-        <a href="service-travel.html"    class="sidebar-link"><span class="icon">✈️</span> Travel & Relocation</a>
-        <a href="service-security.html"  class="sidebar-link"><span class="icon">🛡️</span> Security & Protection</a>
-        <a href="service-legal.html"     class="sidebar-link"><span class="icon">⚖️</span> Legal Assistance</a>
-        <a href="service-medical.html"   class="sidebar-link"><span class="icon">🏥</span> Medical & Wellness</a>
-        <a href="service-housing.html"   class="sidebar-link"><span class="icon">🏡</span> Housing & Lodging</a>
-        <a href="service-finance.html"   class="sidebar-link"><span class="icon">💳</span> Financial Services</a>
-        <a href="service-transport.html" class="sidebar-link"><span class="icon">🚗</span> Transport & Logistics</a>
-        <a href="service-lifestyle.html" class="sidebar-link"><span class="icon">✨</span> Lifestyle & Personal</a>
-        <a href="service-emergency.html" class="sidebar-link"><span class="icon">🚨</span> Emergency Services</a>
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-heading">Account</div>
-        <a href="account.html" class="sidebar-link active"><span class="icon">⚙️</span> Settings</a>
+        <a href="account.html"        class="sidebar-link active"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
       </div>
       <div class="sidebar-footer">
         <div class="sidebar-user">
@@ -216,6 +211,7 @@
         document.getElementById('sb-avatar').textContent  = initials(p.first_name, p.last_name);
         document.getElementById('sb-name').textContent    = (p.first_name||'') + ' ' + (p.last_name||'');
         document.getElementById('sb-role').textContent    = p.role === 'admin' ? 'Administrator' : 'Member';
+        if (p.is_admin || p.role === 'admin') document.getElementById('admin-link')?.classList.remove('hidden');
 
         document.getElementById('first-name').value = p.first_name || '';
         document.getElementById('last-name').value  = p.last_name  || '';

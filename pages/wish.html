@@ -6,7 +6,7 @@
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <meta name="robots" content="noindex, nofollow"/>
-  <title>Your Request — </title>
+  <title>Your Request — fractured Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
   <style>
     body { display:flex; flex-direction:column; min-height:100vh; }
@@ -14,7 +14,7 @@
       flex:1; padding:50px 24px 80px; position:relative; z-index:1;
       animation:fadeUp 0.5s ease both;
     }
-    .wish-container { max-width:680px; margin:0 auto; }
+    .wish-container { max-width:760px; margin:0 auto; }
 
     .wish-eyebrow {
       display:inline-flex; align-items:center; gap:8px;
@@ -27,12 +27,12 @@
     .wish-title {
       font-family:'Cormorant Garamond',serif;
       font-size:clamp(2rem,4.5vw,3rem); font-weight:300;
-      line-height:1.15; color:var(--text); margin-bottom:14px;
+      line-height:1.18; color:var(--text); margin-bottom:14px;
     }
     .wish-title em { font-style:italic; color:var(--pink); }
 
     .wish-lead {
-      font-size:14px; color:var(--text-2); line-height:1.8;
+      font-size:14px; color:var(--text-2); line-height:1.85;
       margin-bottom:32px;
     }
 
@@ -49,14 +49,13 @@
       animation:pulse 2s infinite;
     }
 
-    /* Option chooser */
     .options-row {
-      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
-      margin-bottom:32px;
+      display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+      margin-bottom:36px;
     }
     .option-pick {
       background:var(--bg-2); border:2px solid var(--border);
-      border-radius:var(--radius-lg); padding:22px 18px;
+      border-radius:var(--radius-lg); padding:24px 18px;
       cursor:pointer; text-align:center;
       transition:all 0.22s ease;
     }
@@ -78,14 +77,13 @@
     .option-pick.active .opt-letter {
       background:var(--pink); color:#0c0c0e;
     }
-    .option-pick .opt-icon { font-size:22px; margin-bottom:8px; }
-    .option-pick .opt-title { font-size:13px; font-weight:700; color:var(--text); }
-    .option-pick .opt-sub   { font-size:11px; color:var(--text-3); margin-top:3px; line-height:1.5; }
+    .option-pick .opt-icon { font-size:24px; margin-bottom:10px; }
+    .option-pick .opt-title { font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .option-pick .opt-sub   { font-size:11.5px; color:var(--text-3); margin-top:3px; line-height:1.55; }
 
-    /* Form sections */
     .form-section {
       background:var(--bg-2); border:1px solid var(--border);
-      border-radius:var(--radius-xl); padding:32px 28px;
+      border-radius:var(--radius-xl); padding:36px 32px;
       margin-bottom:24px; display:none;
       animation:fadeUp 0.4s ease both;
     }
@@ -93,20 +91,31 @@
 
     .section-heading {
       font-family:'Cormorant Garamond',serif;
-      font-size:1.4rem; color:var(--text); margin-bottom:8px;
+      font-size:1.55rem; color:var(--text); margin-bottom:10px;
     }
     .section-heading em { font-style:italic; color:var(--pink); }
     .section-desc {
-      font-size:13px; color:var(--text-2); line-height:1.7; margin-bottom:24px;
+      font-size:13.5px; color:var(--text-2); line-height:1.75; margin-bottom:28px;
     }
 
+    .form-section .field { margin-bottom:20px; }
+    .form-section .form-row { margin-bottom:20px; }
+    .form-section .info-tip { margin-top:20px; }
+    .form-section h3.subhead {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.15rem; color:var(--text); margin:28px 0 14px;
+      padding-top:20px; border-top:1px solid var(--border);
+    }
+    .form-section h3.subhead em { font-style:italic; color:var(--pink); }
+    .form-section h3.subhead.no-border { border-top:none; padding-top:0; margin-top:18px; }
+
     .transfer-method {
-      display:grid; grid-template-columns:1fr 1fr; gap:12px;
-      margin-bottom:20px;
+      display:grid; grid-template-columns:1fr 1fr; gap:14px;
+      margin-bottom:24px;
     }
     .method-card {
       background:var(--bg-3); border:2px solid var(--border);
-      border-radius:var(--radius-md); padding:18px;
+      border-radius:var(--radius-md); padding:20px;
       cursor:pointer; transition:all 0.2s;
     }
     .method-card:hover { border-color:var(--border-pink); }
@@ -115,16 +124,16 @@
     }
     .method-card .m-num {
       font-size:10px; font-weight:700; color:var(--pink);
-      letter-spacing:0.1em; margin-bottom:5px;
+      letter-spacing:0.1em; margin-bottom:6px;
     }
-    .method-card .m-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; }
-    .method-card .m-desc  { font-size:11.5px; color:var(--text-2); line-height:1.65; }
+    .method-card .m-title { font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:6px; }
+    .method-card .m-desc  { font-size:12px; color:var(--text-2); line-height:1.65; }
 
     .transfer-method-detail { display:none; }
     .transfer-method-detail.active { display:block; animation:fadeUp 0.3s ease both; }
 
     .submit-bar {
-      margin-top:8px;
+      margin-top:12px;
       display:flex; flex-direction:column; gap:14px;
     }
     .final-warning {
@@ -133,30 +142,39 @@
     }
     .final-warning strong { color:var(--text-2); }
 
-    @media(max-width:560px){
+    @media(max-width:640px){
       .options-row { grid-template-columns:1fr; }
       .transfer-method { grid-template-columns:1fr; }
-      .form-section { padding:24px 20px; }
+      .form-section { padding:26px 22px; }
     }
 
-    /* Common amount/currency row */
-    .amount-row { display:grid; grid-template-columns:2fr 1fr; gap:12px; }
+    .amount-row { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
+
+    .cap-line {
+      display:flex; align-items:center; gap:10px;
+      background:var(--bg-3); border:1px solid var(--border);
+      border-radius:var(--radius-sm); padding:10px 14px;
+      font-size:12px; color:var(--text-2); line-height:1.55;
+      margin-top:8px; margin-bottom:20px;
+    }
+    .cap-line strong { color:var(--text); font-family:'Inter',sans-serif; font-weight:600; }
+    .cap-line.over { border-color:var(--red); background:rgba(248,113,113,0.06); color:var(--red); }
+    .cap-line.over strong { color:var(--red); }
 
     .info-tip {
       background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-sm); padding:12px 14px;
-      margin-top:14px;
-      font-size:12px; color:var(--text-3); line-height:1.65;
+      border-radius:var(--radius-sm); padding:14px 16px;
+      font-size:12.5px; color:var(--text-3); line-height:1.7;
     }
     .info-tip strong { color:var(--text); }
 
     .country-warning {
       background:var(--amber-dim); border:1px solid rgba(251,191,36,0.2);
-      border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:18px;
-      font-size:12.5px; color:var(--amber); line-height:1.65;
+      border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:22px;
+      font-size:12.5px; color:var(--amber); line-height:1.75;
     }
+    .country-warning strong { color:#fbd38d; }
 
-    /* Success state */
     .success-screen {
       text-align:center; padding:60px 30px;
       background:var(--bg-2); border:1px solid var(--border-pink);
@@ -169,6 +187,63 @@
       display:flex; align-items:center; justify-content:center;
       font-size:32px; margin:0 auto 24px;
     }
+
+    .pm-tiles {
+      display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;
+      margin-bottom:18px;
+    }
+    @media(max-width:720px){ .pm-tiles { grid-template-columns:repeat(2,1fr); } }
+    .pm-tile {
+      background:var(--bg-3); border:2px solid var(--border);
+      border-radius:var(--radius-md); padding:14px 10px;
+      cursor:pointer; text-align:center;
+      transition:all 0.2s ease;
+    }
+    .pm-tile:hover { border-color:var(--border-pink); }
+    .pm-tile.active { border-color:var(--pink); background:var(--pink-dim-2); }
+    .pm-tile .pm-icon { font-size:20px; margin-bottom:6px; line-height:1; }
+    .pm-tile .pm-name { font-size:12px; font-weight:600; color:var(--text); }
+    .pm-detail { display:none; }
+    .pm-detail.active { display:block; animation:fadeUp 0.3s ease both; }
+
+    .verify-box {
+      background:var(--bg-3); border:1px dashed var(--border-pink);
+      border-radius:var(--radius-md); padding:20px 18px;
+      margin-bottom:16px;
+    }
+    .verify-box .vb-label {
+      font-size:11px; color:var(--pink); font-weight:600;
+      letter-spacing:0.08em; text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .verify-box .field { margin-bottom:14px; }
+    .verify-box .field:last-child { margin-bottom:0; }
+    .verify-mismatch {
+      font-size:11.5px; color:var(--red); margin-top:6px;
+    }
+
+    .confirm-row {
+      display:flex; align-items:flex-start; gap:12px;
+      background:var(--bg-3); border:1px solid var(--border);
+      border-radius:var(--radius-md); padding:14px 16px;
+      cursor:pointer; margin-bottom:18px;
+    }
+    .confirm-row input[type="checkbox"] {
+      margin-top:3px; flex-shrink:0;
+      width:16px; height:16px; cursor:pointer;
+      accent-color:var(--pink);
+    }
+    .confirm-row label {
+      font-size:12.5px; color:var(--text-2); line-height:1.6;
+      cursor:pointer; margin:0;
+    }
+    .confirm-row label strong { color:var(--text); }
+
+    .addr-grid {
+      display:grid; grid-template-columns:2fr 1fr; gap:14px;
+      margin-bottom:16px;
+    }
+    @media(max-width:640px){ .addr-grid { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -185,7 +260,6 @@
   <div class="wish-page">
     <div class="wish-container">
 
-      <!-- Form view -->
       <div id="form-view">
 
         <div class="wish-eyebrow">
@@ -200,7 +274,6 @@
 
         <div id="form-alert" class="alert alert-error hidden" style="margin-bottom:20px;"></div>
 
-        <!-- Option chooser -->
         <div class="options-row">
           <div class="option-pick" data-option="money" onclick="chooseOption('money')">
             <div class="opt-letter">A</div>
@@ -222,85 +295,248 @@
           </div>
         </div>
 
-        <!-- ════════ OPTION A · MONEY ════════ -->
+        <!-- ════════ OPTION A · FINANCIAL ASSISTANCE ════════ -->
         <div class="form-section" id="section-money">
           <h2 class="section-heading">Financial <em>Assistance</em></h2>
-          <p class="section-desc">Tell us how much you need and how you'd like to receive it. Maximum is the equivalent of <strong>$10,000 USD</strong>.</p>
+          <p class="section-desc">Tell us how much you need and where to send it. The maximum is the equivalent of <strong>$10,000 USD</strong> — the cap updates automatically based on the currency you choose.</p>
 
           <div class="amount-row">
             <div class="field">
               <label class="field-label">Amount</label>
               <div class="field-input">
-                <input type="number" id="m-amount" placeholder="e.g. 5000" min="1" step="any"/>
+                <input type="number" id="m-amount" placeholder="e.g. 5000" min="1" step="any" oninput="updateCapLine()"/>
               </div>
             </div>
             <div class="field">
               <label class="field-label">Currency</label>
               <div class="field-input">
-                <select id="m-currency">
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="EUR">EUR — Euro</option>
-                  <option value="GBP">GBP — British Pound</option>
-                  <option value="CAD">CAD — Canadian Dollar</option>
-                  <option value="AUD">AUD — Australian Dollar</option>
-                  <option value="JPY">JPY — Japanese Yen</option>
-                  <option value="CHF">CHF — Swiss Franc</option>
-                  <option value="MXN">MXN — Mexican Peso</option>
-                  <option value="INR">INR — Indian Rupee</option>
-                  <option value="BRL">BRL — Brazilian Real</option>
-                  <option value="ZAR">ZAR — South African Rand</option>
-                  <option value="CNY">CNY — Chinese Yuan</option>
-                  <option value="OTHER">Other (specify in notes)</option>
-                </select>
+                <select id="m-currency" onchange="updateCapLine()"></select>
+              </div>
+            </div>
+          </div>
+          <div class="cap-line" id="cap-line">
+            <span>📐</span>
+            <span>Maximum for this currency: <strong id="cap-max">—</strong></span>
+          </div>
+
+          <h3 class="subhead no-border">Your <em>contact</em></h3>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">Your Name</label>
+              <div class="field-input"><input type="text" id="m-name" placeholder="How should we address you?"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Best Way to Reach You</label>
+              <div class="field-input"><input type="text" id="m-contact" placeholder="Email, phone, Signal, or other"/></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Country / Region <span class="field-optional">where you're located</span></label>
+            <div class="field-input">
+              <input type="text" id="m-country" placeholder="e.g. United States — California"/>
+            </div>
+          </div>
+
+          <h3 class="subhead">How would you like to <em>receive it?</em></h3>
+          <p class="section-desc" style="margin-bottom:18px;">Pick the option that works best for you. We'll ask for the matching details below.</p>
+
+          <div class="pm-tiles">
+            <div class="pm-tile" data-pm="bank"     onclick="choosePM('bank')"><div class="pm-icon">🏦</div><div class="pm-name">Bank / Wire</div></div>
+            <div class="pm-tile" data-pm="cashapp"  onclick="choosePM('cashapp')"><div class="pm-icon">💵</div><div class="pm-name">CashApp</div></div>
+            <div class="pm-tile" data-pm="zelle"    onclick="choosePM('zelle')"><div class="pm-icon">⚡</div><div class="pm-name">Zelle</div></div>
+            <div class="pm-tile" data-pm="paypal"   onclick="choosePM('paypal')"><div class="pm-icon">🅿️</div><div class="pm-name">PayPal</div></div>
+            <div class="pm-tile" data-pm="venmo"    onclick="choosePM('venmo')"><div class="pm-icon">💳</div><div class="pm-name">Venmo</div></div>
+            <div class="pm-tile" data-pm="crypto"   onclick="choosePM('crypto')"><div class="pm-icon">⛓️</div><div class="pm-name">Crypto</div></div>
+            <div class="pm-tile" data-pm="cash"     onclick="choosePM('cash')"><div class="pm-icon">🤝</div><div class="pm-name">Cash in person</div></div>
+            <div class="pm-tile" data-pm="other"    onclick="choosePM('other')"><div class="pm-icon">✏️</div><div class="pm-name">Other</div></div>
+          </div>
+
+          <!-- Bank -->
+          <div class="pm-detail" id="pm-bank">
+            <div class="info-tip" style="margin-bottom:18px;">
+              <strong>Note:</strong> Don't enter full account or routing numbers in this form. We'll request those over a secure channel after we follow up. The fields below are just enough to know whose account it is and where it lives.
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Account Holder's Name</label>
+                <div class="field-input"><input type="text" id="pm-bank-holder" placeholder="Full legal name on the account"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Bank Name <span class="field-optional">helpful for routing</span></label>
+                <div class="field-input"><input type="text" id="pm-bank-name" placeholder="e.g. Chase, Wells Fargo, etc."/></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Country of the Account</label>
+              <div class="field-input"><input type="text" id="pm-bank-country" placeholder="e.g. United States"/></div>
+            </div>
+          </div>
+
+          <!-- CashApp -->
+          <div class="pm-detail" id="pm-cashapp">
+            <div class="verify-box">
+              <div class="vb-label">CashApp $cashtag</div>
+              <div class="field">
+                <label class="field-label">$Cashtag</label>
+                <div class="field-input"><input type="text" id="pm-cashapp-1" placeholder="$yourcashtag" autocomplete="off" oninput="checkVerify('cashapp')"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm $Cashtag</label>
+                <div class="field-input"><input type="text" id="pm-cashapp-2" placeholder="$yourcashtag" autocomplete="off" oninput="checkVerify('cashapp')"/></div>
+                <div class="verify-mismatch hidden" id="pm-cashapp-mismatch">⚠️ The two entries don't match.</div>
               </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Preferred Delivery Method</label>
-            <div class="field-input">
-              <select id="m-delivery">
-                <option>Bank Transfer (wire / ACH)</option>
-                <option>Cash (in-person, secure handoff)</option>
-                <option>Money Order or Cashier's Check</option>
-                <option>Cryptocurrency (BTC, ETH, USDC, etc.)</option>
-                <option>Prepaid Card / Gift Card</option>
-                <option>Western Union / MoneyGram</option>
-                <option>Other (explain in notes)</option>
-              </select>
+          <!-- Zelle -->
+          <div class="pm-detail" id="pm-zelle">
+            <div class="info-tip" style="margin-bottom:14px;">
+              Zelle uses either an email address <em>or</em> a phone number tied to your bank account. Enter whichever your Zelle is registered with.
+            </div>
+            <div class="verify-box">
+              <div class="vb-label">Zelle email or phone</div>
+              <div class="field">
+                <label class="field-label">Zelle email or phone</label>
+                <div class="field-input"><input type="text" id="pm-zelle-1" placeholder="email@example.com or +1 555 555 5555" autocomplete="off" oninput="checkVerify('zelle')"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm Zelle email or phone</label>
+                <div class="field-input"><input type="text" id="pm-zelle-2" placeholder="re-enter the same value" autocomplete="off" oninput="checkVerify('zelle')"/></div>
+                <div class="verify-mismatch hidden" id="pm-zelle-mismatch">⚠️ The two entries don't match.</div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Name on the Zelle account <span class="field-optional">to confirm the recipient</span></label>
+              <div class="field-input"><input type="text" id="pm-zelle-name" placeholder="Full name as it appears on the bank"/></div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Your Name</label>
-            <div class="field-input">
-              <input type="text" id="m-name" placeholder="How should we address you?"/>
+          <!-- PayPal -->
+          <div class="pm-detail" id="pm-paypal">
+            <div class="verify-box">
+              <div class="vb-label">PayPal email or PayPal.me link</div>
+              <div class="field">
+                <label class="field-label">PayPal email <span class="field-optional">or paypal.me link</span></label>
+                <div class="field-input"><input type="text" id="pm-paypal-1" placeholder="you@example.com or paypal.me/yourhandle" autocomplete="off" oninput="checkVerify('paypal')"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm PayPal email or link</label>
+                <div class="field-input"><input type="text" id="pm-paypal-2" placeholder="re-enter the same value" autocomplete="off" oninput="checkVerify('paypal')"/></div>
+                <div class="verify-mismatch hidden" id="pm-paypal-mismatch">⚠️ The two entries don't match.</div>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Best Way to Contact You</label>
-            <div class="field-input">
-              <input type="text" id="m-contact" placeholder="Email, phone, Signal, or other"/>
+          <!-- Venmo -->
+          <div class="pm-detail" id="pm-venmo">
+            <div class="verify-box">
+              <div class="vb-label">Venmo username</div>
+              <div class="field">
+                <label class="field-label">@username</label>
+                <div class="field-input"><input type="text" id="pm-venmo-1" placeholder="@your-handle" autocomplete="off" oninput="checkVerify('venmo')"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm @username</label>
+                <div class="field-input"><input type="text" id="pm-venmo-2" placeholder="@your-handle" autocomplete="off" oninput="checkVerify('venmo')"/></div>
+                <div class="verify-mismatch hidden" id="pm-venmo-mismatch">⚠️ The two entries don't match.</div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Last 4 digits of phone <span class="field-optional">helps Venmo find the right account</span></label>
+              <div class="field-input"><input type="text" id="pm-venmo-phone4" maxlength="4" placeholder="1234"/></div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Country / Region</label>
-            <div class="field-input">
-              <input type="text" id="m-country" placeholder="Where are you located?"/>
+          <!-- Crypto -->
+          <div class="pm-detail" id="pm-crypto">
+            <div class="info-tip" style="margin-bottom:14px;">
+              <strong>Important:</strong> Crypto sends are irreversible. Double-check the wallet address — we will too, but the burden of correctness is shared.
+            </div>
+            <div class="field">
+              <label class="field-label">Coin / Network</label>
+              <div class="field-input">
+                <select id="pm-crypto-coin">
+                  <option value="BTC">Bitcoin (BTC) — native chain</option>
+                  <option value="ETH">Ethereum (ETH) — native chain</option>
+                  <option value="USDC-ETH">USDC on Ethereum</option>
+                  <option value="USDC-SOL">USDC on Solana</option>
+                  <option value="USDT-ETH">USDT on Ethereum</option>
+                  <option value="USDT-TRX">USDT on Tron</option>
+                  <option value="SOL">Solana (SOL)</option>
+                  <option value="XMR">Monero (XMR)</option>
+                  <option value="OTHER">Other (specify in notes)</option>
+                </select>
+              </div>
+            </div>
+            <div class="verify-box">
+              <div class="vb-label">Wallet address</div>
+              <div class="field">
+                <label class="field-label">Wallet address</label>
+                <div class="field-input"><input type="text" id="pm-crypto-1" placeholder="paste full address" autocomplete="off" oninput="checkVerify('crypto')"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm wallet address</label>
+                <div class="field-input"><input type="text" id="pm-crypto-2" placeholder="paste it again to verify" autocomplete="off" oninput="checkVerify('crypto')"/></div>
+                <div class="verify-mismatch hidden" id="pm-crypto-mismatch">⚠️ The two entries don't match — addresses must be exact.</div>
+              </div>
             </div>
           </div>
 
+          <!-- Cash in person -->
+          <div class="pm-detail" id="pm-cash">
+            <div class="info-tip" style="margin-bottom:14px;">
+              <strong>Cash hand-off:</strong> We'll arrange a secure, in-person meeting in your area. Tell us where works and any context that matters.
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">City</label>
+                <div class="field-input"><input type="text" id="pm-cash-city" placeholder="City where you'd meet"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Country / State</label>
+                <div class="field-input"><input type="text" id="pm-cash-region" placeholder="e.g. California, USA"/></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Best meeting context <span class="field-optional">when, where, who</span></label>
+              <div class="field-input">
+                <textarea id="pm-cash-context" rows="3" placeholder="e.g. weekday mornings, public coffee shop, prefer no third party present, etc."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other -->
+          <div class="pm-detail" id="pm-other">
+            <div class="verify-box">
+              <div class="vb-label">Method details</div>
+              <div class="field">
+                <label class="field-label">Describe the method &amp; destination details</label>
+                <div class="field-input"><textarea id="pm-other-1" rows="3" placeholder="e.g. Wise to USD account, Western Union with my legal name, etc." oninput="checkVerify('other')"></textarea></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Confirm by re-entering the same details</label>
+                <div class="field-input"><textarea id="pm-other-2" rows="3" placeholder="paste or retype the same description to verify" oninput="checkVerify('other')"></textarea></div>
+                <div class="verify-mismatch hidden" id="pm-other-mismatch">⚠️ The two entries don't match.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirmation checkbox -->
+          <div class="confirm-row" id="m-confirm-row" style="display:none;">
+            <input type="checkbox" id="m-confirm" onchange="updateMoneySubmitState()"/>
+            <label for="m-confirm"><strong>I confirm</strong> the payment information above is correct. I understand that I am responsible for the accuracy of these details — incorrect information may delay or prevent delivery.</label>
+          </div>
+
           <div class="field">
-            <label class="field-label">Additional Details</label>
+            <label class="field-label">Additional Details <span class="field-optional">optional</span></label>
             <div class="field-input">
-              <textarea id="m-notes" rows="4" placeholder="Anything else we should know — preferred timing, recipient details, special instructions, account info we should request later, etc."></textarea>
+              <textarea id="m-notes" rows="4" placeholder="Anything else we should know — preferred timing, recipient details, special instructions, etc."></textarea>
             </div>
           </div>
 
           <div class="info-tip">
-            <strong>Privacy:</strong> Do not include sensitive financial details (account numbers, card numbers, etc.) in this form. We will request those securely once we follow up.
+            <strong>Privacy:</strong> Don't include sensitive financial details (full account numbers, card numbers, etc.) anywhere in this form. We will request those over a secure channel once we follow up.
           </div>
         </div>
 
@@ -310,83 +546,181 @@
           <p class="section-desc">A complete relocation, fully coordinated. Includes moving your belongings and 6 months of living expenses covered on your behalf.</p>
 
           <div class="country-warning">
-            ⚐ <strong>U.S. residents only.</strong> Additional countries are coming soon. If you're outside the U.S., please choose a different option or wait for an update.
+            ⚐ <strong>Coverage:</strong> We can <strong>guarantee</strong> relocations within and between the United States and Canada. If you're located outside these two countries, please still submit your information — we'll do our best to accommodate based on what's possible in your situation.
           </div>
 
-          <div class="field">
-            <label class="field-label">Are You Currently in the U.S.?</label>
-            <div class="field-input">
-              <select id="r-us">
-                <option value="yes">Yes — I am in the U.S.</option>
-                <option value="no">No — I am not in the U.S.</option>
-              </select>
-            </div>
-          </div>
-
+          <h3 class="subhead no-border">Your <em>contact</em></h3>
           <div class="form-row">
             <div class="field">
               <label class="field-label">Your Name</label>
               <div class="field-input"><input type="text" id="r-name" placeholder="How should we address you?"/></div>
             </div>
             <div class="field">
-              <label class="field-label">Best Way to Contact You</label>
+              <label class="field-label">Best Way to Reach You</label>
               <div class="field-input"><input type="text" id="r-contact" placeholder="Phone, email, or Signal"/></div>
+            </div>
+          </div>
+
+          <h3 class="subhead">Your <em>current address</em></h3>
+          <p class="section-desc" style="margin-bottom:18px;">A full address helps us plan logistics — packing crews, transport routes, and timing.</p>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">Country</label>
+              <div class="field-input">
+                <select id="r-from-country">
+                  <option value="">— Select country —</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="MX">Mexico</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="IE">Ireland</option>
+                  <option value="AU">Australia</option>
+                  <option value="NZ">New Zealand</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="ES">Spain</option>
+                  <option value="IT">Italy</option>
+                  <option value="NL">Netherlands</option>
+                  <option value="SE">Sweden</option>
+                  <option value="NO">Norway</option>
+                  <option value="DK">Denmark</option>
+                  <option value="FI">Finland</option>
+                  <option value="JP">Japan</option>
+                  <option value="KR">South Korea</option>
+                  <option value="SG">Singapore</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="BR">Brazil</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">State / Province / Region</label>
+              <div class="field-input"><input type="text" id="r-from-state" placeholder="e.g. California, Ontario"/></div>
+            </div>
+          </div>
+
+          <div class="addr-grid">
+            <div class="field">
+              <label class="field-label">Street address</label>
+              <div class="field-input"><input type="text" id="r-from-street" placeholder="123 Main Street" autocomplete="off"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Apt / Unit <span class="field-optional">if applicable</span></label>
+              <div class="field-input"><input type="text" id="r-from-unit" placeholder="Apt 4B" autocomplete="off"/></div>
             </div>
           </div>
 
           <div class="form-row">
             <div class="field">
-              <label class="field-label">Current City / State</label>
-              <div class="field-input"><input type="text" id="r-from" placeholder="Where are you now?"/></div>
+              <label class="field-label">City</label>
+              <div class="field-input"><input type="text" id="r-from-city" placeholder="City" autocomplete="off"/></div>
             </div>
             <div class="field">
-              <label class="field-label">Desired Destination</label>
-              <div class="field-input"><input type="text" id="r-to" placeholder="City, state — or 'wherever is safe'"/></div>
+              <label class="field-label">Postal / ZIP code</label>
+              <div class="field-input"><input type="text" id="r-from-postal" placeholder="e.g. 94107 or M5V 3A8" autocomplete="off"/></div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Number of People Relocating</label>
-            <div class="field-input">
-              <select id="r-people">
-                <option>Just me</option>
-                <option>Me + partner</option>
-                <option>Me + children</option>
-                <option>Full family (3+ people)</option>
-                <option>Multiple adults / extended household</option>
-              </select>
+          <h3 class="subhead">Where you'd like to <em>go</em></h3>
+          <p class="section-desc" style="margin-bottom:18px;">Be as specific as you'd like. If you're flexible or unsure, write that — we'll guide you through it.</p>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">Country</label>
+              <div class="field-input">
+                <select id="r-to-country">
+                  <option value="">— Select country —</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="MX">Mexico</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="IE">Ireland</option>
+                  <option value="AU">Australia</option>
+                  <option value="NZ">New Zealand</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="ES">Spain</option>
+                  <option value="IT">Italy</option>
+                  <option value="NL">Netherlands</option>
+                  <option value="SE">Sweden</option>
+                  <option value="NO">Norway</option>
+                  <option value="DK">Denmark</option>
+                  <option value="FI">Finland</option>
+                  <option value="JP">Japan</option>
+                  <option value="KR">South Korea</option>
+                  <option value="SG">Singapore</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="BR">Brazil</option>
+                  <option value="FLEX">Flexible — wherever is safe</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">State / Province / Region <span class="field-optional">if known</span></label>
+              <div class="field-input"><input type="text" id="r-to-state" placeholder="e.g. Oregon, Quebec, anywhere"/></div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Children?</label>
-            <div class="field-input">
-              <select id="r-children">
-                <option>No children</option>
-                <option>1 child</option>
-                <option>2 children</option>
-                <option>3 or more children</option>
-              </select>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">City <span class="field-optional">or 'open to suggestions'</span></label>
+              <div class="field-input"><input type="text" id="r-to-city" placeholder="City — or write 'wherever is safe'" autocomplete="off"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label">Neighborhood / area notes <span class="field-optional">optional</span></label>
+              <div class="field-input"><input type="text" id="r-to-neighborhood" placeholder="e.g. small town, near family, away from X" autocomplete="off"/></div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Pets?</label>
-            <div class="field-input">
-              <input type="text" id="r-pets" placeholder="e.g. 1 dog, 2 cats — or 'none'"/>
+          <h3 class="subhead">Your <em>household</em></h3>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">Number of People Relocating</label>
+              <div class="field-input">
+                <select id="r-people">
+                  <option>Just me</option>
+                  <option>Me + partner</option>
+                  <option>Me + children</option>
+                  <option>Full family (3+ people)</option>
+                  <option>Multiple adults / extended household</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Children?</label>
+              <div class="field-input">
+                <select id="r-children">
+                  <option>No children</option>
+                  <option>1 child</option>
+                  <option>2 children</option>
+                  <option>3 or more children</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div class="field">
-            <label class="field-label">Volume of Belongings</label>
-            <div class="field-input">
-              <select id="r-volume">
-                <option>Studio / 1 bedroom</option>
-                <option>2 bedroom</option>
-                <option>3 bedroom</option>
-                <option>4+ bedroom / large household</option>
-                <option>Just essentials — minimal belongings</option>
-              </select>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label">Pets?</label>
+              <div class="field-input">
+                <input type="text" id="r-pets" placeholder="e.g. 1 dog, 2 cats — or 'none'"/>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Volume of Belongings</label>
+              <div class="field-input">
+                <select id="r-volume">
+                  <option>Studio / 1 bedroom</option>
+                  <option>2 bedroom</option>
+                  <option>3 bedroom</option>
+                  <option>4+ bedroom / large household</option>
+                  <option>Just essentials — minimal belongings</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -411,7 +745,7 @@
           </div>
 
           <div class="info-tip">
-            <strong>What's covered:</strong> Professional packing & moving, transportation, new residence arrangement, 6 months of rent + utilities + essential living expenses. <strong>Not provided:</strong> Direct cash payouts.
+            <strong>What's covered:</strong> Professional packing &amp; moving, transportation, new residence arrangement, 6 months of rent + utilities + essential living expenses. <strong>Not provided:</strong> Direct cash payouts.
           </div>
         </div>
 
@@ -433,9 +767,8 @@
             </div>
           </div>
 
-          <!-- Method 1 — Direct -->
           <div class="transfer-method-detail" id="method-direct">
-            <div class="alert alert-info" style="margin-bottom:18px;">
+            <div class="alert alert-info" style="margin-bottom:20px;">
               ✅ <strong>Got it.</strong> Just hand off your code and the website (<strong>fracturedego.org</strong>) to the person directly. They'll come here, enter the code, and choose their own option. We'll mark this code as released to them and confirm via your contact info below.
             </div>
 
@@ -451,21 +784,20 @@
             </div>
 
             <div class="field">
-              <label class="field-label">Anything We Should Know? (Optional)</label>
+              <label class="field-label">Anything We Should Know? <span class="field-optional">optional</span></label>
               <div class="field-input">
                 <textarea id="td-notes" rows="3" placeholder="Any context about who you're transferring to or why..."></textarea>
               </div>
             </div>
           </div>
 
-          <!-- Method 2 — Anonymous -->
           <div class="transfer-method-detail" id="method-anonymous">
-            <div class="alert alert-info" style="margin-bottom:18px;">
+            <div class="alert alert-info" style="margin-bottom:20px;">
               📨 <strong>We'll reach out to them anonymously.</strong> If they consent, the opportunity becomes theirs and they'll choose their own option. <strong>If they don't consent, we'll email you to let you know</strong> — your code stays in your hands until then.
             </div>
 
-            <div class="page-eyebrow">Recipient's Information</div>
-            <div class="form-row" style="margin-top:8px;">
+            <h3 class="subhead no-border">Recipient's <em>information</em></h3>
+            <div class="form-row">
               <div class="field">
                 <label class="field-label">Recipient's Name</label>
                 <div class="field-input"><input type="text" id="ta-rname" placeholder="Their full name"/></div>
@@ -477,7 +809,7 @@
             </div>
 
             <div class="field">
-              <label class="field-label">Recipient's Location (Optional)</label>
+              <label class="field-label">Recipient's Location <span class="field-optional">optional</span></label>
               <div class="field-input">
                 <input type="text" id="ta-rlocation" placeholder="City / region — helps us reach them appropriately"/>
               </div>
@@ -504,7 +836,7 @@
               </div>
             </div>
 
-            <div class="divider-text">Your contact info</div>
+            <h3 class="subhead">Your <em>contact</em></h3>
 
             <div class="form-row">
               <div class="field">
@@ -517,13 +849,12 @@
               </div>
             </div>
 
-            <div class="field-hint" style="margin-top:-8px;margin-bottom:0;">
+            <div class="info-tip">
               We will only contact you if the recipient does not consent, or to confirm successful transfer.
             </div>
           </div>
         </div>
 
-        <!-- Submit -->
         <div class="submit-bar">
           <button class="btn btn-primary btn-full btn-lg" id="submit-btn" onclick="submitForm()" disabled>
             Submit My Request
@@ -535,7 +866,6 @@
 
       </div>
 
-      <!-- Success view (hidden until submitted) -->
       <div id="success-view" style="display:none;">
         <div class="success-screen">
           <div class="success-icon-big">✓</div>
@@ -556,30 +886,37 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/app.js"></script>
   <script>
-    // ── Session guard ──
     const sessionId = sessionStorage.getItem('fe_session_id');
     const redeemedCode = sessionStorage.getItem('fe_redeemed_code');
 
     if (!sessionId || !redeemedCode) {
-      // No valid session — redirect to start
       alert('Your session has expired. Please start again from the beginning.');
       window.location.href = 'access-info.html';
     }
 
     let chosenOption = null;
     let transferMethod = null;
+    let chosenPM = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const sel = document.getElementById('m-currency');
+      if (sel && typeof CURRENCY_RATES !== 'undefined') {
+        const order = ['USD','EUR','GBP','CAD','AUD','JPY','CHF','MXN','INR','BRL','ZAR','CNY','KRW','SGD','HKD','NZD','SEK','NOK'];
+        sel.innerHTML = order.map(code =>
+          `<option value="${code}">${code} — ${(typeof CURRENCY_NAMES !== 'undefined' && CURRENCY_NAMES[code]) || code}</option>`
+        ).join('');
+      }
+      updateCapLine();
+    });
 
     function chooseOption(opt) {
       chosenOption = opt;
-      // Update visual state
       document.querySelectorAll('.option-pick').forEach(c => {
         c.classList.toggle('active', c.dataset.option === opt);
       });
-      // Show only the selected form section
       document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
       document.getElementById('section-' + opt).classList.add('active');
 
-      // Reset transfer method when switching
       if (opt !== 'transfer') {
         transferMethod = null;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
@@ -587,7 +924,6 @@
       }
 
       updateSubmitState();
-      // Smooth scroll to form
       setTimeout(() => {
         document.getElementById('section-' + opt).scrollIntoView({ behavior:'smooth', block:'start' });
       }, 100);
@@ -603,15 +939,139 @@
       updateSubmitState();
     }
 
+    function choosePM(pm) {
+      chosenPM = pm;
+      document.querySelectorAll('.pm-tile').forEach(t => {
+        t.classList.toggle('active', t.dataset.pm === pm);
+      });
+      document.querySelectorAll('.pm-detail').forEach(d => d.classList.remove('active'));
+      document.getElementById('pm-' + pm).classList.add('active');
+      document.getElementById('m-confirm-row').style.display = 'flex';
+      updateMoneySubmitState();
+    }
+
+    function checkVerify(pm) {
+      const a = document.getElementById('pm-' + pm + '-1').value.trim();
+      const b = document.getElementById('pm-' + pm + '-2').value.trim();
+      const mismatchEl = document.getElementById('pm-' + pm + '-mismatch');
+      if (b && a !== b) mismatchEl.classList.remove('hidden');
+      else mismatchEl.classList.add('hidden');
+      updateMoneySubmitState();
+    }
+
+    function updateCapLine() {
+      const sel = document.getElementById('m-currency');
+      const amtInput = document.getElementById('m-amount');
+      const capEl = document.getElementById('cap-max');
+      const capLine = document.getElementById('cap-line');
+      if (!sel || !sel.value || typeof maxAmountInCurrency === 'undefined') return;
+      const max = maxAmountInCurrency(sel.value);
+      capEl.textContent = `${formatCurrencyAmount(max, sel.value)} ${sel.value}`;
+      const amt = parseFloat(amtInput.value);
+      if (!isNaN(amt) && amt > max) {
+        capLine.classList.add('over');
+        capEl.textContent = `${formatCurrencyAmount(max, sel.value)} ${sel.value} — over the cap`;
+      } else {
+        capLine.classList.remove('over');
+      }
+      updateMoneySubmitState();
+    }
+
+    function moneyFormValid() {
+      const amt = parseFloat(document.getElementById('m-amount').value);
+      const currency = document.getElementById('m-currency').value;
+      if (isNaN(amt) || amt <= 0) return false;
+      if (typeof maxAmountInCurrency !== 'undefined' && amt > maxAmountInCurrency(currency)) return false;
+      const contact = document.getElementById('m-contact').value.trim();
+      if (!contact) return false;
+      if (!chosenPM) return false;
+
+      const pairs = {
+        cashapp:['pm-cashapp-1','pm-cashapp-2'],
+        zelle:  ['pm-zelle-1','pm-zelle-2'],
+        paypal: ['pm-paypal-1','pm-paypal-2'],
+        venmo:  ['pm-venmo-1','pm-venmo-2'],
+        crypto: ['pm-crypto-1','pm-crypto-2'],
+        other:  ['pm-other-1','pm-other-2'],
+      };
+      if (pairs[chosenPM]) {
+        const [a,b] = pairs[chosenPM].map(id => document.getElementById(id).value.trim());
+        if (!a || !b || a !== b) return false;
+      } else if (chosenPM === 'bank') {
+        if (!document.getElementById('pm-bank-holder').value.trim()) return false;
+      } else if (chosenPM === 'cash') {
+        if (!document.getElementById('pm-cash-city').value.trim()) return false;
+      }
+
+      if (!document.getElementById('m-confirm').checked) return false;
+      return true;
+    }
+
+    function updateMoneySubmitState() {
+      if (chosenOption !== 'money') return;
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = !moneyFormValid();
+    }
+
     function updateSubmitState() {
       const btn = document.getElementById('submit-btn');
       let ready = false;
-      if (chosenOption === 'money' || chosenOption === 'relocation') ready = true;
-      if (chosenOption === 'transfer' && transferMethod) ready = true;
+      if (chosenOption === 'money') ready = moneyFormValid();
+      else if (chosenOption === 'relocation') ready = true;
+      else if (chosenOption === 'transfer' && transferMethod) ready = true;
       btn.disabled = !ready;
     }
 
-    // ── Submit ──
+    document.addEventListener('input', () => {
+      if (chosenOption === 'money') updateMoneySubmitState();
+    });
+
+    function buildPMData() {
+      switch(chosenPM) {
+        case 'bank':
+          return {
+            method:'bank',
+            holder: document.getElementById('pm-bank-holder').value.trim(),
+            bank_name: document.getElementById('pm-bank-name').value.trim(),
+            country: document.getElementById('pm-bank-country').value.trim(),
+            note: 'Account & routing details to be requested securely.',
+          };
+        case 'cashapp':
+          return { method:'cashapp', cashtag: document.getElementById('pm-cashapp-1').value.trim() };
+        case 'zelle':
+          return {
+            method:'zelle',
+            handle: document.getElementById('pm-zelle-1').value.trim(),
+            account_name: document.getElementById('pm-zelle-name').value.trim(),
+          };
+        case 'paypal':
+          return { method:'paypal', handle: document.getElementById('pm-paypal-1').value.trim() };
+        case 'venmo':
+          return {
+            method:'venmo',
+            username: document.getElementById('pm-venmo-1').value.trim(),
+            phone_last4: document.getElementById('pm-venmo-phone4').value.trim(),
+          };
+        case 'crypto':
+          return {
+            method:'crypto',
+            coin: document.getElementById('pm-crypto-coin').value,
+            wallet: document.getElementById('pm-crypto-1').value.trim(),
+          };
+        case 'cash':
+          return {
+            method:'cash',
+            city: document.getElementById('pm-cash-city').value.trim(),
+            region: document.getElementById('pm-cash-region').value.trim(),
+            context: document.getElementById('pm-cash-context').value.trim(),
+          };
+        case 'other':
+          return { method:'other', details: document.getElementById('pm-other-1').value.trim() };
+        default:
+          return { method: chosenPM };
+      }
+    }
+
     async function submitForm() {
       hideAlert('form-alert');
 
@@ -619,7 +1079,6 @@
         showAlert('form-alert', 'Please choose an option above.'); return;
       }
 
-      // Validate per-option fields and build option_data
       let optionData = {};
       let summaryName = '';
       let summaryContact = '';
@@ -629,7 +1088,6 @@
       if (chosenOption === 'money') {
         const amount = document.getElementById('m-amount').value.trim();
         const currency = document.getElementById('m-currency').value;
-        const delivery = document.getElementById('m-delivery').value;
         summaryName = document.getElementById('m-name').value.trim();
         summaryContact = document.getElementById('m-contact').value.trim();
         const country = document.getElementById('m-country').value.trim();
@@ -638,23 +1096,41 @@
         if (!amount || !summaryContact) {
           showAlert('form-alert', 'Please enter an amount and your contact info.'); return;
         }
-        if (parseFloat(amount) <= 0) {
+        const amtNum = parseFloat(amount);
+        if (amtNum <= 0) {
           showAlert('form-alert', 'Amount must be greater than zero.'); return;
         }
-        optionData = { amount, currency, delivery_method: delivery, country, notes };
+        if (typeof maxAmountInCurrency !== 'undefined' && amtNum > maxAmountInCurrency(currency)) {
+          showAlert('form-alert', `Amount exceeds the $10,000 USD equivalent cap for ${currency}.`); return;
+        }
+        if (!chosenPM) {
+          showAlert('form-alert', 'Please choose a payment method.'); return;
+        }
+        if (!document.getElementById('m-confirm').checked) {
+          showAlert('form-alert', 'Please confirm your payment details by checking the box.'); return;
+        }
+        optionData = {
+          amount, currency, country, notes,
+          payment: buildPMData(),
+          confirmed: true,
+        };
         urgency = 'Standard';
-        summaryRequest = `Financial assistance: ${amount} ${currency} via ${delivery}. Located in ${country || 'unspecified'}. ${notes ? 'Notes: ' + notes : ''}`;
+        summaryRequest = `Financial assistance: ${amount} ${currency} via ${chosenPM}. Located in ${country || 'unspecified'}. ${notes ? 'Notes: ' + notes : ''}`;
       }
 
       else if (chosenOption === 'relocation') {
-        const inUS = document.getElementById('r-us').value;
-        if (inUS === 'no') {
-          showAlert('form-alert', 'Relocation is currently available only to U.S. residents. Please choose a different option.'); return;
-        }
         summaryName = document.getElementById('r-name').value.trim();
         summaryContact = document.getElementById('r-contact').value.trim();
-        const from = document.getElementById('r-from').value.trim();
-        const to = document.getElementById('r-to').value.trim();
+        const fromCountry = document.getElementById('r-from-country').value;
+        const fromState = document.getElementById('r-from-state').value.trim();
+        const fromStreet = document.getElementById('r-from-street').value.trim();
+        const fromUnit = document.getElementById('r-from-unit').value.trim();
+        const fromCity = document.getElementById('r-from-city').value.trim();
+        const fromPostal = document.getElementById('r-from-postal').value.trim();
+        const toCountry = document.getElementById('r-to-country').value;
+        const toState = document.getElementById('r-to-state').value.trim();
+        const toCity = document.getElementById('r-to-city').value.trim();
+        const toNeighborhood = document.getElementById('r-to-neighborhood').value.trim();
         const people = document.getElementById('r-people').value;
         const children = document.getElementById('r-children').value;
         const pets = document.getElementById('r-pets').value.trim();
@@ -662,12 +1138,20 @@
         const timeline = document.getElementById('r-timeline').value;
         const notes = document.getElementById('r-notes').value.trim();
 
-        if (!summaryName || !summaryContact || !from || !to) {
-          showAlert('form-alert', 'Please fill in your name, contact, current location, and destination.'); return;
+        if (!summaryName || !summaryContact || !fromCountry || !fromCity || !toCountry) {
+          showAlert('form-alert', 'Please fill in your name, contact, current country & city, and destination country.'); return;
         }
-        optionData = { in_us: inUS, from, to, people, children, pets, volume, timeline, notes };
+        const guaranteed = (fromCountry === 'US' || fromCountry === 'CA') && (toCountry === 'US' || toCountry === 'CA' || toCountry === 'FLEX');
+        optionData = {
+          guaranteed_coverage: guaranteed,
+          from: { country: fromCountry, state: fromState, street: fromStreet, unit: fromUnit, city: fromCity, postal: fromPostal },
+          to:   { country: toCountry, state: toState, city: toCity, neighborhood: toNeighborhood },
+          people, children, pets, volume, timeline, notes,
+        };
         urgency = timeline;
-        summaryRequest = `Relocation from ${from} to ${to}. ${people}. Volume: ${volume}. Timeline: ${timeline}. ${notes ? 'Notes: ' + notes : ''}`;
+        const fromStr = `${fromCity}${fromState ? ', ' + fromState : ''}, ${fromCountry}`;
+        const toStr = `${toCity || 'flexible'}${toState ? ', ' + toState : ''}, ${toCountry}`;
+        summaryRequest = `Relocation from ${fromStr} to ${toStr}. ${people}. Volume: ${volume}. Timeline: ${timeline}. Coverage: ${guaranteed ? 'guaranteed (US/Canada)' : 'best-effort (outside US/Canada)'}. ${notes ? 'Notes: ' + notes : ''}`;
       }
 
       else if (chosenOption === 'transfer') {
@@ -697,17 +1181,14 @@
             recipient_name: recipientName,
             recipient_contact: recipientContact,
             recipient_location: recipientLocation,
-            relationship,
-            reason,
+            relationship, reason,
           };
           urgency = 'Anonymous referral';
           summaryRequest = `Anonymous referral to ${recipientName} (${recipientContact}). Relationship: ${relationship}. Reason: ${reason}`;
         }
       }
 
-      // Submit to wishes table
       setLoading('submit-btn', true);
-
       try {
         await submitWish({
           name: summaryName || 'Anonymous',
@@ -721,12 +1202,10 @@
           status: 'new',
         });
 
-        // Clear session storage so they can't resubmit
         sessionStorage.removeItem('fe_session_id');
         sessionStorage.removeItem('fe_redeemed_code');
         sessionStorage.removeItem('fe_code_type');
 
-        // Show success view
         document.getElementById('ref-id').textContent = sessionId.split('-')[0].toUpperCase();
         document.getElementById('form-view').style.display = 'none';
         document.getElementById('success-view').style.display = 'block';
@@ -739,7 +1218,6 @@
       }
     }
 
-    // Warn if they try to leave with unsaved form
     window.addEventListener('beforeunload', (e) => {
       if (chosenOption && document.getElementById('form-view').style.display !== 'none') {
         e.preventDefault();

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>New Request — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
+    <div class="nav-right">
+      <div class="nav-user-pill">
+        <div class="avatar" id="nav-avatar">?</div>
+        <span id="nav-name">Loading…</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="app-wrap">
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Overview</div>
+        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Member Tools</div>
+        <a href="request.html"        class="sidebar-link active"><span class="icon">✨</span> New Request</a>
+        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
+        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-heading">Account</div>
+        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
+        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
+      </div>
+    </aside>
+
+    <main class="main fade-up">
+
+      <!-- Form view -->
+      <div id="form-view">
+        <div class="page-header" style="margin-bottom:20px;">
+          <div class="page-eyebrow">Concierge Services</div>
+          <h2 class="page-title">Submit a <em>New Request</em></h2>
+          <p class="page-subtitle">Choose a category, fill in the details, and someone will reach out personally. Everything is held in confidence.</p>
+        </div>
+
+        <!-- Emergency banner -->
+        <div class="alert alert-warn" id="emergency-banner" style="display:none;margin-bottom:22px;">
+          🚨 <strong>For active emergencies, call Sibeth directly first.</strong> Submitting this form starts a coordinated response, but a phone call is faster.
+        </div>
+
+        <!-- Category picker -->
+        <div class="page-eyebrow" style="margin-bottom:10px;">1 · Category</div>
+        <div class="svc-grid" id="svc-grid"></div>
+
+        <!-- Dynamic form -->
+        <div id="dynamic-form" style="display:none;">
+          <div class="alert hidden" id="form-alert"></div>
+
+          <div class="page-eyebrow" style="margin-bottom:10px;">2 · Details</div>
+          <div class="form-section active" id="dyn-fields"></div>
+
+          <!-- Common fields -->
+          <div class="form-section active">
+            <h2 class="section-heading"><em>Urgency</em> &amp; Notes</h2>
+            <p class="section-desc">A few last details so we can prioritize and respond appropriately.</p>
+
+            <div class="field">
+              <label class="field-label">How time-sensitive is this?</label>
+              <div class="field-input">
+                <select id="g-urgency">
+                  <option>Standard — within a few days</option>
+                  <option>Soon — within 24–48 hours</option>
+                  <option>Urgent — same day</option>
+                  <option>Emergency — immediate</option>
+                  <option>Flexible — no rush</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Best way to reach you</label>
+              <div class="field-input">
+                <select id="g-contact-pref">
+                  <option value="phone">Phone call</option>
+                  <option value="text">Text / SMS</option>
+                  <option value="email">Email</option>
+                  <option value="signal">Signal</option>
+                  <option value="any">Any of the above</option>
+                </select>
+              </div>
+              <div class="helper-line">We'll use the contact info on your profile. <a href="account.html" style="color:var(--pink);">Update it here</a> if needed.</div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Anything else we should know? <span class="field-optional">(Optional)</span></label>
+              <div class="field-input">
+                <textarea id="g-notes" rows="4" placeholder="Context, constraints, sensitivities, references — anything that helps us respond well."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="submit-bar">
+            <button class="btn btn-primary btn-full btn-lg" id="submit-btn" onclick="submitForm()">Submit Request</button>
+            <div class="final-warning">Once submitted, someone from the team will follow up via your preferred contact method.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Success view -->
+      <div id="success-view" style="display:none;">
+        <div class="success-screen" style="background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-xl);padding:60px 40px;text-align:center;">
+          <div class="success-icon-big" style="width:64px;height:64px;border-radius:50%;background:var(--pink-dim);color:var(--pink);font-size:30px;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;">✓</div>
+          <h1 style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--text);margin-bottom:14px;">Request <em style="font-style:italic;color:var(--pink);">received.</em></h1>
+          <p style="font-size:14px;color:var(--text-2);line-height:1.8;max-width:480px;margin:0 auto 26px;">Thank you. Someone from the team will follow up via your preferred contact method as soon as possible.</p>
+          <a href="requests.html" class="btn btn-secondary">View My Requests</a>
+          <a href="dashboard.html" class="btn btn-ghost" style="margin-left:8px;">Return Home</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/app.js"></script>
+  <script>
+
+  // ─────────────────────────────────────────
+  //  SERVICE_CONFIG — one source of truth for
+  //  every concierge category's question set.
+  // ─────────────────────────────────────────
+  const SERVICE_CONFIG = {
+    travel: {
+      title: 'Travel & <em>Relocation</em>',
+      desc:  'Flights, hotels, ground transport, longer-term moves. Tell us where you are, where you need to be, and when.',
+      fields: [
+        { id: 't-from',     label: 'Origin (city / country)',         type: 'text',     placeholder: 'e.g. Las Vegas, NV', required: true },
+        { id: 't-to',       label: 'Destination',                      type: 'text',     placeholder: 'Where do you need to go?', required: true },
+        { id: 't-people',   label: 'Number of travelers',              type: 'select',   options: ['Just me', '2 people', '3–4 people', '5 or more'] },
+        { id: 't-when',     label: 'When?',                            type: 'text',     placeholder: 'A specific date, "ASAP", or a range', required: true },
+        { id: 't-mode',     label: 'Preferred mode',                   type: 'select',   options: ['Flight', 'Train', 'Drive / private car', 'Whatever works fastest', 'No preference'] },
+        { id: 't-budget',   label: 'Budget tier',                      type: 'select',   options: ['Lean — keep it minimal', 'Standard', 'Premium', 'No constraint'] },
+        { id: 't-special',  label: 'Special needs (children, mobility, pets, anonymity)', type: 'textarea', rows: 3 },
+      ],
+    },
+    security: {
+      title: 'Security & <em>Protection</em>',
+      desc:  'Threat assessment, protective detail, safe-housing referrals, digital hardening. Tell us what feels unsafe.',
+      fields: [
+        { id: 's-nature',   label: 'Nature of concern',                type: 'select',   options: ['Stalking / harassment', 'Domestic threat', 'Public-figure / doxxing', 'Workplace situation', 'Digital / cyber', 'Travel security', 'General precaution', 'Other'] },
+        { id: 's-active',   label: 'Is the threat currently active?',  type: 'select',   options: ['Yes — active right now', 'Recent (within 7 days)', 'Recurring / pattern', 'Anticipated', 'Resolved but want a review'] },
+        { id: 's-where',    label: 'Where is the concern located?',    type: 'text',     placeholder: 'City / context (home, workplace, online, while traveling)' },
+        { id: 's-detail',   label: 'Describe what\'s happening',       type: 'textarea', rows: 4, required: true, placeholder: 'As much detail as you\'re comfortable sharing.' },
+      ],
+    },
+    legal: {
+      title: 'Legal <em>Assistance</em>',
+      desc:  'Attorney referrals, document prep, and discreet legal guidance. We don\'t practice law — we connect you to people who do.',
+      fields: [
+        { id: 'l-area',     label: 'Area of law',                      type: 'select',   options: ['Family / domestic', 'Criminal defense', 'Civil / contract', 'Immigration', 'Employment', 'Estate / will', 'Restraining order / protective order', 'Other'] },
+        { id: 'l-stage',    label: 'Where are you in the process?',    type: 'select',   options: ['Just exploring', 'Need a referral now', 'Actively in a matter', 'Court date approaching', 'Document review'] },
+        { id: 'l-jurisdiction', label: 'State / jurisdiction',         type: 'text',     placeholder: 'Where the matter is happening' },
+        { id: 'l-detail',   label: 'Briefly, what\'s the situation?',  type: 'textarea', rows: 4, required: true },
+      ],
+    },
+    medical: {
+      title: 'Medical & <em>Wellness</em>',
+      desc:  'Discreet appointments, mental-health support, prescription access, second opinions. We protect your privacy throughout.',
+      fields: [
+        { id: 'm-type',     label: 'Type of need',                     type: 'select',   options: ['Primary care / GP', 'Mental health / therapy', 'Psychiatric / medication', 'Specialist referral', 'Reproductive health', 'Urgent / same-day', 'Prescription refill', 'Second opinion', 'Other'] },
+        { id: 'm-where',    label: 'Where are you located?',           type: 'text',     placeholder: 'City / state — for in-person appointments' },
+        { id: 'm-mode',     label: 'Preferred mode',                   type: 'select',   options: ['In-person', 'Telehealth', 'Either'] },
+        { id: 'm-insurance',label: 'Insurance situation',              type: 'select',   options: ['I have insurance', 'No insurance', 'Don\'t want to use my insurance', 'Unsure / need help understanding'] },
+        { id: 'm-detail',   label: 'Brief description (optional)',     type: 'textarea', rows: 3, placeholder: 'Only what you\'re comfortable sharing.' },
+      ],
+    },
+    housing: {
+      title: 'Housing & <em>Lodging</em>',
+      desc:  'Emergency shelter, short-term safe accommodation, longer-term housing search.',
+      fields: [
+        { id: 'h-type',     label: 'Type',                             type: 'select',   options: ['Emergency tonight', 'Short-term safe stay (days–weeks)', 'Longer-term housing', 'Backup option / "just in case"'] },
+        { id: 'h-where',    label: 'Where',                            type: 'text',     placeholder: 'City / general region', required: true },
+        { id: 'h-people',   label: 'Who needs housing?',               type: 'select',   options: ['Just me', 'Me + partner', 'Me + children', 'Full household', 'Multiple adults / extended household'] },
+        { id: 'h-pets',     label: 'Pets?',                            type: 'text',     placeholder: 'e.g. 1 dog, none, etc.' },
+        { id: 'h-detail',   label: 'Anything else we should know?',    type: 'textarea', rows: 3 },
+      ],
+    },
+    finance: {
+      title: 'Financial <em>Services</em>',
+      desc:  'Emergency funds, account protection, financial planning, navigating institutions on your behalf.',
+      fields: [
+        { id: 'f-type',     label: 'Type of help',                     type: 'select',   options: ['Emergency funds', 'Account / identity protection', 'Banking referral', 'Budget / planning advice', 'Help dealing with a creditor', 'Help dealing with a bank or institution', 'Other'] },
+        { id: 'f-urgency',  label: 'How urgent?',                      type: 'select',   options: ['Standard', 'Soon (this week)', 'Urgent (today / tomorrow)', 'Emergency'] },
+        { id: 'f-detail',   label: 'Briefly, what\'s going on?',       type: 'textarea', rows: 4, required: true, placeholder: 'Don\'t include account numbers — just context.' },
+      ],
+      tip: '<strong>Privacy:</strong> Do not include account numbers, card numbers, or full SSNs in this form. We\'ll request anything sensitive over a secure channel.',
+    },
+    transport: {
+      title: 'Transport & <em>Logistics</em>',
+      desc:  'Private drivers, vehicle sourcing, moving belongings, discreet pickups and drop-offs.',
+      fields: [
+        { id: 'tr-type',    label: 'Type',                             type: 'select',   options: ['Private driver / ride', 'Long-distance transport', 'Move belongings', 'Vehicle sourcing / loaner', 'Discreet pickup', 'Other'] },
+        { id: 'tr-from',    label: 'From',                             type: 'text',     placeholder: 'City / address-area', required: true },
+        { id: 'tr-to',      label: 'To',                               type: 'text',     placeholder: 'City / address-area', required: true },
+        { id: 'tr-when',    label: 'When?',                            type: 'text',     placeholder: 'A specific date, "ASAP", or a range', required: true },
+        { id: 'tr-detail',  label: 'Anything else?',                   type: 'textarea', rows: 3 },
+      ],
+    },
+    lifestyle: {
+      title: 'Lifestyle & <em>Personal</em>',
+      desc:  'Childcare, errands, scheduling, home services, personal logistics — the everyday stuff that\'s hard to do alone.',
+      fields: [
+        { id: 'ls-type',    label: 'Type of help',                     type: 'select',   options: ['Childcare / babysitting', 'Errands / shopping', 'Home services (cleaning, repair, etc.)', 'Scheduling / appointments', 'Pet care', 'Personal organization', 'Other'] },
+        { id: 'ls-when',    label: 'When?',                            type: 'text',     placeholder: 'Date / day of week / "ongoing"' },
+        { id: 'ls-where',   label: 'Where',                            type: 'text',     placeholder: 'City / general area' },
+        { id: 'ls-detail',  label: 'Tell us more',                     type: 'textarea', rows: 4, required: true },
+      ],
+    },
+    emergency: {
+      title: '<em>Emergency</em> Services',
+      desc:  'For an active life-or-safety emergency. <strong>Phone is faster.</strong> If you can call Sibeth right now, please do — and submit this anyway.',
+      isEmergency: true,
+      fields: [
+        { id: 'e-nature',   label: 'Nature of the emergency',          type: 'select',   options: ['Physical danger', 'Domestic violence', 'Medical', 'Mental health crisis', 'Need to leave a location now', 'Stranded', 'Other'], required: true },
+        { id: 'e-where',    label: 'Where are you right now?',         type: 'text',     placeholder: 'Address, intersection, or as specific as you can be', required: true },
+        { id: 'e-safe',     label: 'Are you currently safe?',          type: 'select',   options: ['Yes', 'No', 'Not sure'], required: true },
+        { id: 'e-detail',   label: 'What is happening?',               type: 'textarea', rows: 4, required: true },
+      ],
+    },
+  };
+
+  // ─────────────────────────────────────────
+  //  Page boot
+  // ─────────────────────────────────────────
+  let chosenService = null;
+
+  (async () => {
+    const user = await requireAuth();
+    if (!user) return;
+
+    try {
+      const profile = await getProfile(user.id);
+      const name = profile.first_name || 'friend';
+      const ini  = initials(profile.first_name, profile.last_name);
+      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
+      document.getElementById('nav-avatar').textContent = ini;
+      if (profile.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
+
+      // Default contact pref to profile setting
+      if (profile.contact_pref) {
+        const sel = document.getElementById('g-contact-pref');
+        const opt = Array.from(sel.options).find(o => o.value === profile.contact_pref);
+        if (opt) sel.value = profile.contact_pref;
+      }
+    } catch (e) { console.error(e); }
+
+    renderCategoryPicker();
+
+    // Pre-select via URL ?service=xyz
+    const params = new URLSearchParams(location.search);
+    const pre = params.get('service');
+    if (pre && SERVICE_CONFIG[pre]) chooseService(pre);
+  })();
+
+  function renderCategoryPicker() {
+    const grid = document.getElementById('svc-grid');
+    grid.innerHTML = Object.keys(SERVICE_CONFIG).map(key => {
+      const s = SERVICE_MAP[key];
+      const cfg = SERVICE_CONFIG[key];
+      const desc = cfg.desc.replace(/<[^>]+>/g, '');
+      return `<div class="svc-pick" data-svc="${key}" onclick="chooseService('${key}')">
+        <div class="sp-icon">${s.icon}</div>
+        <div>
+          <div class="sp-title">${s.label}</div>
+          <div class="sp-desc">${desc.length > 90 ? desc.substring(0,90) + '…' : desc}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function chooseService(key) {
+    chosenService = key;
+    document.querySelectorAll('.svc-pick').forEach(c => c.classList.toggle('active', c.dataset.svc === key));
+
+    const cfg = SERVICE_CONFIG[key];
+    document.getElementById('emergency-banner').style.display = cfg.isEmergency ? 'flex' : 'none';
+    document.getElementById('dynamic-form').style.display = 'block';
+
+    // Build the dynamic field section
+    const sec = document.getElementById('dyn-fields');
+    sec.innerHTML = `<h2 class="section-heading">${cfg.title}</h2>
+                     <p class="section-desc">${cfg.desc}</p>
+                     ${cfg.fields.map(renderField).join('')}
+                     ${cfg.tip ? `<div class="info-tip">${cfg.tip}</div>` : ''}`;
+
+    setTimeout(() => sec.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  function renderField(f) {
+    const req = f.required ? '<span style="color:var(--pink);">*</span>' : '<span class="field-optional">(Optional)</span>';
+    let input;
+    if (f.type === 'textarea') {
+      input = `<textarea id="${f.id}" rows="${f.rows || 3}" placeholder="${escapeHtml(f.placeholder || '')}"></textarea>`;
+    } else if (f.type === 'select') {
+      input = `<select id="${f.id}">${f.options.map(o => `<option>${escapeHtml(o)}</option>`).join('')}</select>`;
+    } else {
+      input = `<input type="${f.type}" id="${f.id}" placeholder="${escapeHtml(f.placeholder || '')}"/>`;
+    }
+    return `<div class="field">
+      <label class="field-label">${escapeHtml(f.label)} ${req}</label>
+      <div class="field-input">${input}</div>
+    </div>`;
+  }
+
+  // ─────────────────────────────────────────
+  //  Submit
+  // ─────────────────────────────────────────
+  async function submitForm() {
+    hideAlert('form-alert');
+    if (!chosenService) {
+      showAlert('form-alert', 'Please pick a category first.');
+      return;
+    }
+
+    const cfg = SERVICE_CONFIG[chosenService];
+    const data = {};
+
+    // Validate per-field requireds
+    for (const f of cfg.fields) {
+      const v = (document.getElementById(f.id)?.value || '').trim();
+      if (f.required && !v) {
+        showAlert('form-alert', `Please fill in: ${f.label}`);
+        return;
+      }
+      data[f.id] = v;
+    }
+
+    // Common fields
+    data.urgency      = document.getElementById('g-urgency').value;
+    data.contact_pref = document.getElementById('g-contact-pref').value;
+    data.notes        = document.getElementById('g-notes').value.trim();
+
+    setLoading('submit-btn', true);
+    try {
+      await submitRequest(chosenService, data);
+      document.getElementById('form-view').style.display    = 'none';
+      document.getElementById('success-view').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      console.error(e);
+      showAlert('form-alert', 'Could not submit. Please try again or contact Sibeth directly.');
+      setLoading('submit-btn', false, 'Submit Request');
+    }
+  }
+  </script>
+</body>
+</html>
