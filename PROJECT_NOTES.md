@@ -286,3 +286,57 @@ Three targeted polish requests after the v3 build was deployed.
 - Sidebars on all 9 authenticated pages match the three-section pattern with Contact Sibeth in Account
 
 _Refinements log added by Claude on 2026-05-07._
+
+---
+
+## 12. Session — 2026-05-08 (admin visibility fixes)
+
+Three blocking bugs surfaced after the v3 build went live, plus a small request to expose every form field in the admin panel.
+
+### Issue #1 — Admin tabs (Code Requests, Invite Requests, Login Activity) wouldn't load
+
+**Root cause:** The v3 migration created the three new tables with foreign keys pointing at `auth.users(id)`. The admin queries in `js/app.js` use Supabase's embed syntax (`profiles!code_requests_user_id_fkey(...)`), which requires the FK to point at `public.profiles(id)` for PostgREST to resolve the join. Because the FK was pointing at `auth.users` instead of `profiles`, PostgREST returned 400s and the admin tables silently rendered "Failed to load."
+
+**Fix:** Re-target each FK to `public.profiles(id)`. Cascade behavior is preserved because `profiles.id` already references `auth.users(id) ON DELETE CASCADE`. The fix lives in two places:
+- **`supabase/migration-v3.sql`** — appended a new section 12 (FK retargeting) so the canonical migration is self-correcting.
+- **`supabase/migration-v3-patch1.sql`** — standalone patch file Cass can run right now without re-running the full migration.
+
+Both are idempotent. Running either one resolves the admin tab issue. The patch also includes `NOTIFY pgrst, 'reload schema'` to force PostgREST to pick up the change immediately (otherwise it may take a minute).
+
+### Issue #2 — Wish admin modal didn't show all submitted data
+
+**Root cause:** The wish modal renderer flattened `option_data` with `Object.entries(...).map(([k,v]) => escapeHtml(v))` — but the v3 wish form stores nested objects (`from: {country, state, street, ...}`, `to: {...}`, `payment: {method, holder, ...}`). Those nested objects rendered as `[object Object]`.
+
+**Fix:** Built a recursive renderer `renderDataTree(data, depth)` that:
+- Walks any object/array
+- Skips null/empty/undefined
+- Renders nested objects as visually distinct sub-blocks with italic Cormorant section headers (`.data-subblock`)
+- Handles arrays as numbered sub-items
+- Nicely displays booleans as ✓ Yes / ✗ No
+- Uses a custom-key map (`prettyKey()`) for human-friendly labels (e.g. `from_country` → "From Country", `recipient_safety` → "Safety Concerns")
+
+Both the wish modal and the request modal now use `renderDataTree()`, so requests with nested form data also render properly.
+
+### Issue #3 — Reference ID not visible to admin
+
+**Root cause:** Members see a Reference ID on the success screen (computed as `sessionId.split('-')[0].toUpperCase()`). The admin had no way to find a wish by that ID.
+
+**Fix:** Both the wish and request modals now show the reference ID in a prominent pink banner at the top (`.ref-banner`). For wishes it's derived from `session_id` (matching what the member sees); for requests it's derived from the request's own `id`. The full session_id is also shown in the metadata as a separate row for completeness.
+
+### CSS additions (admin.html)
+- `.ref-banner`, `.ref-banner-label`, `.ref-banner-value` — pink banner with the reference ID at the top of detail modals
+- `.data-subblock`, `.data-subblock-title` — visually distinct nested-object container with italic Cormorant header
+- Mobile: `.data-subblock .field-row` collapses to single column
+
+### Validation
+- Admin.html inline JS parses cleanly via `new Function()` test
+- `getAllCodeRequests`, `getAllInviteRequests`, `getAllLoginActivity` all use the now-resolvable `profiles!*_fkey(...)` embed syntax
+- Wish/request modals tested mentally against representative payloads (relocation with from/to, money with payment object)
+
+### Deployment
+1. Replace deployed files with the zip
+2. **Run `supabase/migration-v3-patch1.sql` in Supabase SQL editor** — this is the critical step that makes the admin tabs work
+3. Smoke test: log in as admin → Code Requests tab should load; Invite Requests tab should load; Login Activity should show recent sign-ins
+4. Have a member submit a wish (any option) → as admin, click into it → confirm the Reference ID banner appears, all fields including nested ones (from/to address, payment details) are visible
+
+_Admin visibility fixes added by Claude on 2026-05-08._

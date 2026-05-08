@@ -33,10 +33,51 @@
     .field-row .v { font-size:13px; color:var(--text); line-height:1.65; word-break:break-word; }
     .field-row .v.long { white-space:pre-wrap; background:var(--bg-3); padding:12px; border-radius:var(--radius-sm); border-left:2px solid var(--border-pink); }
     .modal-footer { padding:18px 28px; border-top:1px solid var(--border); background:var(--bg-3); display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+
+    /* Reference ID banner — shown at top of wish/request modals */
+    .ref-banner {
+      display:flex; align-items:baseline; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+      background:var(--pink-dim); border:1px solid var(--border-pink);
+      border-radius:var(--radius-md);
+      padding:14px 18px; margin-bottom:18px;
+    }
+    .ref-banner-label {
+      font-size:10px; font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; color:var(--pink);
+    }
+    .ref-banner-value {
+      font-family:'Courier New', monospace;
+      font-size:1.4rem; font-weight:700; letter-spacing:0.1em;
+      color:var(--pink);
+    }
+
+    /* Nested-data sub-block (e.g. relocation 'from' / 'to' / payment) */
+    .data-subblock {
+      background:var(--bg-3); border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:14px 16px 8px;
+      margin:10px 0 14px;
+    }
+    .data-subblock-title {
+      font-family:'Cormorant Garamond', serif; font-style:italic;
+      font-size:1.05rem; color:var(--pink);
+      margin-bottom:8px; padding-bottom:8px;
+      border-bottom:1px solid rgba(255,255,255,0.06);
+    }
+    .data-subblock .field-row {
+      grid-template-columns:130px 1fr; padding:6px 0;
+    }
+    .data-subblock .data-subblock {
+      background:var(--bg-4);
+      margin-left:8px;
+    }
+
     @media(max-width:560px){
       .field-row { grid-template-columns:1fr; gap:4px; }
       .modal-footer { justify-content:stretch; }
       .modal-footer .btn { flex:1; }
+      .data-subblock .field-row { grid-template-columns:1fr; }
     }
 
     .data-table tbody tr { cursor:pointer; }
@@ -683,29 +724,34 @@
       try {
         const r = await getRequestById(id);
         const s = SERVICE_MAP[r.service_type] || { icon:'📋', label: r.service_type };
+        const referenceId = (r.id || '').split('-')[0].toUpperCase() || '—';
+
         document.getElementById('rm-eyebrow').textContent = `${s.icon} ${s.label}`;
         const memberName = r.profiles ? `${r.profiles.first_name||''} ${r.profiles.last_name||''}`.trim() || r.profiles.email : '—';
         document.getElementById('rm-title').textContent = `Request from ${memberName}`;
+
         document.getElementById('rm-member').innerHTML = `
+          <div class="ref-banner">
+            <div class="ref-banner-label">Reference ID</div>
+            <div class="ref-banner-value">${escapeHtml(referenceId)}</div>
+          </div>
           <div class="field-row"><div class="k">Name</div><div class="v">${escapeHtml(memberName)}</div></div>
           <div class="field-row"><div class="k">Email</div><div class="v">${escapeHtml(r.profiles?.email||'—')}</div></div>
           <div class="field-row"><div class="k">Phone</div><div class="v">${escapeHtml(r.profiles?.phone||'—')}</div></div>
+          <div class="field-row"><div class="k">Service Type</div><div class="v">${s.icon} ${escapeHtml(s.label)}</div></div>
           <div class="field-row"><div class="k">Submitted</div><div class="v">${formatDateTime(r.created_at)}</div></div>
         `;
-        const fields = r.form_data || {};
-        const fieldsHtml = Object.entries(fields).map(([k, v]) => {
-          if (!v) return '';
-          const isLong = String(v).length > 80;
-          const niceKey = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          return `<div class="field-row"><div class="k">${escapeHtml(niceKey)}</div><div class="v ${isLong ? 'long' : ''}">${escapeHtml(v)}</div></div>`;
-        }).join('');
-        document.getElementById('rm-fields').innerHTML = fieldsHtml || '<div style="font-size:12px;color:var(--text-3);">No additional details.</div>';
+
+        // Recursively render every form_data field — including nested ones
+        const tree = renderDataTree(r.form_data || {});
+        document.getElementById('rm-fields').innerHTML = tree || '<div style="font-size:12px;color:var(--text-3);">No additional details.</div>';
+
         document.getElementById('rm-status').value = r.status || 'pending';
         document.getElementById('rm-notes').value  = r.admin_notes || '';
         document.getElementById('rm-status-msg').textContent = '';
         document.getElementById('rm-notes-msg').textContent  = '';
         document.getElementById('modal-request').classList.add('show');
-      } catch(e) { alert('Could not load request details.'); }
+      } catch(e) { console.error(e); alert('Could not load request details.'); }
     }
 
     async function rmUpdateStatus() {
@@ -745,37 +791,130 @@
       try {
         const w = await getWishById(id);
         const opt = OPTION_MAP[w.option_chosen] || { icon: '🌙', label: 'Wish' };
+        const referenceId = (w.session_id || '').split('-')[0].toUpperCase() || '—';
+
         document.getElementById('wm-eyebrow').textContent = `${opt.icon} ${opt.label}`;
         document.getElementById('wm-title').textContent = `From ${w.name || 'Anonymous'}`;
+
+        // Top-level metadata + the all-important reference ID
         document.getElementById('wm-fields').innerHTML = `
-          <div class="field-row"><div class="k">Name</div><div class="v">${escapeHtml(w.name||'Anonymous')}</div></div>
+          <div class="ref-banner">
+            <div class="ref-banner-label">Reference ID</div>
+            <div class="ref-banner-value">${escapeHtml(referenceId)}</div>
+          </div>
+          <div class="field-row"><div class="k">Submitter Name</div><div class="v">${escapeHtml(w.name||'Anonymous')}</div></div>
           <div class="field-row"><div class="k">Contact</div><div class="v">${escapeHtml(w.contact||'—')}</div></div>
           <div class="field-row"><div class="k">Access Code</div><div class="v"><code style="color:var(--pink);">${escapeHtml(w.access_code||'—')}</code></div></div>
           <div class="field-row"><div class="k">Option Chosen</div><div class="v">${opt.icon} ${opt.label}</div></div>
           <div class="field-row"><div class="k">Urgency</div><div class="v">${escapeHtml(w.urgency||'—')}</div></div>
           <div class="field-row"><div class="k">Submitted</div><div class="v">${formatDateTime(w.created_at)}</div></div>
+          <div class="field-row"><div class="k">Session ID</div><div class="v"><code style="font-size:11px;color:var(--text-3);">${escapeHtml(w.session_id || '—')}</code></div></div>
         `;
 
-        // Render option_data structured
-        const od = w.option_data || {};
-        const odHtml = Object.entries(od).map(([k, v]) => {
-          if (v === null || v === undefined || v === '') return '';
-          const isLong = String(v).length > 80;
-          const niceKey = k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-          return `<div class="field-row"><div class="k">${escapeHtml(niceKey)}</div><div class="v ${isLong ? 'long' : ''}">${escapeHtml(v)}</div></div>`;
-        }).join('');
-
-        // Also show raw request as long text if available
-        const requestHtml = w.request ? `<div class="field-row"><div class="k">Summary</div><div class="v long">${escapeHtml(w.request)}</div></div>` : '';
-
-        document.getElementById('wm-option-data').innerHTML = (odHtml + requestHtml) || '<div style="font-size:12px;color:var(--text-3);">No structured details.</div>';
+        // Render full option_data tree (nested objects expanded into sub-blocks)
+        const summary = w.request ? `<div class="field-row"><div class="k">Summary</div><div class="v long">${escapeHtml(w.request)}</div></div>` : '';
+        const tree = renderDataTree(w.option_data || {});
+        document.getElementById('wm-option-data').innerHTML = (summary + tree) || '<div style="font-size:12px;color:var(--text-3);">No structured details.</div>';
 
         document.getElementById('wm-status').value = w.status || 'new';
         document.getElementById('wm-notes').value  = w.admin_notes || '';
         document.getElementById('wm-status-msg').textContent = '';
         document.getElementById('wm-notes-msg').textContent  = '';
         document.getElementById('modal-wish').classList.add('show');
-      } catch(e) { alert('Could not load wish details.'); }
+      } catch(e) { console.error(e); alert('Could not load wish details.'); }
+    }
+
+    // ────────────────────────────────────────────────
+    // Recursive data renderer — used by wish + request modals
+    // Walks any object/array, renders every field, expands nested
+    // objects as sub-blocks with section headers. Skips null/empty.
+    // ────────────────────────────────────────────────
+    function renderDataTree(data, depth = 0) {
+      if (data === null || data === undefined) return '';
+      if (Array.isArray(data)) {
+        if (!data.length) return '';
+        return data.map((item, idx) => {
+          if (typeof item === 'object' && item !== null) {
+            return `<div class="data-subblock">
+              <div class="data-subblock-title">Item ${idx + 1}</div>
+              ${renderDataTree(item, depth + 1)}
+            </div>`;
+          }
+          return `<div class="field-row"><div class="k">[${idx}]</div><div class="v">${escapeHtml(String(item))}</div></div>`;
+        }).join('');
+      }
+      if (typeof data === 'object') {
+        return Object.entries(data).map(([k, v]) => {
+          if (v === null || v === undefined || v === '') return '';
+          const niceKey = prettyKey(k);
+          if (typeof v === 'object' && !Array.isArray(v)) {
+            // Nested object — render as sub-block
+            const inner = renderDataTree(v, depth + 1);
+            if (!inner.trim()) return '';
+            return `<div class="data-subblock">
+              <div class="data-subblock-title">${escapeHtml(niceKey)}</div>
+              ${inner}
+            </div>`;
+          }
+          if (Array.isArray(v)) {
+            const inner = renderDataTree(v, depth + 1);
+            if (!inner.trim()) return '';
+            return `<div class="data-subblock">
+              <div class="data-subblock-title">${escapeHtml(niceKey)}</div>
+              ${inner}
+            </div>`;
+          }
+          // Scalar (string/number/boolean)
+          const str = String(v);
+          const isLong = str.length > 80;
+          let display = str;
+          if (typeof v === 'boolean') display = v ? '✓ Yes' : '✗ No';
+          return `<div class="field-row"><div class="k">${escapeHtml(niceKey)}</div><div class="v ${isLong ? 'long' : ''}">${escapeHtml(display)}</div></div>`;
+        }).join('');
+      }
+      // Primitive at top level
+      return `<div class="field-row"><div class="k">Value</div><div class="v">${escapeHtml(String(data))}</div></div>`;
+    }
+
+    function prettyKey(k) {
+      // Custom labels for common keys, fallback to title-case
+      const map = {
+        guaranteed_coverage: 'Guaranteed Coverage (US/CA)',
+        from: 'Origin Address',
+        to: 'Destination',
+        recipient_name: "Recipient's Name",
+        recipient_age: "Recipient's Age",
+        recipient_pronouns: "Recipient's Pronouns",
+        recipient_relationship: 'Their Relationship to Sender',
+        recipient_location: "Recipient's City / Region",
+        recipient_country: "Recipient's Country",
+        recipient_language: "Recipient's Language",
+        recipient_situation: "Recipient's Situation",
+        recipient_safety: 'Safety Concerns',
+        recipient_email: "Recipient's Email",
+        recipient_phone: "Recipient's Phone",
+        recipient_contact_pref: 'Best Way to Reach Them',
+        recipient_time_best: 'Best Time of Day',
+        need_type: 'What They Likely Need',
+        expected_timing: 'Expected Use Timing',
+        mention_preference: 'How to Mention Sender',
+        confirmed: 'Member Confirmed Details',
+        bank_name: 'Bank Name',
+        account_name: 'Account Name',
+        phone_last4: 'Phone Last 4',
+        from_country: 'From Country',
+        from_state: 'From State / Province',
+        from_street: 'From Street',
+        from_unit: 'From Unit',
+        from_city: 'From City',
+        from_postal: 'From Postal / ZIP',
+        to_country: 'To Country',
+        to_state: 'To State / Province',
+        to_city: 'To City',
+        to_neighborhood: 'To Neighborhood',
+      };
+      if (map[k]) return map[k];
+      return k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     }
 
     async function wmUpdateStatus() {
