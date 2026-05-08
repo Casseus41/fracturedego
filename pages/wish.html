@@ -244,6 +244,47 @@
       margin-bottom:16px;
     }
     @media(max-width:640px){ .addr-grid { grid-template-columns:1fr; } }
+
+    /* Callout — alternative to .alert with proper icon/body separation
+       (used for the longer informational messages on Option C transfers) */
+    .callout {
+      display:flex; align-items:flex-start; gap:18px;
+      background:var(--pink-dim); border:1px solid var(--border-pink);
+      border-radius:var(--radius-md);
+      padding:24px 26px;
+    }
+    .callout-icon {
+      flex-shrink:0;
+      width:40px; height:40px; border-radius:50%;
+      background:var(--pink-dim-2); border:1px solid var(--border-pink);
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; line-height:1;
+    }
+    .callout-body {
+      flex:1; min-width:0;
+      padding-top:2px;
+    }
+    .callout-body .callout-title {
+      font-family:'Inter', system-ui, sans-serif;
+      font-size:14px; font-weight:600; color:var(--pink);
+      letter-spacing:0.01em;
+      margin:0 0 12px 0; line-height:1.4;
+      text-transform:none;
+    }
+    .callout-body p {
+      font-size:13.5px; color:var(--text-2); line-height:1.85;
+      margin:0 0 12px 0;
+      text-wrap:pretty;
+      hyphens:none; word-break:normal; overflow-wrap:break-word;
+    }
+    .callout-body p:last-child { margin-bottom:0; }
+    .callout-body p strong { color:var(--text); font-weight:600; }
+    @media(max-width:560px){
+      .callout { padding:20px 20px; gap:14px; }
+      .callout-icon { width:36px; height:36px; font-size:16px; }
+      .callout-body .callout-title { font-size:13px; margin-bottom:10px; }
+      .callout-body p { font-size:13px; line-height:1.8; }
+    }
   </style>
 </head>
 <body>
@@ -768,10 +809,16 @@
           </div>
 
           <div class="transfer-method-detail" id="method-direct">
-            <div class="alert alert-info" style="margin-bottom:20px;">
-              ✅ <strong>Got it.</strong> Just hand off your code and the website (<strong>fracturedego.org</strong>) to the person directly. They'll come here, enter the code, and choose their own option. We'll mark this code as released to them and confirm via your contact info below.
+            <div class="callout callout-pink" style="margin-bottom:24px;">
+              <div class="callout-icon">✅</div>
+              <div class="callout-body">
+                <div class="callout-title">Direct hand-off</div>
+                <p>Hand off your code and the website (<strong>fracturedego.org</strong>) to the recipient yourself. They'll come here, enter the code, and choose their own option.</p>
+                <p>We'll mark this code as released to them and confirm via your contact info below. Anything you tell us about them stays internal — it just helps us prepare for their arrival.</p>
+              </div>
             </div>
 
+            <h3 class="subhead no-border">Your <em>contact</em></h3>
             <div class="form-row">
               <div class="field">
                 <label class="field-label">Your Name</label>
@@ -783,46 +830,250 @@
               </div>
             </div>
 
+            <h3 class="subhead">About the <em>recipient</em></h3>
+            <p class="section-desc" style="margin-bottom:18px;">A few details so we can prepare appropriately when they arrive. None of this is shown to them — it's only for our team.</p>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Recipient's Full Name</label>
+                <div class="field-input"><input type="text" id="td-rname" placeholder="Their full name"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Approximate Age <span class="field-optional">helps us prepare</span></label>
+                <div class="field-input">
+                  <select id="td-rage">
+                    <option value="">— Select —</option>
+                    <option>Under 18</option>
+                    <option>18–24</option>
+                    <option>25–34</option>
+                    <option>35–44</option>
+                    <option>45–54</option>
+                    <option>55–64</option>
+                    <option>65+</option>
+                    <option>Unsure</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Their Pronouns <span class="field-optional">if known</span></label>
+                <div class="field-input">
+                  <select id="td-rpronouns">
+                    <option value="">— Select —</option>
+                    <option>she / her</option>
+                    <option>he / him</option>
+                    <option>they / them</option>
+                    <option>she / they</option>
+                    <option>he / they</option>
+                    <option>Other / fluid</option>
+                    <option>Prefer not to say</option>
+                    <option>Unsure</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Their Relationship to You</label>
+                <div class="field-input">
+                  <select id="td-rrelationship">
+                    <option value="">— Select —</option>
+                    <option>Family member</option>
+                    <option>Close friend</option>
+                    <option>Partner / Spouse</option>
+                    <option>Acquaintance</option>
+                    <option>Someone in need I came across</option>
+                    <option>Other</option>
+                    <option>Prefer not to say</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Their City / Region <span class="field-optional">if known</span></label>
+                <div class="field-input"><input type="text" id="td-rlocation" placeholder="City — helps us know what's possible"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Country <span class="field-optional">if known</span></label>
+                <div class="field-input"><input type="text" id="td-rcountry" placeholder="e.g. United States"/></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Preferred Language <span class="field-optional">optional</span></label>
+                <div class="field-input"><input type="text" id="td-rlanguage" placeholder="e.g. English, Spanish"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">When do you expect them to use the code? <span class="field-optional">approximate</span></label>
+                <div class="field-input">
+                  <select id="td-rtiming">
+                    <option>Within hours</option>
+                    <option>Within a day or two</option>
+                    <option>Within the week</option>
+                    <option>Within the month</option>
+                    <option>Whenever they're ready — no rush</option>
+                    <option>Unsure</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div class="field">
-              <label class="field-label">Anything We Should Know? <span class="field-optional">optional</span></label>
+              <label class="field-label">What kind of help do they likely need? <span class="field-optional">your best guess is fine</span></label>
               <div class="field-input">
-                <textarea id="td-notes" rows="3" placeholder="Any context about who you're transferring to or why..."></textarea>
+                <select id="td-rneedtype">
+                  <option value="">— Select —</option>
+                  <option>Financial — short-term cash help</option>
+                  <option>Relocation — needs to leave their current situation</option>
+                  <option>Both financial and relocation</option>
+                  <option>They'll choose what they need themselves</option>
+                  <option>Unsure</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Their general situation <span class="field-optional">optional, but very helpful</span></label>
+              <div class="field-input">
+                <textarea id="td-rsituation" rows="4" placeholder="What's going on for them? What are they up against? Any context that helps us respond well when they arrive..."></textarea>
+              </div>
+              <div class="field-hint">Examples: financial hardship from job loss · escaping an unsafe relationship · medical emergency in family · between housing situations · etc.</div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Sensitivities or safety concerns <span class="field-optional">optional but important if relevant</span></label>
+              <div class="field-input">
+                <textarea id="td-rsafety" rows="3" placeholder="e.g. don't reference the referrer when they arrive, partner monitors their phone, prefers to be addressed by a different name, etc."></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Anything else we should know? <span class="field-optional">optional</span></label>
+              <div class="field-input">
+                <textarea id="td-notes" rows="3" placeholder="Anything that doesn't fit above..."></textarea>
               </div>
             </div>
           </div>
 
           <div class="transfer-method-detail" id="method-anonymous">
-            <div class="alert alert-info" style="margin-bottom:20px;">
-              📨 <strong>We'll reach out to them anonymously.</strong> If they consent, the opportunity becomes theirs and they'll choose their own option. <strong>If they don't consent, we'll email you to let you know</strong> — your code stays in your hands until then.
+            <div class="callout callout-pink" style="margin-bottom:24px;">
+              <div class="callout-icon">📨</div>
+              <div class="callout-body">
+                <div class="callout-title">Anonymous outreach</div>
+                <p>We'll reach out to them anonymously. If they consent, the opportunity becomes theirs and they choose their own option.</p>
+                <p><strong>If they don't consent, we'll email you to let you know</strong> — your code stays in your hands until then.</p>
+              </div>
             </div>
 
             <h3 class="subhead no-border">Recipient's <em>information</em></h3>
+            <p class="section-desc" style="margin-bottom:18px;">The more we know, the better we can approach them. Anything you share here stays with our team.</p>
+
             <div class="form-row">
               <div class="field">
-                <label class="field-label">Recipient's Name</label>
+                <label class="field-label">Recipient's Full Name</label>
                 <div class="field-input"><input type="text" id="ta-rname" placeholder="Their full name"/></div>
               </div>
               <div class="field">
-                <label class="field-label">Recipient's Email or Phone</label>
-                <div class="field-input"><input type="text" id="ta-rcontact" placeholder="How we should reach them"/></div>
+                <label class="field-label">Approximate Age <span class="field-optional">optional</span></label>
+                <div class="field-input">
+                  <select id="ta-rage">
+                    <option value="">— Select —</option>
+                    <option>Under 18</option>
+                    <option>18–24</option>
+                    <option>25–34</option>
+                    <option>35–44</option>
+                    <option>45–54</option>
+                    <option>55–64</option>
+                    <option>65+</option>
+                    <option>Unsure</option>
+                  </select>
+                </div>
               </div>
             </div>
 
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Email Address <span class="field-optional">if known</span></label>
+                <div class="field-input"><input type="email" id="ta-remail" placeholder="them@example.com" autocomplete="off"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label">Phone Number <span class="field-optional">if known</span></label>
+                <div class="field-input"><input type="text" id="ta-rphone" placeholder="+1 555 555 5555" autocomplete="off"/></div>
+              </div>
+            </div>
+            <div class="field-hint" style="margin-top:-8px;margin-bottom:18px;">Provide whichever you have — at least one is needed so we can reach them.</div>
+
             <div class="field">
-              <label class="field-label">Recipient's Location <span class="field-optional">optional</span></label>
+              <label class="field-label">Best Way to Reach Them</label>
               <div class="field-input">
-                <input type="text" id="ta-rlocation" placeholder="City / region — helps us reach them appropriately"/>
+                <select id="ta-rcontactpref">
+                  <option value="">— Select —</option>
+                  <option>Email</option>
+                  <option>Text / SMS</option>
+                  <option>Phone call</option>
+                  <option>Either email or phone</option>
+                  <option>Signal</option>
+                  <option>WhatsApp</option>
+                  <option>Other (note below)</option>
+                  <option>Unsure</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">City / Region <span class="field-optional">if known</span></label>
+                <div class="field-input">
+                  <input type="text" id="ta-rlocation" placeholder="City — helps us reach them appropriately"/>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Country <span class="field-optional">if known</span></label>
+                <div class="field-input">
+                  <input type="text" id="ta-rcountry" placeholder="e.g. United States"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label">Preferred Language <span class="field-optional">optional</span></label>
+                <div class="field-input">
+                  <input type="text" id="ta-rlanguage" placeholder="e.g. English, Spanish"/>
+                </div>
+              </div>
+              <div class="field">
+                <label class="field-label">Best Time of Day to Reach Them <span class="field-optional">optional</span></label>
+                <div class="field-input">
+                  <select id="ta-rtimebest">
+                    <option value="">— Select —</option>
+                    <option>Morning</option>
+                    <option>Midday / lunchtime</option>
+                    <option>Afternoon</option>
+                    <option>Evening</option>
+                    <option>Late night</option>
+                    <option>Weekends only</option>
+                    <option>Anytime</option>
+                    <option>Unsure</option>
+                  </select>
+                </div>
               </div>
             </div>
 
             <div class="field">
-              <label class="field-label">Relationship to You</label>
+              <label class="field-label">Their Relationship to You</label>
               <div class="field-input">
                 <select id="ta-relationship">
                   <option>Family member</option>
                   <option>Close friend</option>
+                  <option>Partner / Spouse</option>
+                  <option>Colleague / Coworker</option>
                   <option>Acquaintance</option>
                   <option>Someone in need I came across</option>
+                  <option>Online connection</option>
                   <option>Other</option>
                   <option>Prefer not to say</option>
                 </select>
@@ -830,9 +1081,28 @@
             </div>
 
             <div class="field">
-              <label class="field-label">Why Are You Transferring to Them?</label>
+              <label class="field-label">How should we mention you, if at all?</label>
               <div class="field-input">
-                <textarea id="ta-reason" rows="3" placeholder="Briefly tell us why you're choosing them. This context helps us approach them appropriately."></textarea>
+                <select id="ta-rmention">
+                  <option value="anonymous">Don't mention me at all — keep it fully anonymous</option>
+                  <option value="hint">Hint at a referral but don't name me</option>
+                  <option value="named">You may share my name if it helps them trust the outreach</option>
+                  <option value="ask_first">Check with me before deciding</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Why are you transferring to them? <span class="field-required">required</span></label>
+              <div class="field-input">
+                <textarea id="ta-reason" rows="4" placeholder="Briefly tell us why you're choosing them — what they might need, what they're going through, any context that helps us approach them appropriately."></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="field-label">Sensitivities or safety concerns <span class="field-optional">optional but important if relevant</span></label>
+              <div class="field-input">
+                <textarea id="ta-safety" rows="3" placeholder="e.g. don't contact during work hours, don't leave voicemail, abusive partner monitors phone, prefer text only, etc."></textarea>
               </div>
             </div>
 
@@ -1160,31 +1430,80 @@
         if (transferMethod === 'direct') {
           summaryName = document.getElementById('td-name').value.trim();
           summaryContact = document.getElementById('td-contact').value.trim();
-          const notes = document.getElementById('td-notes').value.trim();
+          const recipientName     = document.getElementById('td-rname').value.trim();
+          const recipientAge      = document.getElementById('td-rage').value;
+          const recipientPronouns = document.getElementById('td-rpronouns').value;
+          const recipientRel      = document.getElementById('td-rrelationship').value;
+          const recipientLocation = document.getElementById('td-rlocation').value.trim();
+          const recipientCountry  = document.getElementById('td-rcountry').value.trim();
+          const recipientLanguage = document.getElementById('td-rlanguage').value.trim();
+          const recipientTiming   = document.getElementById('td-rtiming').value;
+          const recipientNeedType = document.getElementById('td-rneedtype').value;
+          const recipientSituation= document.getElementById('td-rsituation').value.trim();
+          const recipientSafety   = document.getElementById('td-rsafety').value.trim();
+          const notes             = document.getElementById('td-notes').value.trim();
           if (!summaryContact) { showAlert('form-alert', 'Please provide your contact info.'); return; }
-          optionData = { method: 'direct', notes };
+          optionData = {
+            method: 'direct',
+            recipient_name: recipientName || null,
+            recipient_age: recipientAge || null,
+            recipient_pronouns: recipientPronouns || null,
+            recipient_relationship: recipientRel || null,
+            recipient_location: recipientLocation || null,
+            recipient_country: recipientCountry || null,
+            recipient_language: recipientLanguage || null,
+            expected_timing: recipientTiming || null,
+            need_type: recipientNeedType || null,
+            recipient_situation: recipientSituation || null,
+            recipient_safety: recipientSafety || null,
+            notes,
+          };
           urgency = 'Direct hand-off';
-          summaryRequest = `Direct transfer — sender will hand off code to recipient personally. ${notes ? 'Notes: ' + notes : ''}`;
+          summaryRequest = `Direct transfer to ${recipientName || 'unnamed recipient'}${recipientRel ? ' (' + recipientRel + ')' : ''}${recipientLocation ? ' in ' + recipientLocation : ''}. Need: ${recipientNeedType || 'unspecified'}. Expected timing: ${recipientTiming || 'unspecified'}. ${recipientSituation ? 'Situation: ' + recipientSituation + '. ' : ''}${recipientSafety ? 'Safety: ' + recipientSafety + '. ' : ''}${notes ? 'Notes: ' + notes : ''}`;
         } else {
           summaryName = document.getElementById('ta-name').value.trim();
           summaryContact = document.getElementById('ta-email').value.trim();
-          const recipientName = document.getElementById('ta-rname').value.trim();
-          const recipientContact = document.getElementById('ta-rcontact').value.trim();
+          const recipientName     = document.getElementById('ta-rname').value.trim();
+          const recipientAge      = document.getElementById('ta-rage').value;
+          const recipientEmail    = document.getElementById('ta-remail').value.trim();
+          const recipientPhone    = document.getElementById('ta-rphone').value.trim();
+          const recipientCPref    = document.getElementById('ta-rcontactpref').value;
           const recipientLocation = document.getElementById('ta-rlocation').value.trim();
-          const relationship = document.getElementById('ta-relationship').value;
-          const reason = document.getElementById('ta-reason').value.trim();
-          if (!recipientName || !recipientContact || !summaryContact) {
-            showAlert('form-alert', 'Please fill in the recipient\'s name & contact, and your email.'); return;
+          const recipientCountry  = document.getElementById('ta-rcountry').value.trim();
+          const recipientLang     = document.getElementById('ta-rlanguage').value.trim();
+          const recipientTimeBest = document.getElementById('ta-rtimebest').value;
+          const relationship      = document.getElementById('ta-relationship').value;
+          const mention           = document.getElementById('ta-rmention').value;
+          const reason            = document.getElementById('ta-reason').value.trim();
+          const safety            = document.getElementById('ta-safety').value.trim();
+
+          if (!recipientName || !summaryContact) {
+            showAlert('form-alert', 'Please fill in the recipient\'s name and your email.'); return;
+          }
+          if (!recipientEmail && !recipientPhone) {
+            showAlert('form-alert', 'Please provide at least an email or phone for the recipient.'); return;
+          }
+          if (!reason) {
+            showAlert('form-alert', 'Please tell us why you\'re transferring to them.'); return;
           }
           optionData = {
             method: 'anonymous',
             recipient_name: recipientName,
-            recipient_contact: recipientContact,
-            recipient_location: recipientLocation,
-            relationship, reason,
+            recipient_age: recipientAge || null,
+            recipient_email: recipientEmail || null,
+            recipient_phone: recipientPhone || null,
+            recipient_contact_pref: recipientCPref || null,
+            recipient_location: recipientLocation || null,
+            recipient_country: recipientCountry || null,
+            recipient_language: recipientLang || null,
+            recipient_best_time: recipientTimeBest || null,
+            relationship,
+            mention_preference: mention,
+            reason,
+            safety_notes: safety || null,
           };
           urgency = 'Anonymous referral';
-          summaryRequest = `Anonymous referral to ${recipientName} (${recipientContact}). Relationship: ${relationship}. Reason: ${reason}`;
+          summaryRequest = `Anonymous referral to ${recipientName} (${recipientEmail || recipientPhone}). Relationship: ${relationship}. Mention preference: ${mention}. Reason: ${reason}${safety ? ' / Safety: ' + safety : ''}`;
         }
       }
 

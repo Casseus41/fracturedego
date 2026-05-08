@@ -969,3 +969,79 @@ h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; line-he
   line-height: 1.5;
 }
 .tab-pill:empty { display: none; }
+
+/* Required indicator (matches .field-optional cadence) */
+.field-required {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--pink);
+  margin-left: 6px; opacity: 0.85;
+}
+
+/* === Invite Someone — stats inside .allowance-card === */
+.invite-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.invite-stat {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  text-align: center;
+}
+.invite-stat .ist-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.65rem; font-weight: 400; color: var(--pink);
+  line-height: 1.1;
+}
+.invite-stat .ist-lbl {
+  font-size: 10.5px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+@media (max-width: 600px) {
+  .invite-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Invite item card (extends .assigned-code-card) */
+.invite-card-row {
+  align-items: flex-start !important;
+}
+.invite-row-left {
+  flex: 1; min-width: 0;
+}
+.invite-row-right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+  flex-shrink: 0;
+}
+.invite-recipient {
+  font-size: 14px; font-weight: 600; color: var(--text);
+  margin-bottom: 3px;
+}
+.invite-email {
+  font-size: 13px; color: var(--pink);
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 6px;
+  word-break: break-all;
+}
+.invite-meta {
+  font-size: 11.5px; color: var(--text-3);
+  margin-bottom: 8px; line-height: 1.65;
+}
+.invite-meta-r {
+  font-size: 10.5px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.invite-reason {
+  font-size: 12.5px; color: var(--text-2); line-height: 1.7;
+  background: var(--bg-3); border: 1px solid var(--border);
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  margin-top: 4px;
+}
+.invite-admin-note {
+  font-size: 12.5px; color: var(--text-2); line-height: 1.7;
+  background: var(--pink-dim); border: 1px solid var(--border-pink);
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  margin-top: 8px;
+}
