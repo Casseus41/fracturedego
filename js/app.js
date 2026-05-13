@@ -295,16 +295,19 @@ async function setMemberRole(userId, role) {
 //   MEMBERSHIP REQUESTS — public-facing applications
 // ═══════════════════════════════════════════════
 async function submitMembershipRequest({ firstName, lastName, citizenship, email, phone, lifeQuestion }) {
-  const { data, error } = await sb.from('membership_requests').insert({
+  // NOTE: no .select() chain here — RLS only allows admins to SELECT, so an
+  // anonymous visitor can insert but can't read the row back. Trying to read
+  // back would silently fail the whole call.
+  const { error } = await sb.from('membership_requests').insert({
     first_name:    firstName,
     last_name:     lastName,
     citizenship,
     email,
     phone:         phone || null,
     life_question: lifeQuestion,
-  }).select().single();
+  });
   if (error) throw error;
-  return data;
+  return { ok: true };
 }
 async function getAllMembershipRequests() {
   const { data, error } = await sb.from('membership_requests')
