@@ -349,6 +349,7 @@
 
         <div class="invite-actions">
           <button class="btn btn-primary" id="send-all-btn" onclick="handleSendAll()">📨 Send All Pending Invites</button>
+          <button class="btn btn-secondary" id="test-send-btn" onclick="handleTestSend()" title="Send a one-off test email — does not touch the pending list">🧪 Test send</button>
           <span id="send-status" style="font-size:12px;color:var(--text-3);"></span>
         </div>
 
@@ -663,7 +664,10 @@
         document.getElementById('s-pending').textContent  = requests.filter(r => r.status === 'pending').length;
         document.getElementById('s-wishes').textContent   = wishes.length;
         document.getElementById('s-codes').textContent    = codes.filter(c => c.status === 'unused').length;
-        document.getElementById('s-invites').textContent  = invites.filter(i => !i.accepted).length;
+        document.getElementById('s-invites').textContent  = invites.filter(i => {
+          const s = i.status || (i.sent_at ? 'sent' : 'pending');
+          return s === 'pending' || s === 'failed';
+        }).length;
       } catch(e) { console.error(e); }
     }
 
@@ -1067,20 +1071,51 @@
       try {
         const invites = await getPendingInvites();
         if (!invites.length) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No invitations yet.</td></tr>'; return; }
-        tbody.innerHTML = invites.map(i => `
-          <tr class="no-click">
-            <td class="cell-name">${escapeHtml((i.first_name||'') + ' ' + (i.last_name||'').trim())}</td>
-            <td>${escapeHtml(i.email)}</td>
-            <td>${roleBadge(i.role)}</td>
-            <td>${inviteBadge(i.accepted)}</td>
-            <td style="font-size:12px;">${i.accepted ? ('Sent ' + formatDate(i.sent_at)) : ('Added ' + formatDate(i.invited_at))}</td>
-            <td style="display:flex;gap:6px;flex-wrap:wrap;">
-              ${!i.accepted ? `<button class="btn btn-primary btn-sm" onclick="handleSendOne('${i.id}','${escapeHtml(i.email)}')">Send Now</button>` : ''}
-              <button class="btn btn-danger btn-sm" onclick="handleDeleteInvite('${i.id}')">Remove</button>
-            </td>
-          </tr>
-        `).join('');
-      } catch(e) { tbody.innerHTML = '<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load invites.</td></tr>'; }
+        tbody.innerHTML = invites.map(i => {
+          // Use the status column from patch2; fall back to sent_at presence
+          const status = i.status || (i.sent_at ? 'sent' : 'pending');
+          const canSend = (status === 'pending' || status === 'failed');
+          const fullName = `${i.first_name||''} ${i.last_name||''}`.trim() || '—';
+          const whenText = status === 'sent'     ? 'Sent ' + formatDate(i.sent_at) :
+                           status === 'accepted' ? 'Accepted ' + formatDate(i.sent_at || i.invited_at) :
+                           status === 'failed'   ? 'Failed ' + formatDate(i.sent_at || i.invited_at) :
+                                                   'Added ' + formatDate(i.invited_at);
+          const errorRow = (status === 'failed' && i.last_send_error)
+            ? `<tr class="no-click"><td colspan="6" style="padding:6px 14px 14px;background:rgba(248,113,113,0.04);">
+                 <div style="font-size:11px;color:var(--red);font-family:monospace;line-height:1.6;">⚠️ ${escapeHtml(i.last_send_error)}</div>
+               </td></tr>`
+            : '';
+          return `
+            <tr class="no-click">
+              <td class="cell-name">${escapeHtml(fullName)}</td>
+              <td>${escapeHtml(i.email)}</td>
+              <td>${roleBadge(i.role)}</td>
+              <td>${inviteStatusBadge(status)}</td>
+              <td style="font-size:12px;">${whenText}</td>
+              <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                ${canSend ? `<button class="btn btn-primary btn-sm" onclick="handleSendOne('${i.id}','${escapeHtml(i.email)}')">${status === 'failed' ? 'Retry' : 'Send Now'}</button>` : ''}
+                <button class="btn btn-danger btn-sm" onclick="handleDeleteInvite('${i.id}')">Remove</button>
+              </td>
+            </tr>
+            ${errorRow}
+          `;
+        }).join('');
+      } catch(e) {
+        console.error(e);
+        tbody.innerHTML = `<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load invites: ${escapeHtml(e.message||'unknown')}</td></tr>`;
+      }
+    }
+
+    // Local helper — extends the legacy inviteBadge() to handle all statuses
+    function inviteStatusBadge(status) {
+      const map = {
+        pending:  { cls: 'badge-amber', label: 'Pending' },
+        sent:     { cls: 'badge-green', label: 'Sent' },
+        accepted: { cls: 'badge-pink',  label: 'Accepted' },
+        failed:   { cls: 'badge-red',   label: 'Failed' },
+      };
+      const m = map[status] || map.pending;
+      return `<span class="badge ${m.cls}">${m.label}</span>`;
     }
 
     async function handleAddInvite() {
@@ -1103,23 +1138,82 @@
 
     async function handleSendOne(inviteId, email) {
       if (!confirm('Send invitation email to ' + email + '?')) return;
-      const status = document.getElementById('send-status'); status.textContent = 'Sending...';
-      try { const result = await sendInvites({ invite_id: inviteId }); status.textContent = result.sent === 1 ? `✓ Sent to ${email}` : `✕ Failed`; loadInvites(); }
-      catch(e) { status.textContent = '✕ ' + e.message; }
-      setTimeout(() => status.textContent = '', 4000);
+      const status = document.getElementById('send-status');
+      status.textContent = 'Sending…';
+      status.style.color = 'var(--text-3)';
+      try {
+        const result = await sendInvites({ invite_id: inviteId });
+        if (result.sent === 1) {
+          status.textContent = `✓ Sent to ${email}`;
+          status.style.color = 'var(--green)';
+        } else {
+          const firstErr = result.errors?.[0]?.error || 'Unknown failure';
+          status.textContent = `✕ Failed: ${firstErr}`;
+          status.style.color = 'var(--red)';
+        }
+        loadInvites();
+      } catch(e) {
+        status.textContent = `✕ ${e.message}`;
+        status.style.color = 'var(--red)';
+        console.error('handleSendOne failed:', e);
+      }
+      setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 8000);
     }
 
     async function handleSendAll() {
       const invites = await getPendingInvites();
-      const pending = invites.filter(i => !i.accepted);
-      if (!pending.length) { alert('No pending invites.'); return; }
+      const pending = invites.filter(i => {
+        const s = i.status || (i.sent_at ? 'sent' : 'pending');
+        return s === 'pending' || s === 'failed';
+      });
+      if (!pending.length) { alert('No pending invites to send.'); return; }
       if (!confirm(`Send ${pending.length} pending invite(s)?`)) return;
       setLoading('send-all-btn', true);
-      const status = document.getElementById('send-status'); status.textContent = 'Sending...';
-      try { const result = await sendInvites({ send_all: true }); status.textContent = `✓ ${result.message}`; loadInvites(); }
-      catch(e) { status.textContent = '✕ ' + e.message; }
+      const status = document.getElementById('send-status');
+      status.textContent = 'Sending…';
+      status.style.color = 'var(--text-3)';
+      try {
+        const result = await sendInvites({ send_all: true });
+        status.textContent = `✓ ${result.message}`;
+        status.style.color = result.failed ? 'var(--amber)' : 'var(--green)';
+        if (result.errors && result.errors.length) {
+          console.warn('Send errors:', result.errors);
+        }
+        loadInvites();
+      } catch(e) {
+        status.textContent = `✕ ${e.message}`;
+        status.style.color = 'var(--red)';
+        console.error('handleSendAll failed:', e);
+      }
       setLoading('send-all-btn', false, '📨 Send All Pending Invites');
-      setTimeout(() => status.textContent = '', 6000);
+      setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 12000);
+    }
+
+    async function handleTestSend() {
+      const status = document.getElementById('send-status');
+      const myEmail = prompt('Send a test invitation to this email address:\n(Use your own to verify the pipeline.)');
+      if (!myEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(myEmail.trim())) {
+        if (myEmail !== null) alert('Please enter a valid email.');
+        return;
+      }
+      status.textContent = 'Sending test…';
+      status.style.color = 'var(--text-3)';
+      try {
+        const result = await sendInvites({ test_to: myEmail.trim() });
+        if (result.sent === 1) {
+          status.textContent = `✓ Test sent to ${myEmail.trim()} — check that inbox (and spam folder).`;
+          status.style.color = 'var(--green)';
+        } else {
+          const firstErr = result.errors?.[0]?.error || 'Unknown failure';
+          status.textContent = `✕ Test failed: ${firstErr}`;
+          status.style.color = 'var(--red)';
+        }
+      } catch(e) {
+        status.textContent = `✕ ${e.message}`;
+        status.style.color = 'var(--red)';
+        console.error('handleTestSend failed:', e);
+      }
+      setTimeout(() => { status.textContent = ''; status.style.color = ''; }, 12000);
     }
 
     async function handleDeleteInvite(id) {

@@ -340,3 +340,108 @@ Both the wish modal and the request modal now use `renderDataTree()`, so request
 4. Have a member submit a wish (any option) → as admin, click into it → confirm the Reference ID banner appears, all fields including nested ones (from/to address, payment details) are visible
 
 _Admin visibility fixes added by Claude on 2026-05-08._
+
+---
+
+## 13. Session — 2026-05-08 (send-invite hardening)
+
+Audit of the admin Send Invite flow turned up two issues plus an opportunity:
+
+### Issues found
+1. **No Edge Function source in the repo** — `js/app.js`'s `sendInvites()` POSTs to `/functions/v1/send-invite`, but the Function only existed in Supabase. Any drift between the deployed code and the front-end was invisible. If the deploy was missing, broken, or had the wrong Resend setup, the Send button failed silently.
+2. **Schema couldn't track failures** — `pending_invites` only had `accepted` (boolean) and `sent_at`. There was no way to distinguish "never sent" from "send failed" from "actually accepted," and no place to store the error message when Resend rejected an email.
+
+### What shipped
+
+**`supabase/functions/send-invite/index.ts`** — complete, audited source for the Edge Function. Highlights:
+- Verifies the caller's JWT is valid AND their profile has `is_admin = true` OR `role = 'admin'`
+- Accepts three body shapes: `{invite_id}`, `{send_all: true}`, or `{test_to: "email"}`
+- Calls Resend's REST API directly (no SDK dependency, so no version drift)
+- Per-row error capture — if one send fails the others keep going
+- On success: writes `status='sent'`, `sent_at=NOW()`, clears `last_send_error`, and sets legacy `accepted=true` so old UI doesn't break
+- On failure: writes `status='failed'`, `last_send_error=<full Resend response>`, leaves `accepted=false`
+- Returns `{sent, failed, attempted, message, errors: [{email, error}]}`
+- Branded HTML template + plain-text alternative, both using the site's dark theme aesthetic
+
+**`supabase/migration-v3-patch2.sql`** — adds two columns to `pending_invites`:
+- `status` text — `pending` / `sent` / `accepted` / `failed`
+- `last_send_error` text — debugging breadcrumbs from Resend
+- Backfills existing rows with sensible status values
+- Idempotent
+
+**`pages/admin.html` Invitations tab** rewired:
+- Status column uses the new `inviteStatusBadge()` with 4 colors (amber/green/pink/red)
+- Failed sends show the Resend error inline as a sub-row in red monospace — admin can diagnose without leaving the page
+- Failed rows get a "Retry" button (vs. "Send Now" for never-sent)
+- `handleSendOne` / `handleSendAll` now surface real error messages with proper colors and longer timeouts (8–12s)
+- New "🧪 Test send" button — prompts for an email and sends a one-off invitation that never touches the pending list. Perfect for verifying the Resend pipeline works without polluting your real invite queue.
+
+### Deployment checklist (do these in order)
+
+1. **Run the SQL patch** in Supabase SQL Editor:
+   ```
+   supabase/migration-v3-patch2.sql
+   ```
+   Adds the `status` and `last_send_error` columns.
+
+2. **Deploy the Edge Function** (one-time setup if not already done):
+   ```bash
+   # Install the Supabase CLI if you don't have it
+   npm i -g supabase
+
+   # From the project root:
+   supabase login
+   supabase link --project-ref aoxheyrtxygerkqsveaf
+   supabase functions deploy send-invite
+   ```
+   (If the CLI route feels heavy, you can also paste the contents of `supabase/functions/send-invite/index.ts` directly into the Supabase Dashboard → Edge Functions → send-invite → Edit.)
+
+3. **Set the Resend secret** in Supabase (Dashboard → Project Settings → Edge Functions → Secrets):
+   ```
+   RESEND_API_KEY = re_xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+   Optional overrides:
+   ```
+   INVITE_FROM_EMAIL = fractured Ego <invites@fracturedego.org>
+   INVITE_REPLY_TO   = admin@fracturedego.org
+   SITE_URL          = https://fracturedego.org
+   ```
+
+4. **Verify the Resend sending domain** at https://resend.com/domains
+   - Add `fracturedego.org`
+   - Add the DNS records they show (SPF + DKIM, usually two TXT records and one MX-like record)
+   - Wait for "Verified" status (usually under 15 minutes after DNS propagates)
+
+5. **Test the pipeline:**
+   - Open admin → Invitations tab → click 🧪 Test send → enter your own email → check inbox + spam
+   - If it lands: deploy is good. Click Send Now on a real pending invite.
+   - If it errors: the error message will appear next to the button AND in the inline error row in the invite list. Common causes:
+     - `RESEND_API_KEY secret not set` → step 3
+     - `Resend 401` → wrong API key
+     - `Resend 403: domain not verified` → step 4
+     - `Function not found` → step 2 didn't deploy successfully
+
+### Files added/modified this session
+- **NEW** `supabase/functions/send-invite/index.ts`
+- **NEW** `supabase/migration-v3-patch2.sql`
+- **MODIFIED** `pages/admin.html` — invites tab UI + handlers
+- **MODIFIED** `PROJECT_NOTES.md` — this section
+
+_Send-invite hardening added by Claude on 2026-05-08._
+
+---
+
+## 13a. Hotfix — 2026-05-08 (patch2 column safety)
+
+When Cass ran `migration-v3-patch2.sql`, Postgres rejected it with `ERROR: 42703: column "accepted" does not exist`. The deployed `pending_invites` table apparently never had that column — the front-end's old `logInvite` insert with `accepted: false` was getting silently rejected by PostgREST (which explains why historically the Invitations tab never actually populated even before this round of changes).
+
+### What changed
+- **`supabase/migration-v3-patch2.sql`** rewritten to be fully defensive — uses `ADD COLUMN IF NOT EXISTS` for every column (`accepted`, `sent_at`, `invited_at`, `last_send_error`) and a `DO $$ ... END$$` block for the constrained `status` column. The backfill now keys off `sent_at IS NOT NULL` only, not `accepted`. Works regardless of starting schema.
+- **`js/app.js`** — `logInvite` no longer inserts `accepted: false`; inserts `status: 'pending'` instead, which always exists after patch2.
+- **`supabase/functions/send-invite/index.ts`** — Edge Function no longer writes `accepted=true`. The success path writes only `status='sent'`, `sent_at=NOW()`, `last_send_error=null`. Cleaner semantics.
+- **`pages/admin.html`** — every read of `i.accepted` replaced with the status determination (`status || (sent_at ? 'sent' : 'pending')`). The overview pending-invites counter and the Send All filter now use status too.
+
+### Run order
+Re-run **`migration-v3-patch2.sql`** — it's idempotent, will add only the missing columns, and will succeed this time because it no longer references columns that may not exist. Then re-deploy the Edge Function (or re-paste it into the dashboard) and you're set.
+
+_Hotfix added by Claude on 2026-05-08._

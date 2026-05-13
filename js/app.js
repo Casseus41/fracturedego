@@ -296,7 +296,7 @@ async function setMemberRole(userId, role) {
 // ═══════════════════════════════════════════════
 async function logInvite(email, firstName, lastName, role) {
   const { error } = await sb.from('pending_invites').insert({
-    email, first_name: firstName, last_name: lastName, role, accepted: false
+    email, first_name: firstName, last_name: lastName, role, status: 'pending'
   });
   if (error) throw error;
 }
