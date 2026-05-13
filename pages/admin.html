@@ -170,6 +170,7 @@
         <button class="sidebar-link" onclick="switchTab('codes')"><span class="icon">🔑</span> Access Codes</button>
         <button class="sidebar-link" onclick="switchTab('code-requests')"><span class="icon">📨</span> Code Requests</button>
         <button class="sidebar-link" onclick="switchTab('invite-requests')"><span class="icon">💌</span> Invite Requests</button>
+        <button class="sidebar-link" onclick="switchTab('membership-requests')"><span class="icon">🌹</span> Membership Requests</button>
         <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invitations</button>
         <button class="sidebar-link" onclick="switchTab('login-activity')"><span class="icon">🛡️</span> Login Activity</button>
       </div>
@@ -198,6 +199,7 @@
         <button class="tab-btn" data-tab="codes" onclick="switchTab('codes')">🔑 Access Codes</button>
         <button class="tab-btn" data-tab="code-requests" onclick="switchTab('code-requests')">📨 Code Requests <span class="tab-pill" id="cr-pill"></span></button>
         <button class="tab-btn" data-tab="invite-requests" onclick="switchTab('invite-requests')">💌 Invite Requests <span class="tab-pill" id="ir-pill"></span></button>
+        <button class="tab-btn" data-tab="membership-requests" onclick="switchTab('membership-requests')">🌹 Membership Requests <span class="tab-pill" id="mr-pill"></span></button>
         <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invitations</button>
         <button class="tab-btn" data-tab="login-activity" onclick="switchTab('login-activity')">🛡️ Login Activity</button>
       </div>
@@ -408,6 +410,30 @@
         </div>
       </div>
 
+      <!-- MEMBERSHIP REQUESTS -->
+      <div class="tab-panel" id="tab-membership-requests">
+        <div style="margin-bottom:16px;">
+          <div class="page-eyebrow" style="margin-bottom:6px;">Public Membership Applications</div>
+          <p style="font-size:13px;color:var(--text-3);line-height:1.7;margin:0;max-width:720px;">
+            Submitted from the home page by visitors without an invitation or access code. Click a row to read their answer to "What do you want out of life?" and any other context. Approving auto-adds them to the Invitations queue so you can hit <strong>Send Now</strong> from there.
+          </p>
+        </div>
+
+        <div class="code-tabs-row" style="margin-bottom:16px;">
+          <button class="code-filter-btn active" data-mr-filter="pending" onclick="setMRFilter('pending')">Pending</button>
+          <button class="code-filter-btn" data-mr-filter="approved" onclick="setMRFilter('approved')">Approved</button>
+          <button class="code-filter-btn" data-mr-filter="denied" onclick="setMRFilter('denied')">Denied</button>
+          <button class="code-filter-btn" data-mr-filter="all" onclick="setMRFilter('all')">All</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Submitted</th><th>Name</th><th>Citizenship</th><th>Email</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="membership-requests-body"><tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- LOGIN ACTIVITY -->
       <div class="tab-panel" id="tab-login-activity">
         <div style="margin-bottom:16px;">
@@ -509,6 +535,25 @@
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal('modal-allowance')">Cancel</button>
         <button class="btn btn-primary" id="al-confirm" onclick="confirmAdjustAllowance()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Membership Request Detail Modal -->
+  <div class="modal-overlay" id="modal-membership" onclick="if(event.target===this)closeModal('modal-membership')">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-eyebrow">🌹 Membership Application</div>
+          <div class="modal-title" id="mm-title">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-membership')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="mm-content"></div>
+      </div>
+      <div class="modal-footer" id="mm-footer">
+        <!-- Action buttons rendered dynamically by openMembershipModal -->
       </div>
     </div>
   </div>
@@ -651,6 +696,7 @@
       if (name === 'invite')   loadInvites();
       if (name === 'code-requests')   loadCodeRequests();
       if (name === 'invite-requests') loadInviteRequests();
+      if (name === 'membership-requests') loadMembershipRequests();
       if (name === 'login-activity')  loadLoginActivity();
     }
 
@@ -1511,22 +1557,186 @@
     // ════════════════════════════════════════════════
     async function updatePillBadges() {
       try {
-        const [crs, irs] = await Promise.all([
+        const [crs, irs, mrs] = await Promise.all([
           getAllCodeRequests().catch(() => []),
           getAllInviteRequests().catch(() => []),
+          getAllMembershipRequests().catch(() => []),
         ]);
         const crPending = crs.filter(r => r.status === 'pending').length;
         const irPending = irs.filter(r => r.status === 'pending').length;
-        const crPill = document.getElementById('cr-pill');
-        const irPill = document.getElementById('ir-pill');
-        crPill.textContent = crPending ? crPending : '';
-        crPill.style.display = crPending ? '' : 'none';
-        irPill.textContent = irPending ? irPending : '';
-        irPill.style.display = irPending ? '' : 'none';
+        const mrPending = mrs.filter(r => r.status === 'pending').length;
+        const setPill = (id, n) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.textContent = n ? n : '';
+          el.style.display = n ? '' : 'none';
+        };
+        setPill('cr-pill', crPending);
+        setPill('ir-pill', irPending);
+        setPill('mr-pill', mrPending);
       } catch (e) { /* silent */ }
     }
     // Refresh pill badges on initial load
     setTimeout(updatePillBadges, 800);
+
+    // ════════════════════════════════════════════════
+    // MEMBERSHIP REQUESTS (public applications)
+    // ════════════════════════════════════════════════
+    let allMembershipRequests = [];
+    let mrFilter = 'pending';
+    let currentMembershipId = null;
+
+    async function loadMembershipRequests() {
+      const tbody = document.getElementById('membership-requests-body');
+      try {
+        allMembershipRequests = await getAllMembershipRequests();
+        renderMembershipRequests();
+        updatePillBadges();
+      } catch (e) {
+        console.error(e);
+        tbody.innerHTML = `<tr class="no-click"><td colspan="6" style="color:var(--red);">Failed to load: ${escapeHtml(e.message || 'unknown')}. Make sure migration-v3-patch3.sql has been applied.</td></tr>`;
+      }
+    }
+
+    function setMRFilter(f) {
+      mrFilter = f;
+      document.querySelectorAll('[data-mr-filter]').forEach(b => b.classList.toggle('active', b.dataset.mrFilter === f));
+      renderMembershipRequests();
+    }
+
+    function renderMembershipRequests() {
+      const tbody = document.getElementById('membership-requests-body');
+      const list = mrFilter === 'all' ? allMembershipRequests : allMembershipRequests.filter(r => r.status === mrFilter);
+      if (!list.length) {
+        tbody.innerHTML = `<tr class="no-click"><td colspan="6" style="color:var(--text-3);">No ${mrFilter === 'all' ? '' : mrFilter + ' '}membership applications.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(r => {
+        const fullName = `${r.first_name||''} ${r.last_name||''}`.trim() || '—';
+        return `<tr onclick="openMembershipModal('${r.id}')" style="cursor:pointer;">
+          <td style="font-size:12px;">${formatDate(r.created_at)}</td>
+          <td class="cell-name">${escapeHtml(fullName)}</td>
+          <td style="font-size:12px;">${escapeHtml(countryLabel(r.citizenship))}</td>
+          <td style="font-size:12px;"><a href="mailto:${escapeHtml(r.email)}" style="color:var(--pink);" onclick="event.stopPropagation();">${escapeHtml(r.email)}</a></td>
+          <td>${statusBadge(r.status)}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openMembershipModal('${r.id}')">Review</button>
+            ${r.status === 'pending' ? `
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();quickApproveMembership('${r.id}')">Approve</button>
+              <button class="btn btn-danger btn-sm"  onclick="event.stopPropagation();quickDenyMembership('${r.id}')">Deny</button>
+            ` : ''}
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    function openMembershipModal(id) {
+      const r = allMembershipRequests.find(x => x.id === id);
+      if (!r) return;
+      currentMembershipId = id;
+      const fullName = `${r.first_name||''} ${r.last_name||''}`.trim() || '—';
+      document.getElementById('mm-title').textContent = fullName;
+
+      const content = document.getElementById('mm-content');
+      content.innerHTML = `
+        <div class="ref-banner">
+          <div class="ref-banner-label">Reference ID</div>
+          <div class="ref-banner-value">${escapeHtml(r.id.split('-')[0].toUpperCase())}</div>
+        </div>
+        <div class="field-row"><div class="k">Submitted</div><div class="v">${formatDateTime(r.created_at)}</div></div>
+        <div class="field-row"><div class="k">Status</div><div class="v">${statusBadge(r.status)}</div></div>
+        <div class="field-row"><div class="k">First Name</div><div class="v">${escapeHtml(r.first_name||'—')}</div></div>
+        <div class="field-row"><div class="k">Last Name</div><div class="v">${escapeHtml(r.last_name||'—')}</div></div>
+        <div class="field-row"><div class="k">Citizenship</div><div class="v">${escapeHtml(countryLabel(r.citizenship))}</div></div>
+        <div class="field-row"><div class="k">Email</div><div class="v"><a href="mailto:${escapeHtml(r.email)}" style="color:var(--pink);">${escapeHtml(r.email)}</a></div></div>
+        <div class="field-row"><div class="k">Phone</div><div class="v">${r.phone ? `<a href="tel:${escapeHtml(r.phone)}" style="color:var(--pink);">${escapeHtml(r.phone)}</a>` : '—'}</div></div>
+        <div class="data-subblock">
+          <div class="data-subblock-title">What do you want out of life?</div>
+          <div class="field-row"><div class="v long">${escapeHtml(r.life_question || '—')}</div></div>
+        </div>
+        ${r.admin_notes ? `<div class="data-subblock">
+          <div class="data-subblock-title">Admin notes</div>
+          <div class="field-row"><div class="v long">${escapeHtml(r.admin_notes)}</div></div>
+        </div>` : ''}
+        ${r.reviewed_at ? `<div class="field-row"><div class="k">Reviewed</div><div class="v">${formatDateTime(r.reviewed_at)}</div></div>` : ''}
+      `;
+
+      const footer = document.getElementById('mm-footer');
+      if (r.status === 'pending') {
+        footer.innerHTML = `
+          <button class="btn btn-secondary" onclick="closeModal('modal-membership')">Close</button>
+          <button class="btn btn-danger"   onclick="denyMembershipFromModal()">Deny…</button>
+          <button class="btn btn-primary"  onclick="approveMembershipFromModal()">Approve &amp; queue invitation</button>
+        `;
+      } else {
+        footer.innerHTML = `<button class="btn btn-secondary" onclick="closeModal('modal-membership')">Close</button>`;
+      }
+
+      document.getElementById('modal-membership').classList.add('show');
+    }
+
+    async function approveMembershipFromModal() {
+      if (!confirm('Approve this application? They will be added to the Invitations queue — you can then send their invite from the Invitations tab.')) return;
+      try {
+        await approveMembershipRequest(currentMembershipId, null);
+        closeModal('modal-membership');
+        await loadMembershipRequests();
+      } catch (e) {
+        alert('Failed to approve: ' + (e.message || 'unknown'));
+      }
+    }
+
+    async function denyMembershipFromModal() {
+      const reason = prompt('Optional: why are you denying this application?\n(Stays internal — they don\'t see it.)');
+      if (reason === null) return; // user hit Cancel
+      try {
+        await denyMembershipRequest(currentMembershipId, reason || null);
+        closeModal('modal-membership');
+        await loadMembershipRequests();
+      } catch (e) {
+        alert('Failed to deny: ' + (e.message || 'unknown'));
+      }
+    }
+
+    async function quickApproveMembership(id) {
+      if (!confirm('Approve this application? They will be added to the Invitations queue so you can send their invite from there.')) return;
+      try {
+        await approveMembershipRequest(id, null);
+        await loadMembershipRequests();
+      } catch (e) {
+        alert('Failed to approve: ' + (e.message || 'unknown'));
+      }
+    }
+
+    async function quickDenyMembership(id) {
+      const reason = prompt('Optional: why are you denying this?\n(Stays internal.)');
+      if (reason === null) return;
+      try {
+        await denyMembershipRequest(id, reason || null);
+        await loadMembershipRequests();
+      } catch (e) {
+        alert('Failed to deny: ' + (e.message || 'unknown'));
+      }
+    }
+
+    // Country code → label map (matches the home page dropdown)
+    const COUNTRY_LABELS = {
+      US:'United States',CA:'Canada',MX:'Mexico',GB:'United Kingdom',IE:'Ireland',
+      AU:'Australia',NZ:'New Zealand',DE:'Germany',FR:'France',ES:'Spain',IT:'Italy',
+      PT:'Portugal',NL:'Netherlands',BE:'Belgium',CH:'Switzerland',AT:'Austria',
+      SE:'Sweden',NO:'Norway',DK:'Denmark',FI:'Finland',IS:'Iceland',PL:'Poland',
+      CZ:'Czech Republic',GR:'Greece',TR:'Turkey',IL:'Israel',AE:'United Arab Emirates',
+      SA:'Saudi Arabia',EG:'Egypt',ZA:'South Africa',NG:'Nigeria',KE:'Kenya',
+      MA:'Morocco',IN:'India',PK:'Pakistan',BD:'Bangladesh',LK:'Sri Lanka',
+      PH:'Philippines',ID:'Indonesia',MY:'Malaysia',SG:'Singapore',TH:'Thailand',
+      VN:'Vietnam',JP:'Japan',KR:'South Korea',CN:'China',TW:'Taiwan',HK:'Hong Kong',
+      BR:'Brazil',AR:'Argentina',CL:'Chile',CO:'Colombia',PE:'Peru',VE:'Venezuela',
+      UA:'Ukraine',RU:'Russia',
+      OTHER:'Other',STATELESS:'Stateless',DUAL:'Dual citizenship',
+    };
+    function countryLabel(code) {
+      return COUNTRY_LABELS[code] || code || '—';
+    }
   </script>
 </body>
 </html>

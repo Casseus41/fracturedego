@@ -292,6 +292,70 @@ async function setMemberRole(userId, role) {
 }
 
 // ═══════════════════════════════════════════════
+//   MEMBERSHIP REQUESTS — public-facing applications
+// ═══════════════════════════════════════════════
+async function submitMembershipRequest({ firstName, lastName, citizenship, email, phone, lifeQuestion }) {
+  const { data, error } = await sb.from('membership_requests').insert({
+    first_name:    firstName,
+    last_name:     lastName,
+    citizenship,
+    email,
+    phone:         phone || null,
+    life_question: lifeQuestion,
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+async function getAllMembershipRequests() {
+  const { data, error } = await sb.from('membership_requests')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+async function getMembershipRequestById(id) {
+  const { data, error } = await sb.from('membership_requests').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data;
+}
+async function setMembershipRequestStatus(id, status, adminNotes) {
+  const { data: { user } } = await sb.auth.getUser();
+  const updates = {
+    status,
+    reviewed_at: new Date().toISOString(),
+    reviewed_by: user?.id || null,
+  };
+  if (typeof adminNotes === 'string') updates.admin_notes = adminNotes;
+  const { error } = await sb.from('membership_requests').update(updates).eq('id', id);
+  if (error) throw error;
+}
+async function approveMembershipRequest(id, adminNotes) {
+  // 1. Mark the request approved
+  // 2. Auto-add the applicant to pending_invites so admin can hit Send from
+  //    the existing Invitations tab.
+  const req = await getMembershipRequestById(id);
+  if (!req) throw new Error('Request not found');
+
+  // Check if this email is already in pending_invites
+  const { data: existing } = await sb.from('pending_invites').select('id').eq('email', req.email).maybeSingle();
+  if (!existing) {
+    const { error: invErr } = await sb.from('pending_invites').insert({
+      email:      req.email,
+      first_name: req.first_name,
+      last_name:  req.last_name,
+      role:       'member',
+      status:     'pending',
+    });
+    if (invErr) throw invErr;
+  }
+
+  await setMembershipRequestStatus(id, 'approved', adminNotes);
+}
+async function denyMembershipRequest(id, reason) {
+  await setMembershipRequestStatus(id, 'denied', reason || null);
+}
+
+// ═══════════════════════════════════════════════
 //   ADMIN — INVITES (existing flow)
 // ═══════════════════════════════════════════════
 async function logInvite(email, firstName, lastName, role) {
@@ -309,19 +373,37 @@ async function deletePendingInvite(id) {
   if (error) throw error;
 }
 async function sendInvites(opts = {}) {
+  // Use the Supabase SDK's functions.invoke — it surfaces clear errors when
+  // the function is missing, returns non-2xx, or has CORS issues. Raw fetch
+  // hides these as "Failed to fetch" which is hard to diagnose.
   const session = await getSession();
   if (!session) throw new Error('Not authenticated');
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/send-invite`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`,
-    },
-    body: JSON.stringify(opts),
+
+  const { data, error } = await sb.functions.invoke('send-invite', {
+    body: opts,
   });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.error || 'Failed to send invites');
-  return result;
+
+  if (error) {
+    // FunctionsHttpError, FunctionsRelayError, FunctionsFetchError
+    // The .context.response may have the actual server response body
+    let detail = error.message || 'Unknown error';
+    try {
+      if (error.context && typeof error.context.json === 'function') {
+        const body = await error.context.json();
+        if (body?.error) detail = body.error;
+      }
+    } catch (_) { /* response body not JSON, keep generic message */ }
+
+    // Friendlier translation for the most common cause
+    if (detail === 'Failed to fetch' || /Failed to send a request/.test(detail) || /NetworkError/.test(detail)) {
+      detail = "Edge Function 'send-invite' not reachable — check that it's deployed in Supabase (Dashboard → Edge Functions → send-invite).";
+    } else if (/non-2xx/i.test(detail) && !data) {
+      detail = 'Edge Function returned an error — open browser console (F12) for details, or check Supabase → Edge Functions → send-invite → Logs.';
+    }
+    throw new Error(detail);
+  }
+
+  return data;
 }
 
 // ═══════════════════════════════════════════════

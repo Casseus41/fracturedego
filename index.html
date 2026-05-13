@@ -199,6 +199,130 @@
       line-height:1.75;
     }
 
+    /* ── Membership request section ───────────────────────────── */
+    .mreq-divider {
+      width:60px; height:1px;
+      background:linear-gradient(to right, transparent, var(--border-pink), transparent);
+      margin:64px auto 28px;
+      opacity:0;
+      animation:fadeUp 0.8s ease 0.9s forwards;
+    }
+    .mreq-section {
+      max-width:520px;
+      margin:0 auto;
+      text-align:center;
+      opacity:0;
+      animation:fadeUp 0.8s ease 1s forwards;
+    }
+    .mreq-eyebrow {
+      font-size:10.5px; letter-spacing:0.18em;
+      text-transform:uppercase; color:var(--text-3);
+      margin-bottom:14px;
+    }
+    .mreq-heading {
+      font-family:'Cormorant Garamond',serif;
+      font-size:2rem; font-weight:300;
+      color:var(--text); margin-bottom:14px;
+      line-height:1.2;
+    }
+    .mreq-heading em { font-style:italic; color:var(--pink); }
+    .mreq-lead {
+      font-size:13.5px; color:var(--text-2);
+      line-height:1.85; margin-bottom:36px;
+      max-width:440px; margin-left:auto; margin-right:auto;
+    }
+    .mreq-card {
+      background:rgba(255,255,255,0.02);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:36px 32px;
+      text-align:left;
+    }
+    .mreq-card .field { margin-bottom:18px; }
+    .mreq-card .form-row { margin-bottom:18px; }
+    .mreq-card label.field-label {
+      font-size:11px; font-weight:600; color:var(--text-3);
+      text-transform:uppercase; letter-spacing:0.08em;
+      margin-bottom:6px; display:block;
+    }
+    .mreq-card .field-optional {
+      text-transform:none; letter-spacing:0;
+      font-weight:400; color:var(--text-3);
+      font-size:10.5px; margin-left:6px;
+    }
+    .mreq-card input,
+    .mreq-card select,
+    .mreq-card textarea {
+      width:100%; box-sizing:border-box;
+      background:var(--bg-3); border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:11px 14px; font-family:Inter, sans-serif;
+      font-size:13.5px; color:var(--text);
+      transition:border-color 0.2s;
+    }
+    .mreq-card input:focus,
+    .mreq-card select:focus,
+    .mreq-card textarea:focus {
+      outline:none; border-color:var(--border-pink);
+    }
+    .mreq-card textarea { resize:vertical; min-height:96px; }
+    .mreq-card .helper-line {
+      font-size:11px; color:var(--text-3);
+      margin-top:6px; line-height:1.65;
+    }
+    .mreq-submit-row {
+      margin-top:8px; display:flex;
+      flex-direction:column; align-items:stretch; gap:14px;
+    }
+    .mreq-submit {
+      background:var(--pink); color:#0c0c0e;
+      font-family:Inter, sans-serif;
+      font-weight:700; font-size:13px;
+      letter-spacing:0.04em;
+      padding:14px 20px; border:none; cursor:pointer;
+      border-radius:var(--radius-full);
+      transition:transform 0.2s, filter 0.2s;
+    }
+    .mreq-submit:hover:not(:disabled) {
+      transform:translateY(-1px); filter:brightness(1.05);
+    }
+    .mreq-submit:disabled { opacity:0.5; cursor:not-allowed; }
+    .mreq-fine-print {
+      font-size:11px; color:var(--text-3);
+      line-height:1.7; text-align:center;
+    }
+    .mreq-alert {
+      padding:12px 14px; margin-bottom:16px;
+      border-radius:var(--radius-sm); font-size:13px;
+      line-height:1.65;
+    }
+    .mreq-alert.err  { background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.25); color:#f87171; }
+    .mreq-alert.ok   { background:var(--pink-dim); border:1px solid var(--border-pink); color:var(--pink); }
+    .mreq-success {
+      text-align:center; padding:36px 20px;
+    }
+    .mreq-success-icon {
+      width:60px; height:60px; border-radius:50%;
+      background:var(--pink-dim); border:1px solid var(--border-pink);
+      display:flex; align-items:center; justify-content:center;
+      font-size:28px; margin:0 auto 20px;
+    }
+    .mreq-success h3 {
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.5rem; font-weight:300;
+      color:var(--text); margin-bottom:12px;
+    }
+    .mreq-success h3 em { font-style:italic; color:var(--pink); }
+    .mreq-success p {
+      font-size:13px; color:var(--text-2); line-height:1.8;
+      max-width:380px; margin:0 auto;
+    }
+    .hidden { display:none !important; }
+    @media(max-width:560px){
+      .mreq-card { padding:26px 22px; }
+      .mreq-heading { font-size:1.65rem; }
+    }
+
     @media(max-width:560px){
       .entry-cards {
         flex-direction:column;
@@ -267,6 +391,136 @@
         If you arrived here by accident or without direct authorization from a member, please leave immediately. All IP addresses are captured and logged for review.
       </div>
     </div>
+
+    <!-- ═══════════════════════════════════════════════
+         REQUEST MEMBERSHIP
+         ═══════════════════════════════════════════════ -->
+    <div class="mreq-divider"></div>
+
+    <section class="mreq-section">
+      <div class="mreq-eyebrow">Without an invitation?</div>
+      <h2 class="mreq-heading">Request <em>Membership</em></h2>
+      <p class="mreq-lead">
+        If you don't have an invitation or an access code but believe this network could help you, you may submit a request below. Every application is reviewed personally — we'll respond by email when a decision is made.
+      </p>
+
+      <div class="mreq-card">
+        <!-- Form view -->
+        <div id="mreq-form">
+          <div id="mreq-alert" class="mreq-alert hidden"></div>
+
+          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field">
+              <label class="field-label" for="mreq-first">First name</label>
+              <input type="text" id="mreq-first" autocomplete="given-name" placeholder="Your first name"/>
+            </div>
+            <div class="field">
+              <label class="field-label" for="mreq-last">Last name</label>
+              <input type="text" id="mreq-last" autocomplete="family-name" placeholder="Your last name"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="mreq-citizenship">Country of citizenship</label>
+            <select id="mreq-citizenship">
+              <option value="">— Select country —</option>
+              <option value="US">United States</option>
+              <option value="CA">Canada</option>
+              <option value="MX">Mexico</option>
+              <option value="GB">United Kingdom</option>
+              <option value="IE">Ireland</option>
+              <option value="AU">Australia</option>
+              <option value="NZ">New Zealand</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="ES">Spain</option>
+              <option value="IT">Italy</option>
+              <option value="PT">Portugal</option>
+              <option value="NL">Netherlands</option>
+              <option value="BE">Belgium</option>
+              <option value="CH">Switzerland</option>
+              <option value="AT">Austria</option>
+              <option value="SE">Sweden</option>
+              <option value="NO">Norway</option>
+              <option value="DK">Denmark</option>
+              <option value="FI">Finland</option>
+              <option value="IS">Iceland</option>
+              <option value="PL">Poland</option>
+              <option value="CZ">Czech Republic</option>
+              <option value="GR">Greece</option>
+              <option value="TR">Turkey</option>
+              <option value="IL">Israel</option>
+              <option value="AE">United Arab Emirates</option>
+              <option value="SA">Saudi Arabia</option>
+              <option value="EG">Egypt</option>
+              <option value="ZA">South Africa</option>
+              <option value="NG">Nigeria</option>
+              <option value="KE">Kenya</option>
+              <option value="MA">Morocco</option>
+              <option value="IN">India</option>
+              <option value="PK">Pakistan</option>
+              <option value="BD">Bangladesh</option>
+              <option value="LK">Sri Lanka</option>
+              <option value="PH">Philippines</option>
+              <option value="ID">Indonesia</option>
+              <option value="MY">Malaysia</option>
+              <option value="SG">Singapore</option>
+              <option value="TH">Thailand</option>
+              <option value="VN">Vietnam</option>
+              <option value="JP">Japan</option>
+              <option value="KR">South Korea</option>
+              <option value="CN">China</option>
+              <option value="TW">Taiwan</option>
+              <option value="HK">Hong Kong</option>
+              <option value="BR">Brazil</option>
+              <option value="AR">Argentina</option>
+              <option value="CL">Chile</option>
+              <option value="CO">Colombia</option>
+              <option value="PE">Peru</option>
+              <option value="VE">Venezuela</option>
+              <option value="UA">Ukraine</option>
+              <option value="RU">Russia</option>
+              <option value="OTHER">Other (please specify in your answer below)</option>
+              <option value="STATELESS">Stateless / No citizenship</option>
+              <option value="DUAL">Dual citizenship (please specify below)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="mreq-email">Email address</label>
+            <input type="email" id="mreq-email" autocomplete="email" placeholder="you@example.com"/>
+            <div class="helper-line">We respond to every application by email — please make sure it's spelled correctly.</div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="mreq-phone">Phone number <span class="field-optional">optional</span></label>
+            <input type="tel" id="mreq-phone" autocomplete="tel" placeholder="Include country code if outside the US"/>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="mreq-life">What do you want out of life?</label>
+            <textarea id="mreq-life" rows="5" placeholder="Tell us — in your own words and your own time — what you're hoping for, working through, or moving toward."></textarea>
+            <div class="helper-line">There's no right answer. We read every submission.</div>
+          </div>
+
+          <div class="mreq-submit-row">
+            <button type="button" class="mreq-submit" id="mreq-submit-btn" onclick="submitMembershipRequestForm()">
+              Submit my application
+            </button>
+            <div class="mreq-fine-print">
+              By submitting, you consent to us reviewing your information and contacting you by email. Your application stays private and is only seen by our admin team.
+            </div>
+          </div>
+        </div>
+
+        <!-- Success view -->
+        <div id="mreq-success" class="mreq-success hidden">
+          <div class="mreq-success-icon">✓</div>
+          <h3>Your application has been <em>received</em></h3>
+          <p>Thank you for sharing. We'll review your application personally and respond by email when a decision is made. This usually takes a few days but can take longer during quieter periods.</p>
+        </div>
+      </div>
+    </section>
 
   </div>
 </div>
@@ -338,6 +592,56 @@ function draw(){
   requestAnimationFrame(draw);
 }
 draw();
+
+// ── Membership Request form ──────────────────────────────────────
+async function submitMembershipRequestForm() {
+  const $ = (id) => document.getElementById(id);
+  const alert = $('mreq-alert');
+  const btn   = $('mreq-submit-btn');
+
+  const first       = $('mreq-first').value.trim();
+  const last        = $('mreq-last').value.trim();
+  const citizenship = $('mreq-citizenship').value;
+  const email       = $('mreq-email').value.trim();
+  const phone       = $('mreq-phone').value.trim();
+  const life        = $('mreq-life').value.trim();
+
+  const showErr = (msg) => {
+    alert.textContent = msg;
+    alert.className = 'mreq-alert err';
+    alert.classList.remove('hidden');
+    alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  if (!first || !last)             return showErr('Please enter your first and last name.');
+  if (!citizenship)                return showErr('Please select your country of citizenship.');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                                   return showErr('Please enter a valid email address.');
+  if (!life || life.length < 20)   return showErr('Please share a little more about what you want out of life — at least a sentence or two.');
+
+  alert.classList.add('hidden');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    await submitMembershipRequest({
+      firstName:    first,
+      lastName:     last,
+      citizenship,
+      email,
+      phone,
+      lifeQuestion: life,
+    });
+    document.getElementById('mreq-form').classList.add('hidden');
+    document.getElementById('mreq-success').classList.remove('hidden');
+    document.getElementById('mreq-success').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {
+    console.error(e);
+    showErr('We couldn\'t submit your application — please try again in a moment. If this keeps happening, you can also email admin@fracturedego.org directly.');
+    btn.disabled = false;
+    btn.textContent = 'Submit my application';
+  }
+}
 </script>
 
 </body>
