@@ -26,50 +26,50 @@
       <div id="form-view">
 
         <ol class="steps" data-step="4" aria-label="Step 4 of 4">
-          <li class="done"><span class="step-n">1</span><span class="step-l">Read</span></li>
-          <li class="done"><span class="step-n">2</span><span class="step-l">Confirm</span></li>
-          <li class="done"><span class="step-n">3</span><span class="step-l">Enter code</span></li>
-          <li class="current" aria-current="step"><span class="step-n">4</span><span class="step-l">Your request</span></li>
+          <li class="done"><span class="step-n">1</span><span class="step-l">Listen</span></li>
+          <li class="done"><span class="step-n">2</span><span class="step-l">Promise</span></li>
+          <li class="done"><span class="step-n">3</span><span class="step-l">Unlock</span></li>
+          <li class="current" aria-current="step"><span class="step-n">4</span><span class="step-l">Ask</span></li>
         </ol>
 
-        <h1 class="wish-title">Your <em>opportunity</em><br>has been unlocked.</h1>
+        <h1 class="wish-title">The door<br/><em>is open.</em></h1>
         <p class="wish-lead">
-          Choose one of the three options below. Each code can be used for one submission, and we respond personally to every one.
+          Choose one path. What you ask for stays between you and us.
         </p>
 
         <div id="form-alert" class="alert alert-error hidden" style="margin-bottom:20px;"></div>
 
         <div class="options-row" role="radiogroup" aria-label="Choose an option">
           <button type="button" class="option-pick" data-option="money" role="radio" aria-checked="false">
-            <div class="opt-letter">A</div><div class="opt-icon">💰</div>
-            <div class="opt-title">A gift of money</div><div class="opt-sub" id="opt-money-sub">Set by your code</div>
+            <div class="opt-letter">A</div><div class="opt-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="4" y="8" width="24" height="17" rx="2"/><path d="M4.5 9l11.5 9 11.5-9"/></svg></div>
+            <div class="opt-title">The envelope</div><div class="opt-sub" id="opt-money-sub">Sealed by your code</div>
           </button>
           <button type="button" class="option-pick" data-option="wish" role="radio" aria-checked="false">
-            <div class="opt-letter">B</div><div class="opt-icon">🌟</div>
-            <div class="opt-title">A wish</div><div class="opt-sub">Anything you need, in your words</div>
+            <div class="opt-letter">B</div><div class="opt-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 4c1.2 6.2 5.8 10.8 12 12-6.2 1.2-10.8 5.8-12 12-1.2-6.2-5.8-10.8-12-12 6.2-1.2 10.8-5.8 12-12z"/></svg></div>
+            <div class="opt-title">The wish</div><div class="opt-sub">Ask for anything</div>
           </button>
           <button type="button" class="option-pick" data-option="transfer" role="radio" aria-checked="false">
-            <div class="opt-letter">C</div><div class="opt-icon">🔄</div>
-            <div class="opt-title">Pass it on</div><div class="opt-sub">Give it to someone else</div>
+            <div class="opt-letter">C</div><div class="opt-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="10" cy="16" r="5.5"/><path d="M15.5 16H28M23 16v4.5M26.5 16v3"/></svg></div>
+            <div class="opt-title">The key</div><div class="opt-sub">Hand it to someone else</div>
           </button>
         </div>
 
         <!-- ════════ A · MONEY ════════ -->
         <div class="form-section" id="section-money">
-          <h2 class="section-heading">A gift of <em>money</em></h2>
+          <h2 class="section-heading">The <em>envelope</em></h2>
           <div class="amount-hero">
-            <span class="amount-label">Your code is worth</span>
+            <span class="amount-label">Sealed inside</span>
             <span class="amount-value" id="amount-value">—</span>
             <span class="amount-note" id="amount-note"></span>
           </div>
 
           <div class="field">
-            <label class="field-label" for="m-currency">Receive it in</label>
+            <label class="field-label" for="m-currency">Have it arrive in</label>
             <div class="field-input"><select id="m-currency"></select></div>
             <div class="helper-line" id="m-equiv"></div>
           </div>
 
-          <h3 class="subhead">Your <em>contact</em></h3>
+          <h3 class="subhead">How we’ll <em>reach you</em></h3>
           <div class="form-row">
             <div class="field">
               <label class="field-label" for="m-name">Your name</label>
@@ -85,8 +85,8 @@
             <div class="field-input"><input type="text" id="m-country" placeholder="e.g. United States" autocomplete="off"/></div>
           </div>
 
-          <h3 class="subhead">How would you like to <em>receive it?</em></h3>
-          <p class="section-desc" style="margin-bottom:18px;">Pick the option that works best for you. We'll ask for the matching details below.</p>
+          <h3 class="subhead">How should it <em>reach you?</em></h3>
+          <p class="section-desc" style="margin-bottom:18px;">Choose a way. We’ll ask only for what it needs.</p>
 
           <div class="pm-tiles">
             <div class="pm-tile" data-pm="bank"     onclick="choosePM('bank')"><div class="pm-icon">🏦</div><div class="pm-name">Bank / Wire</div></div>
@@ -271,27 +271,27 @@
 
           <div class="confirm-row" id="m-confirm-row" style="display:none;">
             <input type="checkbox" id="m-confirm"/>
-            <label for="m-confirm"><strong>I confirm</strong> the payment details above are correct. I understand incorrect details may delay or prevent delivery.</label>
+            <label for="m-confirm"><strong>I confirm</strong> these details are correct. A mistake here can delay delivery or stop it entirely.</label>
           </div>
 
           <div class="field">
             <label class="field-label" for="m-notes">Anything else <span class="field-optional">optional</span></label>
             <div class="field-input"><textarea id="m-notes" rows="3" placeholder="Timing, special instructions, anything that helps us deliver it safely."></textarea></div>
           </div>
-          <div class="info-tip"><strong>Privacy:</strong> Don’t enter full account or card numbers anywhere in this form. If we need them, we’ll ask over a secure channel when we follow up.</div>
+          <div class="info-tip"><strong>Quietly:</strong> never enter full account or card numbers here. If we need them, we’ll ask privately when we reach out.</div>
         </div>
 
         <!-- ════════ B · A WISH ════════ -->
         <div class="form-section" id="section-wish">
-          <h2 class="section-heading">A <em>wish</em></h2>
-          <p class="section-desc">There’s no list to choose from. Ask for what you actually need or want — big or small, practical or personal. The fractured Ego team will do everything we can to fulfill it.</p>
+          <h2 class="section-heading">The <em>wish</em></h2>
+          <p class="section-desc">There is no menu. Ask for what you truly need or want — large or small, practical or personal. We’ll do everything within our reach to answer it.</p>
 
           <div class="field">
-            <label class="field-label" for="w-wish">What’s your wish? <span class="field-required">required</span></label>
-            <div class="field-input"><textarea id="w-wish" rows="6" maxlength="4000" placeholder="Describe it in your own words. Be as specific as you can."></textarea></div>
+            <label class="field-label" for="w-wish">Your wish <span class="field-required">required</span></label>
+            <div class="field-input"><textarea id="w-wish" rows="6" maxlength="4000" placeholder="In your own words. The more specific, the better we can answer it."></textarea></div>
           </div>
           <div class="field">
-            <label class="field-label" for="w-context">What would help us understand it? <span class="field-optional">optional</span></label>
+            <label class="field-label" for="w-context">What should we understand? <span class="field-optional">optional</span></label>
             <div class="field-input"><textarea id="w-context" rows="3" maxlength="2000" placeholder="Why it matters, what you’ve already tried, anything we should be careful about."></textarea></div>
           </div>
           <div class="form-row">
@@ -308,7 +308,7 @@
             </div>
           </div>
 
-          <h3 class="subhead">Your <em>contact</em></h3>
+          <h3 class="subhead">How we’ll <em>reach you</em></h3>
           <div class="form-row">
             <div class="field">
               <label class="field-label" for="w-name">Your name</label>
@@ -319,27 +319,27 @@
               <div class="field-input"><input type="text" id="w-contact" placeholder="Email, phone, Signal, or other" autocomplete="off"/></div>
             </div>
           </div>
-          <div class="info-tip"><strong>How wishes work:</strong> we read every wish personally and talk with you before anything happens. Some wishes can be granted exactly; others in part or in a different way. If what you need is money, choose option A instead.</div>
+          <div class="info-tip"><strong>How wishes are answered:</strong> every wish is read by a person, and we’ll speak with you before anything moves. Some are granted exactly, some in part or in another form. If what you need is money, choose the envelope.</div>
         </div>
 
         <!-- ════════ C · PASS IT ON ════════ -->
         <div class="form-section" id="section-transfer">
-          <h2 class="section-heading">Pass it <em>on</em></h2>
-          <p class="section-desc">Give this opportunity to someone else. Your current code is used either way.</p>
+          <h2 class="section-heading">The <em>key</em></h2>
+          <p class="section-desc">Hand it to someone else. Your code is spent either way.</p>
 
           <div class="transfer-method">
             <button type="button" class="method-card" data-method="contact">
-              <div class="m-title">We reach out for you</div>
-              <div class="m-desc">Tell us who they are. We contact them discreetly and never name you unless you ask us to.</div>
+              <div class="m-title">We find them</div>
+              <div class="m-desc">Tell us who they are. We reach them quietly and never say your name unless you ask.</div>
             </button>
             <button type="button" class="method-card" data-method="new_code">
-              <div class="m-title">A new code, shown once</div>
+              <div class="m-title">A new key, shown once</div>
               <div class="m-desc" id="newcode-desc">We generate a fresh code of the same value for you to give them yourself.</div>
             </button>
           </div>
 
           <div class="transfer-method-detail" id="method-contact">
-            <h3 class="subhead no-border">Who should we <em>contact?</em></h3>
+            <h3 class="subhead no-border">Who should we <em>find?</em></h3>
             <div class="form-row">
               <div class="field">
                 <label class="field-label" for="t-rname">Their name <span class="field-required">required</span></label>
@@ -376,17 +376,17 @@
               <div class="field-input"><textarea id="t-reason" rows="3" placeholder="A little context helps us approach them well."></textarea></div>
             </div>
             <div class="field">
-              <label class="field-label" for="t-safety">Anything we should know before contacting them? <span class="field-optional">optional</span></label>
+              <label class="field-label" for="t-safety">Anything we should know before we reach out? <span class="field-optional">optional</span></label>
               <div class="field-input"><textarea id="t-safety" rows="2" placeholder="e.g. someone else reads their email, call only after 6pm, use a different name."></textarea></div>
             </div>
             <div class="field">
-              <label class="field-label" for="t-naming">May we tell them it came from you?</label>
+              <label class="field-label" for="t-naming">May we say it came from you?</label>
               <div class="field-input"><select id="t-naming">
-                <option value="no">No — keep me anonymous</option>
+                <option value="no">No — keep my name out of it</option>
                 <option value="first_name">Yes, you may share my first name</option>
               </select></div>
             </div>
-            <h3 class="subhead">Your <em>contact</em></h3>
+            <h3 class="subhead">How we’ll <em>reach you</em></h3>
             <div class="form-row">
               <div class="field">
                 <label class="field-label" for="t-name">Your name</label>
@@ -397,11 +397,11 @@
                 <div class="field-input"><input type="email" id="t-email" placeholder="So we can tell you how it went" autocomplete="off"/></div>
               </div>
             </div>
-            <div class="info-tip">If they decline, we’ll email you and help you choose another option.</div>
+            <div class="info-tip">If they decline, we’ll let you know and help you choose again.</div>
           </div>
 
           <div class="transfer-method-detail" id="method-new_code">
-            <div class="notice-bar" style="margin-top:4px;">🔑 <span id="newcode-warning">After you submit, the new code appears on this screen <strong>one time only</strong>. Copy it or write it down before you leave — it can’t be shown again.</span></div>
+            <div class="notice-bar" style="margin-top:4px;">🔑 <span id="newcode-warning">After you submit, their key appears on this screen <strong>once</strong>. Copy it or write it down before you leave — it can’t be shown again.</span></div>
             <div class="field">
               <label class="field-label" for="n-recipient">Who will you give it to? <span class="field-optional">optional</span></label>
               <div class="field-input"><input type="text" id="n-recipient" placeholder="A first name or relationship is enough" autocomplete="off"/></div>
@@ -418,14 +418,14 @@
             </div>
             <label class="confirm-row" for="n-ack">
               <input type="checkbox" id="n-ack"/>
-              <span><strong>I understand</strong> the new code will be shown only once, and that I’m responsible for passing it on.</span>
+              <span><strong>I understand</strong> the key is shown only once, and passing it on is up to me.</span>
             </label>
           </div>
         </div>
 
         <div class="submit-bar">
-          <button type="button" class="btn btn-primary btn-full btn-lg" id="submit-btn" disabled>Choose an option</button>
-          <div class="final-warning"><strong>Submitting is final.</strong> Your code is used for this one request, and we’ll follow up personally.</div>
+          <button type="button" class="btn btn-primary btn-full btn-lg" id="submit-btn" disabled>Choose a path</button>
+          <div class="final-warning"><strong>This is final.</strong> Your code answers one request, and we’ll be in touch personally.</div>
         </div>
       </div>
 
@@ -436,13 +436,13 @@
           <h1 class="wish-title" id="success-title" style="margin-bottom:14px;">Received.</h1>
           <p class="wish-lead" id="success-text" style="max-width:500px;margin:0 auto 24px;"></p>
           <div class="code-reveal" id="code-reveal" hidden>
-            <div class="cr-label">Their new code — shown only once</div>
+            <div class="cr-label">Their key — shown only once</div>
             <div class="cr-code" id="cr-code" aria-live="polite"></div>
             <div class="cr-value" id="cr-value"></div>
-            <button type="button" class="btn btn-primary" id="cr-copy">Copy code</button>
-            <p class="cr-note">Give them this code and the address <strong>fracturedego.org</strong>. Once you leave this page, the code can’t be shown again.</p>
+            <button type="button" class="btn btn-primary" id="cr-copy">Copy the key</button>
+            <p class="cr-note">Give them this code and the address <strong>fracturedego.org</strong>. Once you leave, it’s gone from view for good.</p>
           </div>
-          <div class="ref-line">Reference ID <span id="ref-id">—</span></div>
+          <div class="ref-line">Your reference <span id="ref-id">—</span></div>
           <a href="../index.html" class="btn btn-secondary" id="home-btn">Return home</a>
         </div>
       </div>
@@ -469,11 +469,10 @@
 
     // ── Setup ──
     (function init() {
-      $('opt-money-sub').textContent = VALUE ? `${VALUE_LABEL} with your ${DIGITS}-digit code` : 'Set by your code';
+      $('opt-money-sub').textContent = VALUE ? `${VALUE_LABEL} · sealed by your code` : 'Sealed by your code';
       $('amount-value').textContent = VALUE_LABEL || '—';
-      $('amount-note').textContent = DIGITS === 10 ? 'US dollars · an older 10-digit code, honored at this value'
-                                                   : `US dollars · set by your ${DIGITS}-digit code`;
-      $('newcode-desc').textContent = `We generate a fresh ${VALUE_LABEL || ''} code for you to give them yourself.`.replace('  ', ' ');
+      $('amount-note').textContent = `US dollars · sealed by your ${DIGITS}-digit code`;
+      $('newcode-desc').textContent = `A fresh ${VALUE_LABEL || ''} code, for you to pass on yourself.`.replace('  ', ' ');
       const order = ['USD','EUR','GBP','CAD','AUD','JPY','CHF','MXN','INR','BRL','ZAR','CNY','KRW','SGD','HKD','NZD','SEK','NOK'];
       $('m-currency').innerHTML = order.map((c) => `<option value="${c}">${c} — ${(CURRENCY_NAMES && CURRENCY_NAMES[c]) || c}</option>`).join('');
       updateEquivalent();
@@ -594,10 +593,10 @@
       if (transferMethod === 'new_code') return $('n-ack').checked;
       return false;
     }
-    const LABELS = { money: 'Request my gift', wish: 'Send my wish', transfer: 'Pass it on' };
+    const LABELS = { money: 'Claim the envelope', wish: 'Send my wish', transfer: 'Pass on the key' };
     function updateSubmitState() {
       const btn = $('submit-btn');
-      btn.textContent = chosenOption ? LABELS[chosenOption] : 'Choose an option';
+      btn.textContent = chosenOption ? LABELS[chosenOption] : 'Choose a path';
       btn.disabled = !(chosenOption === 'money' ? moneyValid() : chosenOption === 'wish' ? wishValid() : chosenOption === 'transfer' ? transferValid() : false);
     }
     document.addEventListener('input', updateSubmitState);
@@ -651,10 +650,10 @@
 
     function showSuccess(res, payload) {
       const copy = {
-        money: ['Your request is in.', `We’ll contact you at ${payload.contact} to arrange your ${VALUE_LABEL} gift.`],
-        wish: ['Your wish has been received.', 'We’ll read it personally and reach out before anything happens.'],
-        contact: ['We’ll reach out to them.', `We’ll contact ${payload.data.recipient_name || 'them'} discreetly and email you if they decline.`],
-        new_code: ['Here is their new code.', 'Copy it now, then share it with them along with the website address.'],
+        money: ['It’s sealed.', `We’ll reach you at ${payload.contact} to deliver your ${VALUE_LABEL} envelope.`],
+        wish: ['Your wish has been heard.', 'A person will read it, and we’ll reach out before anything moves.'],
+        contact: ['We’ll find them.', `We’ll reach ${payload.data.recipient_name || 'them'} quietly — and tell you if they decline.`],
+        new_code: ['Here is their key.', 'Copy it now. It will not appear again.'],
       };
       const key = payload.option === 'transfer' ? payload.data.method : payload.option;
       $('success-title').textContent = copy[key][0];
@@ -666,7 +665,7 @@
         $('cr-code').textContent = res.issued_code;
         $('cr-value').textContent = `${codeValueLabel(res.issued_code)} · ${res.issued_code.length} digits`;
         $('home-btn').addEventListener('click', (e) => {
-          if (!codeCopied && !confirm('Have you saved the new code? It can’t be shown again.')) e.preventDefault();
+          if (!codeCopied && !confirm('Have you saved their key? It can’t be shown again.')) e.preventDefault();
         });
       }
       $('form-view').hidden = true; $('success-view').hidden = false;

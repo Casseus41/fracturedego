@@ -3,451 +3,80 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#ffb6c1"/>
   <link rel="icon" type="image/svg+xml" href="logo.svg"/>
   <link rel="apple-touch-icon" href="logo.svg"/>
-  <meta name="robots" content="noindex, nofollow"/>
   <title>fractured Ego</title>
   <link rel="stylesheet" href="css/styles.css"/>
-
-  <style>
-    /* ===== Animated Background ===== */
-    #bg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    body {
-      display:flex;
-      flex-direction:column;
-      min-height:100vh;
-      background:#0c0c0e;
-      overflow-x:hidden;
-    }
-
-    .landing {
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:60px 24px;
-      position:relative;
-      z-index:1;
-    }
-
-    .landing-inner {
-      max-width:660px;
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-    }
-
-    .chip {
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:var(--pink-dim);
-      border:1px solid var(--border-pink);
-      border-radius:var(--radius-full);
-      padding:7px 18px;
-      font-size:11.5px;
-      font-weight:600;
-      color:var(--pink);
-      margin-bottom:36px;
-      opacity:0;
-      animation:fadeUp 0.7s ease 0.15s forwards;
-    }
-
-    .hero-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:clamp(2.8rem,7vw,5.5rem);
-      font-weight:300;
-      line-height:1.06;
-      letter-spacing:0.01em;
-      color:var(--text);
-      margin-bottom:22px;
-      opacity:0;
-      animation:fadeUp 0.8s ease 0.3s forwards;
-    }
-
-    .hero-title em {
-      font-style:italic;
-      color:var(--pink);
-    }
-
-    .hero-title .brand {
-      font-weight:500;
-    }
-
-    .hero-sub {
-      font-size:15px;
-      color:var(--text-2);
-      line-height:1.8;
-      max-width:460px;
-      margin-bottom:52px;
-      opacity:0;
-      animation:fadeUp 0.8s ease 0.45s forwards;
-    }
-
-    /* ===== LOGO INSERT ===== */
-    .mid-logo {
-      width:180px;
-      margin:18px 0 44px;
-      opacity:0.9;
-      filter:drop-shadow(0 0 18px rgba(255,182,193,0.35));
-    }
-
-    .entry-cards {
-      display:flex;
-      gap:16px;
-      flex-wrap:wrap;
-      justify-content:center;
-      opacity:0;
-      animation:fadeUp 0.8s ease 0.6s forwards;
-    }
-
-    .entry-card {
-      background:var(--pink);
-      border-radius:var(--radius-xl);
-      padding:32px 28px 26px;
-      width:232px;
-      text-align:left;
-      text-decoration:none;
-      display:flex;
-      flex-direction:column;
-      border:1px solid transparent;
-      transition:transform 0.25s, box-shadow 0.25s, filter 0.25s;
-      box-shadow:var(--shadow-pink);
-    }
-
-    .entry-card:hover {
-      transform:translateY(-5px);
-      box-shadow:0 16px 48px rgba(255,182,193,0.3);
-      filter:brightness(1.03);
-    }
-
-    .entry-icon {
-      width:44px;
-      height:44px;
-      border-radius:12px;
-      background:rgba(0,0,0,0.12);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:20px;
-      margin-bottom:18px;
-    }
-
-    .entry-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:1.25rem;
-      font-weight:500;
-      color:#0c0c0e;
-      margin-bottom:7px;
-    }
-
-    .entry-desc {
-      font-size:12px;
-      color:rgba(0,0,0,0.6);
-      line-height:1.7;
-      margin-bottom:22px;
-      flex:1;
-    }
-
-    .entry-cta {
-      display:inline-flex;
-      align-items:center;
-      gap:5px;
-      background:rgba(0,0,0,0.1);
-      color:#0c0c0e;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:0.04em;
-      padding:7px 16px;
-      border-radius:var(--radius-full);
-      width:fit-content;
-      transition:background 0.2s;
-    }
-
-    .entry-card:hover .entry-cta {
-      background:rgba(0,0,0,0.18);
-    }
-
-    .notice {
-      margin-top:44px;
-      max-width:500px;
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      background:rgba(255,255,255,0.02);
-      border:1px solid var(--border);
-      border-radius:var(--radius-md);
-      padding:14px 18px;
-      opacity:0;
-      animation:fadeUp 0.8s ease 0.78s forwards;
-    }
-
-    .notice-text {
-      font-size:11.5px;
-      color:var(--text-3);
-      line-height:1.75;
-    }
-
-    /* ── Membership request section ───────────────────────────── */
-    .mreq-divider {
-      width:60px; height:1px;
-      background:linear-gradient(to right, transparent, var(--border-pink), transparent);
-      margin:64px auto 28px;
-      opacity:0;
-      animation:fadeUp 0.8s ease 0.9s forwards;
-    }
-    .mreq-section {
-      max-width:520px;
-      margin:0 auto;
-      text-align:center;
-      opacity:0;
-      animation:fadeUp 0.8s ease 1s forwards;
-    }
-    .mreq-eyebrow {
-      font-size:10.5px; letter-spacing:0.18em;
-      text-transform:uppercase; color:var(--text-3);
-      margin-bottom:14px;
-    }
-    .mreq-heading {
-      font-family:'Cormorant Garamond',serif;
-      font-size:2rem; font-weight:300;
-      color:var(--text); margin-bottom:14px;
-      line-height:1.2;
-    }
-    .mreq-heading em { font-style:italic; color:var(--pink); }
-    .mreq-lead {
-      font-size:13.5px; color:var(--text-2);
-      line-height:1.85; margin-bottom:36px;
-      max-width:440px; margin-left:auto; margin-right:auto;
-    }
-    .mreq-card {
-      background:rgba(255,255,255,0.02);
-      border:1px solid var(--border);
-      border-radius:var(--radius-xl);
-      padding:36px 32px;
-      text-align:left;
-    }
-    .mreq-card .field { margin-bottom:18px; }
-    .mreq-card .form-row { margin-bottom:18px; }
-    .mreq-card label.field-label {
-      font-size:11px; font-weight:600; color:var(--text-3);
-      text-transform:uppercase; letter-spacing:0.08em;
-      margin-bottom:6px; display:block;
-    }
-    .mreq-card .field-optional {
-      text-transform:none; letter-spacing:0;
-      font-weight:400; color:var(--text-3);
-      font-size:10.5px; margin-left:6px;
-    }
-    .mreq-card input,
-    .mreq-card select,
-    .mreq-card textarea {
-      width:100%; box-sizing:border-box;
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-sm);
-      padding:11px 14px; font-family:Inter, sans-serif;
-      font-size:13.5px; color:var(--text);
-      transition:border-color 0.2s;
-    }
-    .mreq-card input:focus,
-    .mreq-card select:focus,
-    .mreq-card textarea:focus {
-      outline:none; border-color:var(--border-pink);
-    }
-    .mreq-card textarea { resize:vertical; min-height:96px; }
-    .mreq-card .helper-line {
-      font-size:11px; color:var(--text-3);
-      margin-top:6px; line-height:1.65;
-    }
-    .mreq-submit-row {
-      margin-top:8px; display:flex;
-      flex-direction:column; align-items:stretch; gap:14px;
-    }
-    .mreq-submit {
-      background:var(--pink); color:#0c0c0e;
-      font-family:Inter, sans-serif;
-      font-weight:700; font-size:13px;
-      letter-spacing:0.04em;
-      padding:14px 20px; border:none; cursor:pointer;
-      border-radius:var(--radius-full);
-      transition:transform 0.2s, filter 0.2s;
-    }
-    .mreq-submit:hover:not(:disabled) {
-      transform:translateY(-1px); filter:brightness(1.05);
-    }
-    .mreq-submit:disabled { opacity:0.5; cursor:not-allowed; }
-    .mreq-fine-print {
-      font-size:11px; color:var(--text-3);
-      line-height:1.7; text-align:center;
-    }
-    .mreq-alert {
-      padding:12px 14px; margin-bottom:16px;
-      border-radius:var(--radius-sm); font-size:13px;
-      line-height:1.65;
-    }
-    .mreq-alert.err  { background:rgba(248,113,113,0.08); border:1px solid rgba(248,113,113,0.25); color:#f87171; }
-    .mreq-alert.ok   { background:var(--pink-dim); border:1px solid var(--border-pink); color:var(--pink); }
-    .mreq-success {
-      text-align:center; padding:36px 20px;
-    }
-    .mreq-success-icon {
-      width:60px; height:60px; border-radius:50%;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      display:flex; align-items:center; justify-content:center;
-      font-size:28px; margin:0 auto 20px;
-    }
-    .mreq-success h3 {
-      font-family:'Cormorant Garamond',serif;
-      font-size:1.5rem; font-weight:300;
-      color:var(--text); margin-bottom:12px;
-    }
-    .mreq-success h3 em { font-style:italic; color:var(--pink); }
-    .mreq-success p {
-      font-size:13px; color:var(--text-2); line-height:1.8;
-      max-width:380px; margin:0 auto;
-    }
-    .hidden { display:none !important; }
-    @media(max-width:560px){
-      .mreq-card { padding:26px 22px; }
-      .mreq-heading { font-size:1.65rem; }
-    }
-
-    @media(max-width:560px){
-      .entry-cards {
-        flex-direction:column;
-        align-items:center;
-      }
-      .entry-card {
-        width:100%;
-        max-width:320px;
-      }
-    }
-    /* ── v5 redesign ── */
-    .hero-title { text-wrap: balance; }
-    .hero-title > em { color: var(--text); font-style: italic; }
-    .hero-title .brand em { color: var(--pink); font-style: normal; }
-    .hero-sub { margin-bottom: 18px; }
-    .seam-draw { display: block; width: min(520px, 78vw); height: 14px; margin: 0 auto 34px; overflow: visible; }
-    .seam-draw path { fill: none; stroke: var(--gold); vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
-    .seam-draw .line { stroke-width: 1.3; stroke-dasharray: 1; stroke-dashoffset: 1; animation: seamDraw 2.2s cubic-bezier(.65,0,.35,1) 1.2s forwards; }
-    .seam-draw .fork { stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; animation: seamDraw .6s ease-out 3.1s forwards; }
-    .seam-draw .glow { stroke-width: 6; stroke-opacity: .18; opacity: 0; animation: fadeIn 1.2s ease 3s forwards; }
-    @keyframes seamDraw { to { stroke-dashoffset: 0; } }
-    .entry-card {
-      background: rgba(23,23,27,0.78); border: 1px solid var(--border-2); box-shadow: none;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      width: 268px; padding: 30px 28px 26px; gap: 0;
-    }
-    .entry-card:hover { transform: none; filter: none; border-color: var(--border-pink); box-shadow: 0 18px 50px rgba(0,0,0,.45); }
-    .entry-title { color: var(--text); font-size: 1.65rem; font-weight: 400; margin-bottom: 10px; }
-    .entry-desc { color: var(--text-2); font-size: 13px; line-height: 1.65; margin-bottom: 22px; flex: 1; }
-    .entry-cta { background: var(--pink); color: #0c0c0e; font-size: 12.5px; letter-spacing: .01em; padding: 9px 20px; }
-    .entry-card:hover .entry-cta { background: #ffc4cd; }
-    .mreq-divider { width: min(420px, 70vw); height: 14px; background: var(--seam) center / 100% 100% no-repeat; }
-    .mreq-eyebrow { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 500; color: var(--gold); }
-    .mreq-heading em { color: inherit; }
-    .mreq-card label.field-label { text-transform: none; letter-spacing: 0; font-size: 12.5px; font-weight: 500; color: var(--text-2); }
-    .mreq-card { background: rgba(23,23,27,0.6); }
-    @media (max-width: 560px) { .entry-card { width: 100%; max-width: 340px; } }
-  </style>
 </head>
+<body class="pg-landing">
+  <a href="#ways" class="skip-link">Skip to content</a>
 
-<body>
+  <header class="lnav" id="lnav">
+    <a href="index.html" class="nav-brand lnav-brand"><img src="logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
+    <nav class="lnav-links" aria-label="Primary">
+      <a href="pages/login.html">Sign in</a>
+      <a href="pages/access-info.html" class="lnav-pill">I have a code</a>
+    </nav>
+  </header>
 
-<canvas id="bg-canvas"></canvas>
+  <main>
+    <section class="hero" id="hero">
+      <p class="hero-chip"><span class="dot-live"></span>Members: call Sibeth directly for same-day requests.</p>
+      <h1 class="frac" id="frac" aria-label="fractured Ego">
+        <span class="frac-size" aria-hidden="true">fractured <i>E</i>go</span>
+        <span class="frac-piece frac-a" aria-hidden="true">fractured <i>E</i>go</span>
+        <span class="frac-piece frac-b" aria-hidden="true">fractured <i>E</i>go</span>
+        <svg class="frac-line" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true">
+          <path class="crack" d="M0 170 L140 150 L210 185 L330 120 L410 160 L520 95 L600 150 L690 130 L790 175 L880 140 L1000 160"/><path class="mend" d="M0 170 L140 150 L210 185 L330 120 L410 160 L520 95 L600 150 L690 130 L790 175 L880 140 L1000 160"/>
+        </svg>
+      </h1>
+      <p class="hero-line">Let’s get you to where you need to be.</p>
+      <p class="hero-sub">You are not alone.</p>
+      <a href="#ways" class="hero-cue" aria-label="Scroll to continue"><span></span></a>
+    </section>
 
-<nav class="topnav">
-  <a href="index.html" class="nav-brand"><img src="logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
-</nav>
-
-<div class="landing">
-  <div class="landing-inner">
-
-    <div class="chip">
-      <span class="dot-live"></span>
-      Members: Please call Sibeth directly for same-day requests.
-    </div>
-
-    <h1 class="hero-title">
-      <br><span class="brand">fractured <em>E</em>go</span> —<br>
-      let's get you to where<em> you need to&nbsp;be.</em>
-    </h1>
-
-    <p class="hero-sub">You are not alone.</p>
-    <svg class="seam-draw" viewBox="0 0 600 14" preserveAspectRatio="none" aria-hidden="true">
-      <path class="glow" d="M0 8 L36 6 L58 9 L94 5 L128 7 L149 4 L186 8 L212 6 L248 9 L286 5 L318 7 L352 6 L369 10 L406 6 L444 8 L468 5 L503 7 L538 6 L563 9 L600 7"/>
-      <path class="line" pathLength="1" d="M0 8 L36 6 L58 9 L94 5 L128 7 L149 4 L186 8 L212 6 L248 9 L286 5 L318 7 L352 6 L369 10 L406 6 L444 8 L468 5 L503 7 L538 6 L563 9 L600 7"/>
-      <path class="fork" pathLength="1" d="M149 4 L157 1 M369 10 L377 13 M468 5 L475 2"/>
-    </svg>
-
-    <!-- LOGO INSERTED HERE -->
-    <img src="logo.svg" alt="" class="mid-logo"/>
-
-    <div class="entry-cards">
-
-      <a href="pages/login.html" class="entry-card">
-        <div class="entry-title">Members</div>
-        <div class="entry-desc">Sign in to your dashboard, the circle, and your concierge.</div>
-        <div class="entry-cta">Sign in</div>
-      </a>
-
-      <a href="pages/access-info.html" class="entry-card">
-        <div class="entry-title">I have a code</div>
-        <div class="entry-desc">Someone shared an access code with you. Start here to see what it opens.</div>
-        <div class="entry-cta">Begin</div>
-      </a>
-
-    </div>
-
-    <div class="notice">
-      <span style="font-size:13px;">⚠️</span>
-      <div class="notice-text">
-        If you arrived here by accident or without direct authorization from a member, please leave immediately. All IP addresses are captured and logged for review.
+    <section class="ways" id="ways" aria-labelledby="ways-title">
+      <h2 class="ways-title" id="ways-title">Three ways in.</h2>
+      <div class="doors">
+        <a class="door" href="pages/login.html">
+          <span class="door-k">Members</span>
+          <span class="door-d">Sign in to your dashboard, the circle, and your concierge.</span>
+          <span class="door-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="door" href="pages/access-info.html">
+          <span class="door-k">I have a code</span>
+          <span class="door-d">Someone gave you a code. Start here to see what it opens.</span>
+          <span class="door-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="door" href="#apply">
+          <span class="door-k">Without an invitation</span>
+          <span class="door-d">Tell us who you are. Every request is read by a person.</span>
+          <span class="door-go" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
       </div>
-    </div>
+    </section>
 
-    <!-- ═══════════════════════════════════════════════
-         REQUEST MEMBERSHIP
-         ═══════════════════════════════════════════════ -->
-    <div class="mreq-divider"></div>
+    <section class="promise" aria-label="Our promise">
+      <div class="promise-item"><h3>Private by design</h3><p>Your email, phone and legal name are never shown to anyone in the network.</p></div>
+      <div class="promise-item"><h3>Answered by people</h3><p>Every request is read and handled by a person on our team, never a script.</p></div>
+      <div class="promise-item"><h3>Never a fee</h3><p>We will never ask you for money, passwords or gift cards. Anyone who does is not us.</p></div>
+    </section>
 
-    <section class="mreq-section">
-      <div class="mreq-eyebrow">Without an invitation?</div>
-      <h2 class="mreq-heading">Request <em>Membership</em></h2>
-      <p class="mreq-lead">
-        If you don't have an invitation or an access code but believe this network could help you, you may submit a request below. Every application is reviewed personally — we'll respond by email when a decision is made.
-      </p>
-
+    <section class="apply" id="apply" aria-labelledby="apply-title">
+      <div class="apply-intro">
+        <h2 class="apply-title" id="apply-title">Request <em>membership</em></h2>
+        <p>No invitation and no code, but you believe this network could help? Tell us a little about yourself. We read every application and reply by email when a decision is made.</p>
+      </div>
       <div class="mreq-card">
-        <!-- Form view -->
         <div id="mreq-form">
           <div id="mreq-alert" class="mreq-alert hidden"></div>
-
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div class="field">
-              <label class="field-label" for="mreq-first">First name</label>
-              <input type="text" id="mreq-first" autocomplete="given-name" placeholder="Your first name"/>
-            </div>
-            <div class="field">
-              <label class="field-label" for="mreq-last">Last name</label>
-              <input type="text" id="mreq-last" autocomplete="family-name" placeholder="Your last name"/>
-            </div>
+          <div class="form-row">
+            <div class="field"><label class="field-label" for="mreq-first">First name</label><div class="field-input"><input type="text" id="mreq-first" autocomplete="given-name" placeholder="Your first name"/></div></div>
+            <div class="field"><label class="field-label" for="mreq-last">Last name</label><div class="field-input"><input type="text" id="mreq-last" autocomplete="family-name" placeholder="Your last name"/></div></div>
           </div>
-
-          <div class="field">
-            <label class="field-label" for="mreq-citizenship">Country of citizenship</label>
-            <select id="mreq-citizenship">
+          <div class="field"><label class="field-label" for="mreq-citizenship">Country of citizenship</label><div class="field-input"><select id="mreq-citizenship">
               <option value="">— Select country —</option>
               <option value="US">United States</option>
               <option value="CA">Canada</option>
@@ -508,119 +137,62 @@
               <option value="OTHER">Other (please specify in your answer below)</option>
               <option value="STATELESS">Stateless / No citizenship</option>
               <option value="DUAL">Dual citizenship (please specify below)</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="mreq-email">Email address</label>
-            <input type="email" id="mreq-email" autocomplete="email" placeholder="you@example.com"/>
-            <div class="helper-line">We respond to every application by email — please make sure it's spelled correctly.</div>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="mreq-phone">Phone number <span class="field-optional">optional</span></label>
-            <input type="tel" id="mreq-phone" autocomplete="tel" placeholder="Include country code if outside the US"/>
-          </div>
-
-          <div class="field">
-            <label class="field-label" for="mreq-life">What do you want out of life?</label>
-            <textarea id="mreq-life" rows="5" placeholder="Tell us — in your own words and your own time — what you're hoping for, working through, or moving toward."></textarea>
-            <div class="helper-line">There's no right answer. We read every submission.</div>
-          </div>
-
-          <div class="mreq-submit-row">
-            <button type="button" class="mreq-submit" id="mreq-submit-btn" onclick="submitMembershipRequestForm()">
-              Submit my application
-            </button>
-            <div class="mreq-fine-print">
-              By submitting, you consent to us reviewing your information and contacting you by email. Your application stays private and is only seen by our admin team.
-            </div>
-          </div>
+            </select></div></div>
+          <div class="field"><label class="field-label" for="mreq-email">Email address</label><div class="field-input"><input type="email" id="mreq-email" autocomplete="email" placeholder="you@example.com"/></div>
+            <div class="helper-line">We reply to every application by email, so check the spelling.</div></div>
+          <div class="field"><label class="field-label" for="mreq-phone">Phone number <span class="field-optional">optional</span></label><div class="field-input"><input type="tel" id="mreq-phone" autocomplete="tel" placeholder="Include your country code outside the US"/></div></div>
+          <div class="field"><label class="field-label" for="mreq-life">What do you want out of life?</label><div class="field-input"><textarea id="mreq-life" rows="5" placeholder="In your own words and your own time — what you’re hoping for, working through, or moving toward."></textarea></div>
+            <div class="helper-line">There’s no right answer. We read every one.</div></div>
+          <button type="button" class="btn btn-primary btn-full btn-lg" id="mreq-submit-btn" onclick="submitMembershipRequestForm()">Send my application</button>
+          <p class="mreq-fine-print">By sending this, you agree to let us review your application and contact you by email. It’s seen only by our admin team.</p>
         </div>
-
-        <!-- Success view -->
         <div id="mreq-success" class="mreq-success hidden">
           <div class="mreq-success-icon">✓</div>
-          <h3>Your application has been <em>received</em></h3>
-          <p>Thank you for sharing. We'll review your application personally and respond by email when a decision is made. This usually takes a few days but can take longer during quieter periods.</p>
+          <h3>Your application is <em>with us</em>.</h3>
+          <p>Thank you for sharing. We’ll review it personally and reply by email. It usually takes a few days.</p>
         </div>
       </div>
     </section>
+  </main>
 
-  </div>
-</div>
+  <footer class="lfoot">
+    <div class="lfoot-mark" aria-hidden="true">fractured Ego</div>
+    <div class="lfoot-row">
+      <p class="lfoot-note">A private network. If you arrived here by accident, please close this page.</p>
+      <nav class="lfoot-links" aria-label="Footer">
+        <a href="pages/login.html">Sign in</a>
+        <a href="pages/access-info.html">I have a code</a>
+        <a href="#apply">Request membership</a>
+      </nav>
+    </div>
+    <p class="lfoot-legal">© 2026 fractured Ego</p>
+    <p class="lfoot-legal">We will never ask you for money, fees, passwords or gift cards.</p>
+  </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
-<script src="js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+  <script src="js/app.js"></script>
   <script src="js/safety.js"></script>
+  <script>
+  (async () => { await redirectIfAuthed(); })();
 
-<script>
-(async () => { await redirectIfAuthed(); })();
-
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-
-let w,h,mouse={x:null,y:null};
-
-function resize(){
-  w = canvas.width = window.innerWidth;
-  h = canvas.height = window.innerHeight;
-}
-window.addEventListener("resize",resize);
-resize();
-
-window.addEventListener("mousemove",e=>{
-  mouse.x = e.x;
-  mouse.y = e.y;
-});
-
-const particles=[];
-const COUNT=90;
-
-for(let i=0;i<COUNT;i++){
-  particles.push({
-    x:Math.random()*w,
-    y:Math.random()*h,
-    z:Math.random()*2,
-    vx:(Math.random()-0.5)*0.2,
-    vy:(Math.random()-0.5)*0.2
-  });
-}
-
-function draw(){
-  ctx.clearRect(0,0,w,h);
-
-  particles.forEach(p=>{
-    p.x+=p.vx*(1+p.z);
-    p.y+=p.vy*(1+p.z);
-
-    // mouse interaction (repel)
-    if(mouse.x){
-      let dx=p.x-mouse.x;
-      let dy=p.y-mouse.y;
-      let dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<120){
-        p.x+=dx*0.02;
-        p.y+=dy*0.02;
-      }
+  // ── The fracture: the wordmark mends as you scroll ──
+  (function () {
+    const frac = document.getElementById('frac'), hero = document.getElementById('hero'), nav = document.getElementById('lnav');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let ticking = false;
+    function update() {
+      const h = hero.offsetHeight || 1;
+      const p = Math.min(1, Math.max(0, window.scrollY / (h * 0.55)));
+      frac.style.setProperty('--f', still ? 0 : (1 - p).toFixed(3));
+      nav.classList.toggle('on-dark', window.scrollY > h - 72);
+      ticking = false;
     }
+    window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    window.addEventListener('resize', update);
+    requestAnimationFrame(() => { document.body.classList.add('is-ready'); update(); });
+  })();
 
-    if(p.x<0||p.x>w) p.vx*=-1;
-    if(p.y<0||p.y>h) p.vy*=-1;
-
-    let size=1.2*(1+p.z);
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,size,0,Math.PI*2);
-    ctx.fillStyle="rgba(255,182,193,0.35)";
-    ctx.fill();
-  });
-
-  requestAnimationFrame(draw);
-}
-draw();
-
-// ── Membership Request form ──────────────────────────────────────
-async function submitMembershipRequestForm() {
+  async function submitMembershipRequestForm() {
   const $ = (id) => document.getElementById(id);
   const alert = $('mreq-alert');
   const btn   = $('mreq-submit-btn');
@@ -665,10 +237,10 @@ async function submitMembershipRequestForm() {
     console.error(e);
     showErr('We couldn\'t submit your application — please try again in a moment. If this keeps happening, you can also email admin@fracturedego.org directly.');
     btn.disabled = false;
-    btn.textContent = 'Submit my application';
+    btn.textContent = 'Send my application';
   }
 }
-</script>
 
+  </script>
 </body>
 </html>

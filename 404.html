@@ -4,22 +4,36 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="robots" content="noindex, nofollow"/>
-  <meta name="theme-color" content="#0c0c0e"/>
+  <meta name="theme-color" content="#ffb6c1"/>
   <link rel="icon" type="image/svg+xml" href="/logo.svg"/>
-  <title>Not found — fractured Ego</title>
+  <title>This door is locked — fractured Ego</title>
   <link rel="stylesheet" href="/css/styles.css"/>
 </head>
-<body>
+<body class="pg-404">
   <main class="lost-wrap">
-    <img src="/logo.svg" alt="" style="width:56px;height:56px;opacity:.85;"/>
-    <div class="lost-code">4<em>0</em>4</div>
-    <h1 class="page-title" style="font-size:1.8rem;">This door doesn’t <em>open</em>.</h1>
-    <p class="page-subtitle" style="max-width:420px;">The page you’re looking for isn’t here — it may have moved, or the link may be incomplete.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;">
+    <h1 class="frac" id="frac" aria-label="404">
+      <span class="frac-size" aria-hidden="true">4<i>0</i>4</span>
+      <span class="frac-piece frac-a" aria-hidden="true">4<i>0</i>4</span>
+      <span class="frac-piece frac-b" aria-hidden="true">4<i>0</i>4</span>
+      <svg class="frac-line" viewBox="0 0 1000 300" preserveAspectRatio="none" aria-hidden="true"><path class="crack" d="M0 170 L140 150 L210 185 L330 120 L410 160 L520 95 L600 150 L690 130 L790 175 L880 140 L1000 160"/><path class="mend" d="M0 170 L140 150 L210 185 L330 120 L410 160 L520 95 L600 150 L690 130 L790 175 L880 140 L1000 160"/></svg>
+    </h1>
+    <p class="page-title" style="font-size:clamp(1.6rem,3vw,2.2rem);margin-top:18px;">This door is <em>locked</em>.</p>
+    <p class="page-subtitle" style="max-width:420px;">The page you’re looking for isn’t here. The link may be incomplete, or the door was never meant to open.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px;">
       <a href="/" class="btn btn-primary">Return home</a>
       <a href="/pages/login.html" class="btn btn-secondary">Member sign in</a>
     </div>
   </main>
   <script src="/js/safety.js"></script>
+  <script>
+    (function () {
+      const f = document.getElementById('frac');
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { f.style.setProperty('--f', 0); return; }
+      document.body.classList.add('is-ready');
+      let t0 = null;
+      function step(t) { t0 = t0 || t; const p = Math.min(1, (t - t0 - 600) / 1400); if (p > 0) f.style.setProperty('--f', (1 - (1 - Math.pow(1 - p, 3))).toFixed(3)); if (p < 1) requestAnimationFrame(step); }
+      requestAnimationFrame(step);
+    })();
+  </script>
 </body>
 </html>

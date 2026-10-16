@@ -607,3 +607,51 @@ _v5 notes added by Claude._
 - Expected Security Advisor change: `submit_wish` is anon-callable SECURITY DEFINER by design (like `redeem_access_code`). The always-true wishes policy warning disappears.
 
 _v6 notes added by Claude._
+
+---
+
+## 17. Session — 10-digit codes, rose identity, secretive voice
+
+### Code length correction (Cass)
+**4 digits = $1,000. 10 digits = $10,000** (as originally designed). The first v6 draft used 7 digits — corrected everywhere:
+- `migration-v6-codes.sql`: generates 4- or 10-digit codes only; transfer keys keep the original length. A re-run drops the draft's 4/7/10 format rule and the draft `generate_7digit_code()`.
+- `code_value_usd()` still values a 7-digit code at $10,000, only in case the first draft was deployed and some were generated.
+- Front end: access.html, admin generator/filters, wish page and copy all use 4/10.
+- Re-verified: 20 v6 tests (including that a 10-digit transfer issues a 10-digit key) and 55 community tests pass.
+
+### Identity (supersedes the v5 rules in §15)
+- **Rose `#ffb6c1` is the main color**, used in large fields:
+  - landing hero, sign-in panels, the dashboard hero card, the active sidebar item;
+  - the envelope's amount panel, the selected path, the 404 page.
+- Neutrals are black `#0b0b0c`, white, and light grey `#d4d4d9`. **Gold is retired**: `--gold` now maps to light grey, and every gold rgba was converted to rose.
+- Text on rose is black (`--ink`). The brand E is white on rose and rose on black.
+- **The fracture** is the signature: the landing wordmark is split along a crack and mends as you scroll. Markup is `.frac` with `.frac-a` / `.frac-b` clip-path pieces plus `.frac-line`, driven by the `--f` variable (1 = broken, 0 = mended). Reduced motion shows it mended. The 404 reuses it and mends on load.
+- The seam is now rose, still used on card rims and the step rail.
+
+### Sign-in pages
+Split screen at ≥1000px: a rose panel with one line from the `data-panel` attribute on `.auth-page`:
+- login: "Welcome back."
+- access: "Unlock."
+- forgot-password: "It happens."
+- reset-password: "Begin again."
+- confirm: "You're in."
+
+### Voice of the code journey (keep consistent)
+- **Steps:** Listen → Promise → Unlock → Ask.
+- **Paths:** **the envelope** (money), **the wish**, **the key** (pass it on: "We find them" / "A new key, shown once").
+- **Facts stay plain:** amounts, that the code is spent on entry, that details are double-checked, and that the key is shown once.
+- Admin labels: "The envelope · money", "The wish", "The key · pass it on".
+
+### Landing page (rebuilt)
+- Sections: fixed nav (rose → dark glass on scroll), fracture hero, "Three ways in" rows (flood rose on hover), three promises, membership application, footer with outlined wordmark.
+- **Removed the claim "All IP addresses are captured and logged."** It wasn't true; the site doesn't log visitor IPs. Replaced with an accurate private-site notice.
+- **Added "We will never ask you for money, fees, passwords or gift cards"** (promise section + footer).
+- The starfield canvas is gone.
+
+### Verification
+- Every changed page screenshotted in Chromium at desktop and phone sizes.
+- The phone wordmark is measured to fit at 360/390/430px.
+- Wish flow driven end to end (envelope with a 4-digit code; key with a 10-digit code).
+- 24 real-browser page loads with zero runtime errors; jsdom suite passes.
+
+_Notes added by Claude._

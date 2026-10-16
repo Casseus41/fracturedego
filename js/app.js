@@ -472,12 +472,12 @@ const SERVICE_MAP = {
 };
 
 const OPTION_MAP = {
-  money:      { icon: '💰', label: 'A gift of money' },
-  wish:       { icon: '🌟', label: 'A wish' },
-  transfer:   { icon: '🔄', label: 'Pass it on' },
+  money:      { icon: '💌', label: 'The envelope · money' },
+  wish:       { icon: '🌟', label: 'The wish' },
+  transfer:   { icon: '🗝️', label: 'The key · pass it on' },
   relocation: { icon: '🏡', label: 'Relocation (legacy)' },
 };
-// Code value is set by length: 4 digits = $1,000; 7 digits = $10,000; legacy 10 digits = $10,000
+// Code value is set by length: 4 digits = $1,000; 10 digits = $10,000
 function codeValueUsd(codeOrType) {
   const t = String(codeOrType || '');
   const len = /^\d+$/.test(t) ? t.length : parseInt(t, 10);
@@ -485,8 +485,7 @@ function codeValueUsd(codeOrType) {
 }
 function codeValueLabel(codeOrType) {
   const v = codeValueUsd(codeOrType);
-  const legacy = String(codeOrType).length === 10 || String(codeOrType).startsWith('10');
-  return v ? `$${v.toLocaleString('en-US')}${legacy ? ' · legacy' : ''}` : '—';
+  return v ? `$${v.toLocaleString('en-US')}` : '—';
 }
 
 // ═══════════════════════════════════════════════

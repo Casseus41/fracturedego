@@ -147,7 +147,7 @@
             <div class="field" style="margin:0;">
               <label class="field-label">Type</label>
               <div class="field-input">
-                <select id="gen-type"><option value="4-digit">4-digit · $1,000</option><option value="7-digit">7-digit · $10,000</option></select>
+                <select id="gen-type"><option value="4-digit">4-digit · $1,000</option><option value="10-digit">10-digit · $10,000</option></select>
               </div>
             </div>
             <div class="field" style="margin:0;">
@@ -162,12 +162,12 @@
           <div class="gen-row">
             <div class="field" style="margin:0;">
               <label class="field-label">Code</label>
-              <div class="field-input"><input type="text" id="add-code" placeholder="4 or 7 digits" maxlength="7" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
+              <div class="field-input"><input type="text" id="add-code" placeholder="4 or 10 digits" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
             </div>
             <div class="field" style="margin:0;">
               <label class="field-label">Type</label>
               <div class="field-input">
-                <select id="add-type"><option value="4-digit">4-digit · $1,000</option><option value="7-digit">7-digit · $10,000</option></select>
+                <select id="add-type"><option value="4-digit">4-digit · $1,000</option><option value="10-digit">10-digit · $10,000</option></select>
               </div>
             </div>
             <div class="field" style="margin:0;">
@@ -190,8 +190,7 @@
           <button class="code-filter-btn" data-filter="used" onclick="setCodeFilter('used')">Used</button>
           <button class="code-filter-btn" data-filter="revoked" onclick="setCodeFilter('revoked')">Revoked</button>
           <button class="code-filter-btn" data-filter="4-digit" onclick="setCodeFilter('4-digit')">$1,000 · 4-digit</button>
-          <button class="code-filter-btn" data-filter="7-digit" onclick="setCodeFilter('7-digit')">$10,000 · 7-digit</button>
-          <button class="code-filter-btn" data-filter="10-digit" onclick="setCodeFilter('10-digit')">Legacy 10-digit</button>
+          <button class="code-filter-btn" data-filter="10-digit" onclick="setCodeFilter('10-digit')">$10,000 · 10-digit</button>
         </div>
 
         <div class="table-wrap">
@@ -915,7 +914,7 @@
       let codes = allCodes;
       if (codeFilter === 'unused' || codeFilter === 'used' || codeFilter === 'revoked') {
         codes = codes.filter(c => c.status === codeFilter);
-      } else if (['4-digit', '7-digit', '10-digit'].includes(codeFilter)) {
+      } else if (['4-digit', '10-digit'].includes(codeFilter)) {
         const len = parseInt(codeFilter, 10);
         codes = codes.filter(c => String(c.code).length === len);
       }
@@ -997,7 +996,7 @@
       const type  = document.getElementById('add-type').value;
       const notes = document.getElementById('add-notes').value.trim() || null;
       hideAlert('gen-alert');
-      const expectedLen = type === '4-digit' ? 4 : 7;
+      const expectedLen = type === '4-digit' ? 4 : 10;
       if (code.length !== expectedLen) {
         showAlert('gen-alert', `${type} codes must be exactly ${expectedLen} digits.`); return;
       }

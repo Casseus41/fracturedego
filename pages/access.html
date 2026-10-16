@@ -19,32 +19,29 @@
     </div>
   </nav>
 
-  <div class="auth-page">
+  <div class="auth-page" data-panel="Unlock.">
     <a href="../index.html" class="auth-logo"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span>E</span>go</a>
 
     <div class="auth-card">
       <div class="auth-icon-wrap">✉️</div>
       <ol class="steps" data-step="3" aria-label="Step 3 of 4">
-        <li class="done"><span class="step-n">1</span><span class="step-l">Read</span></li>
-        <li class="done"><span class="step-n">2</span><span class="step-l">Confirm</span></li>
-        <li class="current" aria-current="step"><span class="step-n">3</span><span class="step-l">Enter code</span></li>
-        <li><span class="step-n">4</span><span class="step-l">Your request</span></li>
+        <li class="done"><span class="step-n">1</span><span class="step-l">Listen</span></li>
+        <li class="done"><span class="step-n">2</span><span class="step-l">Promise</span></li>
+        <li class="current" aria-current="step"><span class="step-n">3</span><span class="step-l">Unlock</span></li>
+        <li><span class="step-n">4</span><span class="step-l">Ask</span></li>
       </ol>
-      <h1 class="auth-title">Enter your <em>code now.</em></h1>
-      <p class="auth-subtitle">
-        This is a one-time-use code. The moment you submit, it is consumed and your session begins.
-      </p>
+      <h1 class="auth-title">Unlock <em>the door.</em></h1>
+      <p class="auth-subtitle">It opens once. The moment you submit, it’s spent and your session begins.</p>
 
       <div class="alert alert-warning" style="margin-bottom:24px;font-size:12.5px;">
-        ⚠️ Do not refresh or close this window after entering your code. Complete the form on the next page in one session.
-      </div>
+        ⚠️ Once inside, stay. Don’t refresh or close this window until you’ve finished.</div>
 
       <div id="alert" class="alert alert-error hidden"></div>
 
       <div class="field">
-        <label class="field-label">Your Access Code</label>
+        <label class="field-label" for="code">Your code</label>
         <div class="field-input">
-          <input type="text" id="code" placeholder="4 or 7-digit code"
+          <input type="text" id="code" placeholder="4 or 10-digit code"
             maxlength="10" inputmode="numeric"
             autocomplete="off"
             oninput="this.value=this.value.replace(/\D/g,'')"
@@ -52,12 +49,10 @@
         </div>
       </div>
 
-      <button class="btn btn-primary btn-full btn-lg" id="code-btn" onclick="handleCode()" style="margin-top:8px;">
-        Submit Code & Begin
-      </button>
+      <button class="btn btn-primary btn-full btn-lg" id="code-btn" onclick="handleCode()" style="margin-top:8px;">Unlock</button>
 
       <div class="auth-footer-link" style="margin-top:18px;">
-        <a href="access-info.html">← Review the options again</a>
+        <a href="access-info.html">← Read it again</a>
       </div>
     </div>
   </div>
@@ -79,8 +74,8 @@
         showAlert('alert', 'Please enter your access code.');
         return;
       }
-      if (![4, 7, 10].includes(code.length)) {
-        showAlert('alert', 'Codes are 4 or 7 digits long.');
+      if (![4, 10].includes(code.length)) {
+        showAlert('alert', 'Codes are 4 or 10 digits long.');
         return;
       }
 
