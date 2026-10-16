@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#0c0c0e"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>Profile — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>body { display:flex; flex-direction:column; min-height:100vh; }</style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <nav class="topnav" data-shell="topnav"></nav>
+  <div class="app-wrap">
+    <aside class="sidebar" data-shell="sidebar" data-active="profile"></aside>
+    <main class="main fade-up" id="main">
+      <div id="view"><div class="loading-state"><div class="spinner"></div><span>Loading profile…</span></div></div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
+  <script src="../js/shell.js"></script>
+  <script>
+  (async function () {
+    const view = document.getElementById('view');
+    const me = await FE.ready;
+    const id = new URLSearchParams(location.search).get('id') || me.user.id;
+    const isMe = id === me.user.id;
+    if (!isMe) document.querySelector('.sidebar-link.active')?.classList.remove('active');
+    const ctx = { meId: me.user.id, isAdmin: me.isAdmin, reactions: {} };
+    let mp = null, blocked = false, oldest = null;
+
+    function lastSeen(iso) {
+      if (!iso) return '';
+      const mins = (Date.now() - new Date(iso)) / 60000;
+      return mins < 10 ? '<span class="online-dot"></span> Active now' : `Active ${timeAgo(iso)}${/\d[mhd]$/.test(timeAgo(iso)) ? ' ago' : ''}`;
+    }
+
+    async function load() {
+      try { mp = await getMemberProfile(id); } catch (_) { mp = null; }
+      if (!mp) {
+        view.innerHTML = `<div class="empty-state"><div class="empty-icon">🕊️</div><div class="empty-title">This profile isn’t available</div>
+          <div class="empty-text">The member may have left the circle.</div><a href="members.html" class="btn btn-secondary btn-sm" style="margin-top:14px;">Browse members</a></div>`;
+        return;
+      }
+      document.title = `${mp.display_name} — fractured Ego`;
+      if (!isMe) blocked = (await listMyBlocks()).some((b) => b.blocked_id === id);
+      renderView();
+    }
+
+    function renderView() {
+      const since = new Date(mp.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+      const incomplete = isMe && (mp.display_name === 'Member' || !mp.bio || !mp.avatar_path);
+      view.innerHTML = `
+        ${incomplete ? `<div class="notice-bar" style="color:var(--pink);background:var(--pink-dim-2);border-color:var(--border-pink);">✨ <span>Add a photo, a short bio and a headline so members can get to know you. <a href="#" data-edit style="color:inherit;font-weight:700;">Complete your profile</a></span></div>` : ''}
+        ${blocked ? `<div class="notice-bar">🚫 <span>You’ve blocked ${esc(mp.display_name)}. Neither of you can see the other’s posts or send messages.</span></div>` : ''}
+        <section class="profile-hero">
+          <div class="profile-cover"></div>
+          <div class="profile-hero-body">
+            ${avatarHTML(mp, 'xl')}
+            <div class="profile-id">
+              <h1 class="profile-name">${esc(mp.display_name)}</h1>
+              <div class="profile-sub">
+                ${mp.pronouns ? `<span>${esc(mp.pronouns)}</span>` : ''}
+                ${mp.headline ? `<span>${esc(mp.headline)}</span>` : ''}
+                ${!isMe && mp.last_seen_at ? `<span>${lastSeen(mp.last_seen_at)}</span>` : ''}
+              </div>
+            </div>
+            <div class="profile-actions">
+              ${isMe ? `<button type="button" class="btn btn-primary btn-sm" data-edit>Edit profile</button>`
+                : `${blocked ? '' : `<button type="button" class="btn btn-primary btn-sm" id="msg-btn">💬 Message</button>`}
+                   <div class="menu-wrap"><button type="button" class="btn btn-secondary btn-sm" id="more-btn" aria-label="More options">⋯</button>
+                   <div class="menu-pop" id="more-menu" hidden>
+                     <button type="button" id="block-btn">${blocked ? 'Unblock' : 'Block'} ${esc(mp.display_name)}</button>
+                     <button type="button" id="report-btn">Report profile</button>
+                   </div></div>`}
+            </div>
+          </div>
+        </section>
+        <div class="profile-grid">
+          <div>
+            <div class="side-card"><h3>About</h3>
+              ${mp.bio ? `<p>${linkify(esc(mp.bio))}</p>` : `<p style="color:var(--text-3);">${isMe ? 'You haven’t written a bio yet.' : 'No bio yet.'}</p>`}</div>
+            ${(mp.interests || []).length ? `<div class="side-card"><h3>Interests</h3><div class="chip-row">${mp.interests.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</div></div>` : ''}
+            <div class="side-card"><h3>Details</h3>
+              ${mp.location ? `<div class="about-line"><span>📍</span><span>${esc(mp.location)}</span></div>` : ''}
+              <div class="about-line"><span>🌙</span><span>Member since ${since}</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="dash-card-head" style="margin-bottom:12px;"><h2 class="dash-card-title">${isMe ? 'Your' : esc(mp.display_name.split(' ')[0]) + '’s'} <em>posts</em></h2></div>
+            <div id="posts"></div>
+            <button type="button" class="btn btn-secondary btn-sm" id="more-posts" hidden style="margin:4px auto 0;display:flex;">Load more</button>
+          </div>
+        </div>`;
+      hydrateMedia(view);
+      wireView();
+      loadPosts(true);
+    }
+
+    async function loadPosts(reset) {
+      const el = document.getElementById('posts');
+      if (reset) { oldest = null; bindPostInteractions(el, ctx); }
+      const posts = await fetchFeed({ authorId: id, before: oldest, limit: 10, includePinned: true });
+      if (!document.getElementById('posts')) return; // view was swapped (e.g. editor opened)
+      if (reset && !posts.length) {
+        el.innerHTML = `<div class="empty-state"><div class="empty-icon">🌙</div><div class="empty-title">No posts yet</div>
+          <div class="empty-text">${isMe ? '<a href="feed.html" style="color:var(--pink);">Share your first post</a> with the circle.' : 'When they share something, it’ll appear here.'}</div></div>`;
+      } else await renderPostsInto(el, posts, ctx, { append: !reset });
+      if (posts.length) oldest = posts[posts.length - 1].created_at;
+      document.getElementById('more-posts').hidden = posts.length < 10;
+    }
+
+    function wireView() {
+      view.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', (e) => { e.preventDefault(); renderEdit(); }));
+      document.getElementById('more-posts')?.addEventListener('click', () => loadPosts(false));
+      if (isMe) return;
+      document.getElementById('msg-btn')?.addEventListener('click', async (e) => {
+        e.target.disabled = true;
+        try { location.href = `messages.html?c=${await startConversation(id)}`; }
+        catch (err) { toast(err.message, 'error'); e.target.disabled = false; }
+      });
+      const menu = document.getElementById('more-menu');
+      document.getElementById('more-btn').addEventListener('click', (e) => { e.stopPropagation(); menu.hidden = !menu.hidden; });
+      document.addEventListener('click', () => { menu.hidden = true; });
+      document.getElementById('report-btn').addEventListener('click', () => openReportDialog('profile', id, 'this profile'));
+      document.getElementById('block-btn').addEventListener('click', async () => {
+        try {
+          if (blocked) {
+            await unblockMember(id); blocked = false; toast(`${mp.display_name} unblocked.`);
+          } else {
+            const ok = await uiConfirm(`Block ${mp.display_name}?`, 'They won’t be able to message you or see your posts, and you won’t see theirs. They aren’t notified. You can unblock anytime.', { confirmLabel: 'Block', danger: true });
+            if (!ok) return;
+            await blockMember(id); blocked = true; toast(`${mp.display_name} blocked.`);
+          }
+          renderView();
+        } catch (err) { toast(err.message || 'Something went wrong.', 'error'); }
+      });
+    }
+
+    function renderEdit() {
+      let newAvatar = null, removeAvatar = false;
+      view.innerHTML = `
+        <div class="page-header">
+          <div class="page-eyebrow">Your public profile</div>
+          <h1 class="page-title">Edit <em>Profile</em></h1>
+          <p class="page-subtitle">Visible to all active members. Your email, phone number and legal name are never shown.</p>
+        </div>
+        <form class="card" id="edit-form" style="max-width:720px;">
+          <div class="avatar-edit">
+            <span id="av-preview">${avatarHTML(mp, 'xl')}</span>
+            <div>
+              <div class="avatar-edit-actions">
+                <label class="btn btn-secondary btn-sm" for="av-file">Upload photo</label>
+                <input type="file" id="av-file" accept="image/*" hidden/>
+                ${mp.avatar_path ? '<button type="button" class="btn btn-ghost btn-sm" id="av-remove">Remove</button>' : ''}
+              </div>
+              <div class="helper-line">Square crop, resized automatically. Location data is stripped from photos before upload.</div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label class="field-label" for="f-name">Display name</label>
+              <div class="field-input"><input id="f-name" maxlength="60" required value="${esc(mp.display_name)}"/></div>
+              <div class="helper-line">A first name, nickname or initials — whatever feels safe.</div></div>
+            <div class="field"><label class="field-label" for="f-pronouns">Pronouns <span class="field-optional">optional</span></label>
+              <div class="field-input"><input id="f-pronouns" maxlength="30" placeholder="e.g. she/her" value="${esc(mp.pronouns || '')}"/></div></div>
+          </div>
+          <div class="field"><label class="field-label" for="f-headline">Headline <span class="field-optional">optional</span></label>
+            <div class="field-input"><input id="f-headline" maxlength="120" placeholder="A line about you — e.g. Rebuilding, one quiet morning at a time" value="${esc(mp.headline || '')}"/></div></div>
+          <div class="field"><label class="field-label" for="f-location">Location <span class="field-optional">optional</span></label>
+            <div class="field-input"><input id="f-location" maxlength="80" placeholder="Region or country is plenty" value="${esc(mp.location || '')}"/></div>
+            <div class="helper-line">For your safety, keep this general. Never share a street, neighborhood or workplace.</div></div>
+          <div class="field"><label class="field-label" for="f-bio">About you <span class="field-optional">optional</span></label>
+            <div class="field-input"><textarea id="f-bio" maxlength="1000" rows="5" placeholder="Share as much or as little as you like.">${esc(mp.bio || '')}</textarea></div></div>
+          <div class="field"><label class="field-label" for="f-interests">Interests <span class="field-optional">comma-separated, up to 12</span></label>
+            <div class="field-input"><input id="f-interests" placeholder="gardening, poetry, long walks" value="${esc((mp.interests || []).join(', '))}"/></div></div>
+          <div id="edit-alert" class="alert hidden"></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:8px;">
+            <button type="button" class="btn btn-ghost" id="cancel-edit">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-edit">Save profile</button>
+          </div>
+        </form>`;
+      hydrateMedia(view);
+      const preview = (html) => { document.getElementById('av-preview').innerHTML = html; };
+      document.getElementById('av-file').addEventListener('change', (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        newAvatar = f; removeAvatar = false;
+        preview(`<span class="av av-xl has-img" style="background-image:url('${URL.createObjectURL(f)}')"><span></span></span>`);
+      });
+      document.getElementById('av-remove')?.addEventListener('click', () => {
+        newAvatar = null; removeAvatar = true; preview(avatarHTML({ display_name: mp.display_name }, 'xl'));
+      });
+      document.getElementById('cancel-edit').addEventListener('click', () => { history.replaceState(null, '', 'profile.html'); renderView(); });
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('f-name').value.trim();
+        if (!name) { showAlert('edit-alert', 'Please choose a display name.'); return; }
+        const interests = document.getElementById('f-interests').value.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 12).map((s) => s.slice(0, 32));
+        const btn = document.getElementById('save-edit'); btn.disabled = true; btn.textContent = 'Saving…';
+        let uploaded = null;
+        try {
+          const fields = {
+            display_name: name,
+            pronouns: document.getElementById('f-pronouns').value.trim() || null,
+            headline: document.getElementById('f-headline').value.trim() || null,
+            location: document.getElementById('f-location').value.trim() || null,
+            bio: document.getElementById('f-bio').value.trim() || null,
+            interests,
+          };
+          if (newAvatar) { uploaded = await uploadImage(newAvatar, 'avatar'); fields.avatar_path = uploaded; }
+          else if (removeAvatar) fields.avatar_path = null;
+          const oldPath = mp.avatar_path;
+          await updateMyMemberProfile(fields);
+          if ((newAvatar || removeAvatar) && oldPath) removeMedia(oldPath);
+          toast('Profile saved.', 'success');
+          setTimeout(() => location.replace('profile.html'), 500);
+        } catch (err) {
+          if (uploaded) removeMedia(uploaded);
+          showAlert('edit-alert', err.message || 'Could not save your profile.');
+          btn.disabled = false; btn.textContent = 'Save profile';
+        }
+      });
+    }
+
+    const wantEdit = isMe && new URLSearchParams(location.search).get('edit') === '1';
+    if (wantEdit) { try { mp = await getMemberProfile(id); } catch (_) {} if (mp) { renderEdit(); return; } }
+    await load();
+  })();
+  </script>
+</body>
+</html>

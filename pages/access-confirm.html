@@ -2,141 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <meta name="robots" content="noindex, nofollow"/>
   <title>Final Confirmation — </title>
   <link rel="stylesheet" href="../css/styles.css"/>
-  <style>
-    body { display:flex; flex-direction:column; min-height:100vh; }
-
-    .confirm-wrap {
-      flex:1; padding:60px 24px; position:relative; z-index:1;
-      display:flex; align-items:center; justify-content:center;
-      animation:fadeUp 0.5s ease both;
-    }
-    .confirm-card {
-      max-width:580px; width:100%;
-      background:var(--bg-2);
-      border:1px solid rgba(248,113,113,0.18);
-      border-radius:var(--radius-xl);
-      padding:44px 40px;
-      box-shadow:var(--shadow-xl);
-      position:relative; overflow:hidden;
-    }
-    .confirm-card::before {
-      content:''; position:absolute; top:0; left:0; right:0;
-      height:3px;
-      background:linear-gradient(90deg, transparent, rgba(248,113,113,0.5), transparent);
-    }
-
-    .confirm-eyebrow {
-      display:inline-flex; align-items:center; gap:8px;
-      background:rgba(248,113,113,0.1);
-      border:1px solid rgba(248,113,113,0.25);
-      border-radius:var(--radius-full);
-      padding:6px 16px;
-      font-size:11px; font-weight:700; color:#ffa5a5;
-      letter-spacing:0.04em;
-      margin-bottom:22px;
-    }
-
-    .confirm-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:clamp(1.9rem,4.5vw,2.7rem); font-weight:300;
-      line-height:1.15; letter-spacing:0.01em; color:var(--text);
-      margin-bottom:14px;
-    }
-    .confirm-title em { font-style:italic; color:var(--pink); }
-    .confirm-title strong { font-weight:500; color:#ffa5a5; }
-
-    .confirm-lead {
-      font-size:14px; color:var(--text-2); line-height:1.8;
-      margin-bottom:26px;
-    }
-
-    .checklist {
-      background:var(--bg-3);
-      border:1px solid var(--border);
-      border-radius:var(--radius-md);
-      padding:20px 22px;
-      margin-bottom:28px;
-    }
-    .checklist-title {
-      font-size:11px; font-weight:700;
-      letter-spacing:0.12em; text-transform:uppercase;
-      color:var(--pink); margin-bottom:14px;
-    }
-    .checklist ul {
-      list-style:none; padding:0; margin:0;
-    }
-    .checklist li {
-      font-size:13.5px; color:var(--text-2); line-height:1.75;
-      padding:7px 0 7px 26px; position:relative;
-    }
-    .checklist li::before {
-      content:'⚠'; position:absolute; left:0; top:7px;
-      color:#ffa5a5; font-size:14px;
-    }
-    .checklist li strong { color:var(--text); font-weight:600; }
-
-    .agree-box {
-      background:rgba(255,182,193,0.06);
-      border:1.5px solid rgba(255,182,193,0.2);
-      border-radius:var(--radius-md);
-      padding:18px 20px;
-      margin-bottom:22px;
-      transition:border-color 0.25s, background 0.25s;
-      cursor:pointer;
-    }
-    .agree-box.checked {
-      border-color:var(--pink);
-      background:rgba(255,182,193,0.1);
-    }
-
-    .agree-row {
-      display:flex; align-items:flex-start; gap:14px;
-    }
-
-    /* Custom checkbox */
-    .agree-check {
-      width:24px; height:24px; flex-shrink:0; margin-top:1px;
-      border:2px solid var(--border-pink);
-      border-radius:6px;
-      background:var(--bg-3);
-      transition:all 0.2s; position:relative;
-      cursor:pointer;
-    }
-    .agree-check.checked {
-      background:var(--pink);
-      border-color:var(--pink);
-    }
-    .agree-check.checked::after {
-      content:'✓'; position:absolute;
-      top:50%; left:50%; transform:translate(-50%,-50%);
-      color:#0c0c0e; font-weight:700; font-size:14px;
-    }
-    .agree-check input { position:absolute; opacity:0; }
-
-    .agree-text {
-      font-size:13.5px; color:var(--text); line-height:1.7;
-      flex:1;
-    }
-    .agree-text strong { color:var(--pink); font-weight:600; }
-
-    .actions {
-      display:flex; gap:12px; flex-wrap:wrap;
-    }
-    .actions .btn { flex:1; }
-
-    @media(max-width:480px){
-      .confirm-card { padding:32px 24px; }
-      .actions { flex-direction:column-reverse; }
-    }
-  </style>
 </head>
-<body>
+<body class="pg-access-confirm">
 
   <nav class="topnav">
     <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
@@ -148,9 +21,12 @@
   <div class="confirm-wrap">
     <div class="confirm-card">
 
-      <div class="confirm-eyebrow">
-        ⚠ Step 2 of 4 · Final Confirmation
-      </div>
+      <ol class="steps" data-step="2" aria-label="Step 2 of 4">
+        <li class="done"><span class="step-n">1</span><span class="step-l">Read</span></li>
+        <li class="current" aria-current="step"><span class="step-n">2</span><span class="step-l">Confirm</span></li>
+        <li><span class="step-n">3</span><span class="step-l">Enter code</span></li>
+        <li><span class="step-n">4</span><span class="step-l">Your request</span></li>
+      </ol>
 
       <h1 class="confirm-title">
         Before you proceed —<br>
@@ -215,5 +91,6 @@
       window.location.href = 'access.html';
     }
   </script>
+  <script src="../js/safety.js"></script>
 </body>
 </html>

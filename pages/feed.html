@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#0c0c0e"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>Feed — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .feed-layout { display:grid; grid-template-columns:minmax(0, 680px) 280px; gap:28px; align-items:start; }
+    .feed-aside { position:sticky; top:calc(var(--nav-h) + 28px); }
+    @media (max-width: 1150px) { .feed-layout { grid-template-columns:minmax(0, 1fr); } .feed-aside { display:none; } }
+    .guideline { display:flex; gap:10px; font-size:12.5px; color:var(--text-2); line-height:1.6; padding:7px 0; }
+    .linked-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--text-3); }
+    .linked-head a { color:var(--pink); text-decoration:none; text-transform:none; letter-spacing:0; font-size:12px; }
+    #feed-sentinel { height:1px; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <nav class="topnav" data-shell="topnav"></nav>
+  <div class="app-wrap">
+    <aside class="sidebar" data-shell="sidebar" data-active="feed"></aside>
+    <main class="main fade-up" id="main">
+
+      <div class="page-header">
+        <div class="page-eyebrow">The Circle</div>
+        <h1 class="page-title">Community <em>Feed</em></h1>
+        <p class="page-subtitle">A quiet room for members only. Share what you’re carrying, what helped, or simply say hello.</p>
+      </div>
+
+      <div class="feed-layout">
+        <div class="feed-col">
+          <div id="linked-wrap" hidden>
+            <div class="linked-head"><span>Linked post</span><a href="feed.html">Back to full feed</a></div>
+            <div id="linked-list"></div>
+          </div>
+
+          <div class="notice-bar" id="restricted-note" hidden>⏸️ <span>Posting and replies are paused on your account for now. You can still read, react and message. Reach out via <a href="contact-sibeth.html" style="color:inherit;text-decoration:underline;">Contact Sibeth</a> with any questions.</span></div>
+
+          <div class="composer" id="composer">
+            <div class="composer-row">
+              <span class="av av-md" id="composer-av"><span>·</span></span>
+              <textarea id="post-body" rows="2" maxlength="4000" placeholder="Share something with the circle…" aria-label="Write a post"></textarea>
+            </div>
+            <div class="composer-preview" id="post-preview" hidden>
+              <img alt="Selected image preview"/>
+              <button type="button" id="post-preview-remove" aria-label="Remove image">✕</button>
+            </div>
+            <div class="composer-foot">
+              <div class="composer-tools">
+                <label class="tool-btn" for="post-image">🖼️ Photo</label>
+                <input type="file" id="post-image" accept="image/*" hidden/>
+                <label class="tool-check" data-admin hidden><input type="checkbox" id="post-announce"/> 📣 Announcement</label>
+                <label class="tool-check" data-admin hidden><input type="checkbox" id="post-pin"/> 📌 Pin</label>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <span class="char-left" id="char-left"></span>
+                <button type="button" class="btn btn-primary btn-sm" id="post-btn" disabled>Post</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="new-posts-pill" id="new-posts" hidden>↑ New posts</button>
+          <div id="pinned-list"></div>
+          <div id="feed-list"><div class="loading-state"><div class="spinner"></div><span>Loading the feed…</span></div></div>
+          <div id="feed-sentinel"></div>
+          <div class="muted-line" id="feed-end" style="text-align:center;padding:18px 0;" hidden>You’re all caught up.</div>
+        </div>
+
+        <aside class="feed-aside">
+          <div class="side-card">
+            <h3>Circle guidelines</h3>
+            <div class="guideline"><span>🤍</span><span>Lead with kindness. Everyone here is carrying something.</span></div>
+            <div class="guideline"><span>🔒</span><span>What’s shared in the circle stays in the circle.</span></div>
+            <div class="guideline"><span>📍</span><span>Never post anyone’s location, address or identifying details — including your own.</span></div>
+            <div class="guideline"><span>🚩</span><span>If something feels wrong, use <strong>Report</strong>. It’s private and goes only to the admin team.</span></div>
+            <div class="guideline"><span>⎋</span><span>Need to leave fast? Tap <strong>Quick exit</strong> or press Esc three times.</span></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
+  <script src="../js/shell.js"></script>
+  <script>
+  (async function () {
+    const PAGE = 15;
+    const $ = (id) => document.getElementById(id);
+    const feedEl = $('feed-list'), pinnedEl = $('pinned-list'), linkedEl = $('linked-list');
+    const bodyEl = $('post-body'), postBtn = $('post-btn');
+    const ctx = { meId: null, isAdmin: false, reactions: {}, onPinChange: () => loadAll() };
+    let oldest = null, done = false, loading = false, pendingImage = null, newCount = 0;
+
+    const me = await FE.ready;
+    ctx.meId = me.user.id; ctx.isAdmin = me.isAdmin;
+    $('composer-av').outerHTML = avatarHTML(me.member, 'md');
+    hydrateMedia($('composer'));
+    if (me.isAdmin) document.querySelectorAll('[data-admin]').forEach((el) => el.hidden = false);
+
+    const restr = await getMyRestrictions();
+    if (restr.posting_suspended) { $('composer').hidden = true; $('restricted-note').hidden = false; }
+
+    [feedEl, pinnedEl, linkedEl].forEach((el) => bindPostInteractions(el, ctx));
+
+    // ── Composer ──
+    const refreshComposer = () => {
+      bodyEl.style.height = 'auto'; bodyEl.style.height = Math.min(bodyEl.scrollHeight, 360) + 'px';
+      const left = 4000 - bodyEl.value.length;
+      $('char-left').textContent = left < 400 ? `${left} left` : '';
+      postBtn.disabled = !bodyEl.value.trim() && !pendingImage;
+    };
+    bodyEl.addEventListener('input', refreshComposer);
+    bodyEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); if (!postBtn.disabled) submitPost(); } });
+    $('post-image').addEventListener('change', (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      if (!f.type.startsWith('image/')) { toast('Please choose an image.', 'error'); return; }
+      pendingImage = f;
+      const prev = $('post-preview'); prev.querySelector('img').src = URL.createObjectURL(f); prev.hidden = false;
+      refreshComposer();
+    });
+    $('post-preview-remove').addEventListener('click', () => {
+      pendingImage = null; $('post-image').value = ''; $('post-preview').hidden = true; refreshComposer();
+    });
+    postBtn.addEventListener('click', submitPost);
+
+    async function submitPost() {
+      const body = bodyEl.value.trim(); if (!body && !pendingImage) return;
+      postBtn.disabled = true; postBtn.textContent = pendingImage ? 'Uploading…' : 'Posting…';
+      let path = null;
+      try {
+        if (pendingImage) path = await uploadImage(pendingImage, 'post');
+        const post = await createPost({
+          body, imagePath: path,
+          isAnnouncement: ctx.isAdmin && $('post-announce').checked,
+          isPinned: ctx.isAdmin && $('post-pin').checked,
+        });
+        bodyEl.value = ''; $('post-preview-remove').click();
+        if (ctx.isAdmin) { $('post-announce').checked = false; $('post-pin').checked = false; }
+        if (post.is_pinned) await loadPinned();
+        else {
+          feedEl.querySelector('.empty-state')?.remove();
+          ctx.reactions[post.id] = { counts: {}, mine: new Set() };
+          feedEl.insertAdjacentHTML('afterbegin', renderPost(post, ctx)); hydrateMedia(feedEl);
+        }
+        toast(post.is_announcement ? 'Announcement posted — members have been notified.' : 'Shared with the circle.', 'success');
+      } catch (err) {
+        console.error(err); if (path) removeMedia(path);
+        toast((err.message || '').includes('row-level') ? 'Posting is paused on your account right now.' : (err.message || 'Could not post.'), 'error');
+      }
+      postBtn.textContent = 'Post'; refreshComposer();
+    }
+
+    // ── Loading ──
+    async function loadPinned() {
+      const pinned = await fetchPinned();
+      await renderPostsInto(pinnedEl, pinned, ctx);
+    }
+    async function loadMore(reset = false) {
+      if (loading || (done && !reset)) return; loading = true;
+      if (reset) { oldest = null; done = false; $('feed-end').hidden = true; }
+      try {
+        const posts = await fetchFeed({ before: oldest, limit: PAGE });
+        if (reset && !posts.length) {
+          feedEl.innerHTML = pinnedEl.children.length ? '' : `<div class="empty-state"><div class="empty-icon">🌙</div>
+            <div class="empty-title">The circle is quiet</div><div class="empty-text">Be the first to share something — a hello is plenty.</div></div>`;
+        } else await renderPostsInto(feedEl, posts, ctx, { append: !reset });
+        if (posts.length) oldest = posts[posts.length - 1].created_at;
+        done = posts.length < PAGE;
+        $('feed-end').hidden = !(done && (oldest || pinnedEl.children.length));
+      } catch (err) {
+        console.error(err);
+        if (reset) feedEl.innerHTML = `<div class="alert alert-warn">The feed couldn’t load. If this is the first time, make sure migration-v4-social.sql has been run.</div>`;
+      }
+      loading = false;
+    }
+    async function loadAll() { await loadPinned(); await loadMore(true); }
+
+    async function loadLinked(id) {
+      $('linked-wrap').hidden = false;
+      try {
+        const p = await fetchPost(id);
+        if (!p) { linkedEl.innerHTML = '<div class="muted-line">That post is no longer available.</div>'; return; }
+        await renderPostsInto(linkedEl, [p], ctx);
+        const card = linkedEl.querySelector('.post-card'); card.classList.add('flash');
+        card.querySelector('[data-action="toggle-comments"]')?.click();
+      } catch (_) { linkedEl.innerHTML = '<div class="muted-line">That post is no longer available.</div>'; }
+    }
+
+    const linked = new URLSearchParams(location.search).get('post');
+    if (linked) loadLinked(linked);
+    await loadAll();
+
+    new IntersectionObserver((entries) => { if (entries[0].isIntersecting) loadMore(); }, { rootMargin: '600px' })
+      .observe($('feed-sentinel'));
+
+    document.addEventListener('fe:post', (e) => {
+      if (e.detail.author_id === ctx.meId) return;
+      newCount++; const pill = $('new-posts'); pill.textContent = `↑ ${newCount} new post${newCount === 1 ? '' : 's'}`; pill.hidden = false;
+    });
+    $('new-posts').addEventListener('click', async () => {
+      $('new-posts').hidden = true; newCount = 0;
+      window.scrollTo({ top: 0, behavior: 'smooth' }); await loadAll();
+    });
+  })();
+  </script>
+</body>
+</html>

@@ -255,8 +255,23 @@ async function getAllLoginActivity(limit = 200) {
 // ═══════════════════════════════════════════════
 //   WISHES
 // ═══════════════════════════════════════════════
-async function submitWish(wishData) {
-  const { error } = await sb.from('wishes').insert(wishData); if (error) throw error;
+// Wishes are submitted only through the submit_wish RPC: the server validates the
+// redeemed code's session, allows one submission per code, and sets the amount.
+const WISH_ERRORS = {
+  invalid_session: 'Your session couldn’t be verified. Please start again from the beginning with your code.',
+  session_expired: 'This session has expired. Contact Sibeth and we’ll help you finish.',
+  already_submitted: 'A request has already been submitted with this code.',
+  unknown_code_value: 'This code’s value couldn’t be determined. Contact Sibeth and we’ll sort it out.',
+  invalid_request: 'Something in the form was incomplete. Please review and try again.',
+};
+async function submitWish({ sessionId, option, name, contact, summary, urgency, data }) {
+  const { data: res, error } = await sb.rpc('submit_wish', {
+    p_session_id: sessionId, p_option: option, p_name: name || null, p_contact: contact || null,
+    p_summary: summary || null, p_urgency: urgency || null, p_data: data || {},
+  });
+  if (error) throw error;
+  if (!res || !res.success) throw new Error(WISH_ERRORS[res?.reason] || 'Your request couldn’t be submitted.');
+  return res;
 }
 async function getAllWishes() {
   const { data, error } = await sb.from('wishes').select('*').order('created_at', { ascending: false });
@@ -457,10 +472,22 @@ const SERVICE_MAP = {
 };
 
 const OPTION_MAP = {
-  money:      { icon: '💰', label: 'Financial Assistance' },
-  relocation: { icon: '🏡', label: 'Relocation Service' },
-  transfer:   { icon: '🔄', label: 'Transfer to Another' },
+  money:      { icon: '💰', label: 'A gift of money' },
+  wish:       { icon: '🌟', label: 'A wish' },
+  transfer:   { icon: '🔄', label: 'Pass it on' },
+  relocation: { icon: '🏡', label: 'Relocation (legacy)' },
 };
+// Code value is set by length: 4 digits = $1,000; 7 digits = $10,000; legacy 10 digits = $10,000
+function codeValueUsd(codeOrType) {
+  const t = String(codeOrType || '');
+  const len = /^\d+$/.test(t) ? t.length : parseInt(t, 10);
+  return len === 4 ? 1000 : (len === 7 || len === 10) ? 10000 : null;
+}
+function codeValueLabel(codeOrType) {
+  const v = codeValueUsd(codeOrType);
+  const legacy = String(codeOrType).length === 10 || String(codeOrType).startsWith('10');
+  return v ? `$${v.toLocaleString('en-US')}${legacy ? ' · legacy' : ''}` : '—';
+}
 
 // ═══════════════════════════════════════════════
 //   CURRENCY — wish flow money option
@@ -511,6 +538,8 @@ function statusBadge(status) {
     denied:        `<span class="badge badge-red">Denied</span>`,
     cancelled:     `<span class="badge badge-neutral">Cancelled</span>`,
     sent:          `<span class="badge badge-pink">Sent</span>`,
+    reviewing:     `<span class="badge badge-amber">Reviewing</span>`,
+    dismissed:     `<span class="badge badge-neutral">Dismissed</span>`,
   };
   return map[status] || `<span class="badge badge-neutral">${status}</span>`;
 }

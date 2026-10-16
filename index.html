@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="logo.svg"/>
   <link rel="apple-touch-icon" href="logo.svg"/>
   <meta name="robots" content="noindex, nofollow"/>
@@ -333,6 +333,33 @@
         max-width:320px;
       }
     }
+    /* ── v5 redesign ── */
+    .hero-title { text-wrap: balance; }
+    .hero-title > em { color: var(--text); font-style: italic; }
+    .hero-title .brand em { color: var(--pink); font-style: normal; }
+    .hero-sub { margin-bottom: 18px; }
+    .seam-draw { display: block; width: min(520px, 78vw); height: 14px; margin: 0 auto 34px; overflow: visible; }
+    .seam-draw path { fill: none; stroke: var(--gold); vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+    .seam-draw .line { stroke-width: 1.3; stroke-dasharray: 1; stroke-dashoffset: 1; animation: seamDraw 2.2s cubic-bezier(.65,0,.35,1) 1.2s forwards; }
+    .seam-draw .fork { stroke-width: 1; stroke-dasharray: 1; stroke-dashoffset: 1; animation: seamDraw .6s ease-out 3.1s forwards; }
+    .seam-draw .glow { stroke-width: 6; stroke-opacity: .18; opacity: 0; animation: fadeIn 1.2s ease 3s forwards; }
+    @keyframes seamDraw { to { stroke-dashoffset: 0; } }
+    .entry-card {
+      background: rgba(23,23,27,0.78); border: 1px solid var(--border-2); box-shadow: none;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      width: 268px; padding: 30px 28px 26px; gap: 0;
+    }
+    .entry-card:hover { transform: none; filter: none; border-color: var(--border-pink); box-shadow: 0 18px 50px rgba(0,0,0,.45); }
+    .entry-title { color: var(--text); font-size: 1.65rem; font-weight: 400; margin-bottom: 10px; }
+    .entry-desc { color: var(--text-2); font-size: 13px; line-height: 1.65; margin-bottom: 22px; flex: 1; }
+    .entry-cta { background: var(--pink); color: #0c0c0e; font-size: 12.5px; letter-spacing: .01em; padding: 9px 20px; }
+    .entry-card:hover .entry-cta { background: #ffc4cd; }
+    .mreq-divider { width: min(420px, 70vw); height: 14px; background: var(--seam) center / 100% 100% no-repeat; }
+    .mreq-eyebrow { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 500; color: var(--gold); }
+    .mreq-heading em { color: inherit; }
+    .mreq-card label.field-label { text-transform: none; letter-spacing: 0; font-size: 12.5px; font-weight: 500; color: var(--text-2); }
+    .mreq-card { background: rgba(23,23,27,0.6); }
+    @media (max-width: 560px) { .entry-card { width: 100%; max-width: 340px; } }
   </style>
 </head>
 
@@ -341,10 +368,7 @@
 <canvas id="bg-canvas"></canvas>
 
 <nav class="topnav">
-  <a href="index.html" class="nav-brand">
-    <img src="logo.svg" class="brand-logo"/>
-    fractured <span class="accent">E</span>go
-  </a>
+  <a href="index.html" class="nav-brand"><img src="logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
 </nav>
 
 <div class="landing">
@@ -357,30 +381,31 @@
 
     <h1 class="hero-title">
       <br><span class="brand">fractured <em>E</em>go</span> —<br>
-      let's get you to where<em> you need to be.</em>
+      let's get you to where<em> you need to&nbsp;be.</em>
     </h1>
 
-    <p class="hero-sub">
-      You are not alone. 
-    </p>
+    <p class="hero-sub">You are not alone.</p>
+    <svg class="seam-draw" viewBox="0 0 600 14" preserveAspectRatio="none" aria-hidden="true">
+      <path class="glow" d="M0 8 L36 6 L58 9 L94 5 L128 7 L149 4 L186 8 L212 6 L248 9 L286 5 L318 7 L352 6 L369 10 L406 6 L444 8 L468 5 L503 7 L538 6 L563 9 L600 7"/>
+      <path class="line" pathLength="1" d="M0 8 L36 6 L58 9 L94 5 L128 7 L149 4 L186 8 L212 6 L248 9 L286 5 L318 7 L352 6 L369 10 L406 6 L444 8 L468 5 L503 7 L538 6 L563 9 L600 7"/>
+      <path class="fork" pathLength="1" d="M149 4 L157 1 M369 10 L377 13 M468 5 L475 2"/>
+    </svg>
 
     <!-- LOGO INSERTED HERE -->
-    <img src="logo.svg" class="mid-logo"/>
+    <img src="logo.svg" alt="" class="mid-logo"/>
 
     <div class="entry-cards">
 
       <a href="pages/login.html" class="entry-card">
-        <div class="entry-icon">🔐</div>
-        <div class="entry-title">Member Login</div>
-        <div class="entry-desc">Registered members — sign in to access your full dashboard and services.</div>
-        <div class="entry-cta">Sign In →</div>
+        <div class="entry-title">Members</div>
+        <div class="entry-desc">Sign in to your dashboard, the circle, and your concierge.</div>
+        <div class="entry-cta">Sign in</div>
       </a>
 
       <a href="pages/access-info.html" class="entry-card">
-        <div class="entry-icon">✉️</div>
-        <div class="entry-title">Access Code</div>
-        <div class="entry-desc">Received a code from a member? Start here to learn what's available.</div>
-        <div class="entry-cta">Enter Code →</div>
+        <div class="entry-title">I have a code</div>
+        <div class="entry-desc">Someone shared an access code with you. Start here to see what it opens.</div>
+        <div class="entry-cta">Begin</div>
       </a>
 
     </div>
@@ -525,8 +550,9 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script src="js/app.js"></script>
+  <script src="js/safety.js"></script>
 
 <script>
 (async () => { await redirectIfAuthed(); })();

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <meta name="robots" content="noindex, nofollow"/>
@@ -24,7 +24,12 @@
 
     <div class="auth-card">
       <div class="auth-icon-wrap">✉️</div>
-      <div class="auth-eyebrow">Step 3 of 4 · Enter Code</div>
+      <ol class="steps" data-step="3" aria-label="Step 3 of 4">
+        <li class="done"><span class="step-n">1</span><span class="step-l">Read</span></li>
+        <li class="done"><span class="step-n">2</span><span class="step-l">Confirm</span></li>
+        <li class="current" aria-current="step"><span class="step-n">3</span><span class="step-l">Enter code</span></li>
+        <li><span class="step-n">4</span><span class="step-l">Your request</span></li>
+      </ol>
       <h1 class="auth-title">Enter your <em>code now.</em></h1>
       <p class="auth-subtitle">
         This is a one-time-use code. The moment you submit, it is consumed and your session begins.
@@ -39,7 +44,7 @@
       <div class="field">
         <label class="field-label">Your Access Code</label>
         <div class="field-input">
-          <input type="text" id="code" placeholder="4 or 10-digit code"
+          <input type="text" id="code" placeholder="4 or 7-digit code"
             maxlength="10" inputmode="numeric"
             autocomplete="off"
             oninput="this.value=this.value.replace(/\D/g,'')"
@@ -57,8 +62,9 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
   <script>
     // Guard: must have come from confirmation page
     if (!sessionStorage.getItem('fe_access_agreed')) {
@@ -73,8 +79,8 @@
         showAlert('alert', 'Please enter your access code.');
         return;
       }
-      if (code.length !== 4 && code.length !== 10) {
-        showAlert('alert', 'Code must be 4 or 10 digits.');
+      if (![4, 7, 10].includes(code.length)) {
+        showAlert('alert', 'Codes are 4 or 7 digits long.');
         return;
       }
 

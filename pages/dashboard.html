@@ -2,254 +2,177 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#0c0c0e"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <title>Dashboard — fractured Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
-  <style>
-    body { display:flex; flex-direction:column; min-height:100vh; }
-    /* Profile completeness mini-bar */
-    .profile-bar {
-      height: 6px; background: var(--bg-4); border-radius: 3px;
-      overflow: hidden; margin-top: 10px;
-    }
-    .profile-bar > span {
-      display: block; height: 100%;
-      background: linear-gradient(90deg, var(--pink) 0%, var(--gold) 100%);
-      border-radius: 3px; transition: width 0.5s ease;
-    }
-  </style>
+  <style>body { display:flex; flex-direction:column; min-height:100vh; }</style>
 </head>
 <body>
-
-  <nav class="topnav">
-    <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
-    <div class="nav-right">
-      <div class="nav-user-pill">
-        <div class="avatar" id="nav-avatar">?</div>
-        <span id="nav-name">Loading…</span>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
-    </div>
-  </nav>
-
+  <a href="#main" class="skip-link">Skip to content</a>
+  <nav class="topnav" data-shell="topnav"></nav>
   <div class="app-wrap">
+    <aside class="sidebar" data-shell="sidebar" data-active="dashboard"></aside>
+    <main class="main fade-up" id="main">
 
-    <aside class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Overview</div>
-        <a href="dashboard.html"      class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
-        <a href="requests.html"       class="sidebar-link"><span class="icon">📋</span> My Requests</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Member Tools</div>
-        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
-        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
-        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Account</div>
-        <a href="contact-sibeth.html" class="sidebar-link"><span class="icon">📇</span> Contact Sibeth</a>
-        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
-        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
-      </div>
-      <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <div class="avatar" id="sb-avatar">?</div>
-          <div class="info">
-            <div class="name" id="sb-name">Loading…</div>
-            <div class="role" id="sb-role">Member</div>
-          </div>
+      <section class="dash-hero">
+        <span id="hero-av" class="av av-lg"><span>·</span></span>
+        <div class="dash-hero-text">
+          <div class="dash-greet" id="greet">Welcome</div>
+          <h1 class="dash-title">Hello, <em id="hero-name">friend</em>.</h1>
+          <p class="dash-sub">Your private network is standing by — the team, the circle, and your tools, all in one place.</p>
         </div>
-        <button class="btn btn-ghost" style="width:100%;font-size:11px;" onclick="signOut()">Sign Out</button>
-      </div>
-    </aside>
+        <div class="dash-pills">
+          <a class="dash-pill" href="messages.html"><strong id="pill-msg">—</strong><span>unread<br/>messages</span></a>
+          <a class="dash-pill" href="requests.html"><strong id="pill-open">—</strong><span>open<br/>requests</span></a>
+          <a class="dash-pill" href="my-codes.html"><strong id="pill-codes">—</strong><span>codes<br/>remaining</span></a>
+        </div>
+      </section>
 
-    <main class="main fade-up">
-
-      <!-- Welcome banner -->
-      <div class="welcome-banner">
+      <div class="dash-grid">
         <div>
-          <div class="wb-title">Welcome back, <em id="first-name">friend.</em></div>
-          <div class="wb-sub">Your private concierge network is standing by. How can we help you today?</div>
-        </div>
-        <span class="badge badge-gold" id="status-badge">Active Member</span>
-      </div>
-
-      <!-- Quick actions -->
-      <div class="quick-actions">
-        <a href="request.html" class="quick-action">
-          <div class="qa-icon">✨</div>
-          <div class="qa-title">New Request</div>
-          <div class="qa-desc">Submit a concierge request across nine service categories.</div>
-        </a>
-        <a href="my-codes.html" class="quick-action">
-          <div class="qa-icon">🔑</div>
-          <div class="qa-title">My Access Codes</div>
-          <div class="qa-desc">Request from your yearly allowance and view assigned codes.</div>
-        </a>
-        <a href="invite-request.html" class="quick-action">
-          <div class="qa-icon">✉️</div>
-          <div class="qa-title">Invite Someone</div>
-          <div class="qa-desc">Ask the team to extend an invitation to someone you trust.</div>
-        </a>
-        <a href="contact-sibeth.html" class="quick-action">
-          <div class="qa-icon">📇</div>
-          <div class="qa-title">Contact Sibeth</div>
-          <div class="qa-desc">Direct line for time-sensitive conversations and personal follow-up.</div>
-        </a>
-      </div>
-
-      <!-- Allowance card -->
-      <div class="allowance-card">
-        <div class="allowance-head">
-          <div>
-            <div class="allowance-title">Your <em>Code Allowance</em></div>
-            <div class="allowance-sub" id="allowance-sub">Each member receives 2 access codes per calendar year.</div>
+          <div class="dash-card" id="announce-card" hidden style="border-color:rgba(201,169,110,.35);background:linear-gradient(180deg,rgba(201,169,110,.07),transparent 60%),var(--bg-2);">
+            <div class="dash-card-head"><h2 class="dash-card-title">📣 <em>Announcement</em></h2><a class="dash-link" id="announce-link" href="feed.html">Open</a></div>
+            <div id="announce-body" style="font-size:14px;line-height:1.75;color:var(--text);white-space:pre-wrap;"></div>
           </div>
-          <a href="my-codes.html" class="btn btn-secondary btn-sm">Manage codes</a>
-        </div>
-        <div class="pip-meter" id="pip-meter">
-          <div class="pip"></div>
-          <div class="pip"></div>
-        </div>
-        <div class="allowance-meta" id="allowance-meta">— remaining</div>
-      </div>
 
-      <!-- Stats grid -->
-      <div class="stats-grid" style="margin-bottom:28px;">
-        <div class="stat-card">
-          <div class="stat-value" id="stat-open">—</div>
-          <div class="stat-label">Open Requests</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-total">—</div>
-          <div class="stat-label">Total Requests</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-codes">—</div>
-          <div class="stat-label">Codes This Year</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">24/7</div>
-          <div class="stat-label">Network Access</div>
-        </div>
-      </div>
-
-      <!-- Profile completeness card -->
-      <div class="activity-card" id="profile-card">
-        <div class="ac-head">
-          <div>
-            <div class="ac-title">Profile <em>Completeness</em></div>
-            <div style="font-size:11.5px;color:var(--text-3);margin-top:3px;" id="profile-pct">Loading…</div>
+          <div class="dash-card">
+            <div class="dash-card-head"><h2 class="dash-card-title">From the <em>circle</em></h2><a class="dash-link" href="feed.html">Open feed</a></div>
+            <div id="circle-list"><div class="muted-line">Loading…</div></div>
           </div>
-          <a href="account.html" class="ac-link">Update profile →</a>
-        </div>
-        <div class="profile-bar"><span id="profile-bar-fill" style="width:0%"></span></div>
-        <div id="profile-missing" style="margin-top:12px;font-size:12px;color:var(--text-3);line-height:1.7;"></div>
-      </div>
 
-      <!-- Recent requests -->
-      <div class="activity-card">
-        <div class="ac-head">
-          <div class="ac-title">Recent <em>Requests</em></div>
-          <a href="requests.html" class="ac-link">View all →</a>
+          <div class="dash-card">
+            <div class="dash-card-head"><h2 class="dash-card-title">Recent <em>requests</em></h2><a class="dash-link" href="requests.html">View all</a></div>
+            <div id="req-list"><div class="muted-line">Loading…</div></div>
+          </div>
         </div>
-        <div id="recent-list">
-          <div style="color:var(--text-3);font-size:13px;padding:6px 0;">Loading…</div>
+
+        <div>
+          <div class="dash-card">
+            <div class="dash-card-head"><h2 class="dash-card-title">Quick <em>actions</em></h2></div>
+            <div class="action-grid">
+              <a class="action-tile" href="request.html"><span class="ai">✨</span><span class="at">New request</span><span class="as">Concierge help, any category</span></a>
+              <a class="action-tile" href="feed.html"><span class="ai">🌙</span><span class="at">Write a post</span><span class="as">Share with the circle</span></a>
+              <a class="action-tile" href="messages.html"><span class="ai">💬</span><span class="at">Messages</span><span class="as">Private conversations</span></a>
+              <a class="action-tile" href="my-codes.html"><span class="ai">🔑</span><span class="at">Access codes</span><span class="as">Your yearly allowance</span></a>
+              <a class="action-tile" href="invite-request.html"><span class="ai">✉️</span><span class="at">Invite someone</span><span class="as">We reach out discreetly</span></a>
+              <a class="action-tile" href="contact-sibeth.html"><span class="ai">📇</span><span class="at">Contact Sibeth</span><span class="as">Direct line</span></a>
+            </div>
+          </div>
+
+          <div class="dash-card" id="todo-card" hidden>
+            <div class="dash-card-head"><h2 class="dash-card-title">Finish <em>setting up</em></h2><span class="dash-link" id="todo-pct" style="color:var(--text-3);"></span></div>
+            <div class="progress"><i id="todo-bar" style="width:0"></i></div>
+            <ul class="check-list" id="todo-list"></ul>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-head"><h2 class="dash-card-title">Code <em>allowance</em></h2><a class="dash-link" href="my-codes.html">Manage</a></div>
+            <div class="pip-meter" id="pip-meter"></div>
+            <div class="allowance-meta" id="allowance-meta" style="margin-top:10px;">—</div>
+          </div>
+
+          <div class="dash-card">
+            <div class="dash-card-head"><h2 class="dash-card-title">Recent <em>messages</em></h2><a class="dash-link" href="messages.html">Inbox</a></div>
+            <div id="msg-list"><div class="muted-line">Loading…</div></div>
+          </div>
         </div>
       </div>
-
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
+  <script src="../js/shell.js"></script>
   <script>
-  (async () => {
-    const user = await requireAuth();
-    if (!user) return;
+  (async function () {
+    const $ = (id) => document.getElementById(id);
+    const me = await FE.ready;
+    const p = me.profile || {}, m = me.member || {};
 
-    try {
-      // Roll over allowance year if needed (no-op otherwise)
-      await refreshAllowance();
+    // Hero
+    const h = new Date().getHours();
+    $('greet').textContent = h < 5 ? 'Up late' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    $('hero-name').textContent = ((m.display_name && m.display_name !== 'Member' ? m.display_name : p.first_name) || 'friend').replace(/\.+$/, '');
+    $('hero-av').outerHTML = avatarHTML(m, 'lg');
+    hydrateMedia(document.querySelector('.dash-hero'));
 
-      const profile = await getProfile(user.id);
-      const name = profile.first_name || 'friend';
-      const ini  = initials(profile.first_name, profile.last_name);
+    // Allowance
+    const total = p.codes_allowance_total ?? 2, used = p.codes_used_this_year ?? 0, remaining = Math.max(0, total - used);
+    $('pip-meter').innerHTML = Array.from({ length: total }, (_, i) => `<div class="pip ${i < remaining ? 'filled' : 'used'}"></div>`).join('');
+    $('allowance-meta').textContent = `${remaining} of ${total} remaining · ${p.codes_allowance_year || new Date().getFullYear()}`;
+    $('pill-codes').textContent = remaining;
 
-      document.getElementById('first-name').textContent = name + '.';
-      document.getElementById('nav-name').textContent   = 'Hello, ' + name;
-      document.getElementById('nav-avatar').textContent = ini;
-      document.getElementById('sb-avatar').textContent  = ini;
-      document.getElementById('sb-name').textContent    = (profile.first_name || '') + ' ' + (profile.last_name || '');
-      document.getElementById('sb-role').textContent    = profile.role === 'admin' ? 'Administrator' : 'Member';
-      if (profile.role === 'admin') document.getElementById('admin-link').classList.remove('hidden');
+    // Unread messages + recent conversations
+    const settle = (pr) => pr.then((v) => v, (e) => { console.error(e); return null; });
+    const [unread, convos, requests, pinned, posts] = await Promise.all([
+      settle(unreadMessageCount()), settle(listConversations()), settle(getMyRequests()),
+      settle(fetchPinned()), settle(fetchFeed({ limit: 4 })),
+    ]);
+    $('pill-msg').textContent = unread ?? 0;
 
-      // ── Allowance pip meter
-      const total = profile.codes_allowance_total ?? 2;
-      const used  = profile.codes_used_this_year ?? 0;
-      const remaining = Math.max(0, total - used);
-      const meter = document.getElementById('pip-meter');
-      meter.innerHTML = '';
-      for (let i = 0; i < total; i++) {
-        const d = document.createElement('div');
-        d.className = 'pip ' + (i < remaining ? 'filled' : 'used');
-        meter.appendChild(d);
-      }
-      document.getElementById('allowance-meta').textContent =
-        `${remaining} of ${total} remaining · year ${profile.codes_allowance_year || new Date().getFullYear()}`;
-      document.getElementById('stat-codes').textContent = `${used}/${total}`;
+    const ml = $('msg-list');
+    if (!convos || !convos.length) ml.innerHTML = '<div class="muted-line">No conversations yet. <a href="members.html" style="color:var(--pink);">Find a member</a></div>';
+    else {
+      ml.innerHTML = convos.slice(0, 3).map((c) => `<a class="mini-row" href="messages.html?c=${c.conversation_id}">
+        ${avatarHTML({ display_name: c.other_display_name || 'Former member', avatar_path: c.other_avatar_path }, 'sm')}
+        <span class="mini-main"><span class="mini-title"><span>${esc(c.other_display_name || 'Former member')}${c.unread_count ? ' <span class="unread-dot" style="display:inline-block;"></span>' : ''}</span><time>${timeAgo(c.last_message_at)}</time></span>
+        <span class="mini-text">${c.last_body == null ? 'No messages yet' : c.last_deleted ? 'Message deleted' : esc((c.last_sender_id === me.user.id ? 'You: ' : '') + c.last_body)}</span></span></a>`).join('');
+      hydrateMedia(ml);
+    }
 
-      // ── Requests stats
-      const requests = await getMyRequests();
-      document.getElementById('stat-open').textContent  = requests.filter(r => r.status !== 'complete').length;
-      document.getElementById('stat-total').textContent = requests.length;
+    // Requests
+    const rl = $('req-list');
+    const reqs = requests || [];
+    $('pill-open').textContent = reqs.filter((r) => r.status !== 'complete' && r.status !== 'cancelled').length;
+    rl.innerHTML = reqs.length ? reqs.slice(0, 4).map((r) => {
+      const s = SERVICE_MAP[r.service_type] || { icon: '📋', label: r.service_type || 'Request' };
+      return `<a class="mini-row" href="requests.html"><span class="notif-icon">${s.icon}</span>
+        <span class="mini-main"><span class="mini-title"><span>${esc(s.label)}</span><time>${formatDate(r.created_at)}</time></span></span>${statusBadge(r.status)}</a>`;
+    }).join('') : '<div class="muted-line">No requests yet. <a href="request.html" style="color:var(--pink);">Start one</a></div>';
 
-      // ── Recent list
-      const list = document.getElementById('recent-list');
-      if (!requests.length) {
-        list.innerHTML = `<div style="text-align:center;padding:18px 0;">
-          <div style="font-size:30px;opacity:0.5;margin-bottom:6px;">📋</div>
-          <div style="font-size:13px;color:var(--text-3);margin-bottom:14px;">No requests yet.</div>
-          <a href="request.html" class="btn btn-secondary btn-sm">Submit your first →</a>
-        </div>`;
-      } else {
-        list.innerHTML = `<div class="request-list">` + requests.slice(0, 5).map(r => {
-          const s = SERVICE_MAP[r.service_type] || { icon: '📋', label: r.service_type };
-          return `<div class="request-item">
-            <div class="r-icon">${s.icon}</div>
-            <div class="r-body">
-              <div class="r-title">${escapeHtml(s.label)}</div>
-              <div class="r-meta">Submitted ${formatDate(r.created_at)}${r.form_data?.urgency ? ' · ' + escapeHtml(r.form_data.urgency) : ''}</div>
-            </div>
-            <div class="r-status">${statusBadge(r.status)}</div>
-          </div>`;
-        }).join('') + `</div>`;
-      }
+    // Announcement (most recent pinned announcement)
+    const ann = (pinned || []).find((x) => x.is_announcement);
+    if (ann) {
+      $('announce-card').hidden = false;
+      $('announce-body').innerHTML = linkify(esc(ann.body.length > 420 ? ann.body.slice(0, 420) + '…' : ann.body));
+      $('announce-link').href = `feed.html?post=${ann.id}`;
+    }
 
-      // ── Profile completeness
-      const fields = [
-        { k: 'first_name',   label: 'First name' },
-        { k: 'last_name',    label: 'Last name' },
-        { k: 'phone',        label: 'Phone number' },
-        { k: 'contact_pref', label: 'Preferred contact method' },
-      ];
-      const filled = fields.filter(f => profile[f.k] && String(profile[f.k]).trim().length > 0);
-      const missing = fields.filter(f => !profile[f.k] || String(profile[f.k]).trim().length === 0);
-      const pct = Math.round((filled.length / fields.length) * 100);
-      document.getElementById('profile-pct').textContent =
-        pct === 100 ? 'Profile complete — thank you.' : `${pct}% complete · ${missing.length} item${missing.length === 1 ? '' : 's'} remaining`;
-      document.getElementById('profile-bar-fill').style.width = pct + '%';
-      document.getElementById('profile-missing').innerHTML = missing.length
-        ? 'Missing: ' + missing.map(m => `<span style="color:var(--text-2);">${escapeHtml(m.label)}</span>`).join(' · ')
-        : '';
+    // Circle activity
+    const cl = $('circle-list');
+    const recent = (posts || []).slice(0, 4);
+    cl.innerHTML = recent.length ? recent.map((x) => `<a class="mini-row" href="feed.html?post=${x.id}">
+        ${avatarHTML(x.author || { display_name: 'Former member' }, 'sm')}
+        <span class="mini-main"><span class="mini-title"><span>${esc(x.author?.display_name || 'Former member')}</span><time>${timeAgo(x.created_at)}</time></span>
+        <span class="mini-text">${x.body ? esc(x.body) : '📷 Shared a photo'}</span></span></a>`).join('')
+      : '<div class="muted-line">The circle is quiet. <a href="feed.html" style="color:var(--pink);">Be the first to post</a></div>';
+    hydrateMedia(cl);
 
-      if (pct === 100) document.getElementById('profile-card').style.display = 'none';
-
-    } catch (e) {
-      console.error(e);
+    // Setup checklist — private account + public profile together
+    const items = [
+      { done: !!m.avatar_path, label: 'Add a profile photo', href: 'profile.html?edit=1' },
+      { done: !!(m.bio && m.bio.trim()), label: 'Write a short bio', href: 'profile.html?edit=1' },
+      { done: !!(m.headline && m.headline.trim()), label: 'Add a headline', href: 'profile.html?edit=1' },
+      { done: !!(p.phone && String(p.phone).trim()), label: 'Add a phone number (private)', href: 'account.html' },
+      { done: !!(p.contact_pref && String(p.contact_pref).trim()), label: 'Choose how we contact you', href: 'account.html' },
+    ];
+    const doneN = items.filter((i) => i.done).length;
+    if (doneN < items.length) {
+      $('todo-card').hidden = false;
+      $('todo-pct').textContent = `${doneN} of ${items.length}`;
+      $('todo-bar').style.width = Math.round((doneN / items.length) * 100) + '%';
+      $('todo-list').innerHTML = items.map((i) => `<li class="${i.done ? 'done' : ''}"><span>${i.done ? '✓' : '○'}</span>${esc(i.label)}${i.done ? '' : `<a href="${i.href}">Do it</a>`}</li>`).join('');
     }
   })();
   </script>

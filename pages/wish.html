@@ -2,292 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <meta name="robots" content="noindex, nofollow"/>
   <title>Your Request — fractured Ego</title>
   <link rel="stylesheet" href="../css/styles.css"/>
-  <style>
-    body { display:flex; flex-direction:column; min-height:100vh; }
-    .wish-page {
-      flex:1; padding:50px 24px 80px; position:relative; z-index:1;
-      animation:fadeUp 0.5s ease both;
-    }
-    .wish-container { max-width:760px; margin:0 auto; }
-
-    .wish-eyebrow {
-      display:inline-flex; align-items:center; gap:8px;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      border-radius:var(--radius-full); padding:6px 16px;
-      font-size:11px; font-weight:600; color:var(--pink);
-      margin-bottom:22px;
-    }
-
-    .wish-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:clamp(2rem,4.5vw,3rem); font-weight:300;
-      line-height:1.18; color:var(--text); margin-bottom:14px;
-    }
-    .wish-title em { font-style:italic; color:var(--pink); }
-
-    .wish-lead {
-      font-size:14px; color:var(--text-2); line-height:1.85;
-      margin-bottom:32px;
-    }
-
-    .session-pill {
-      display:inline-flex; align-items:center; gap:7px;
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-full); padding:5px 13px;
-      font-size:11px; color:var(--text-3);
-      margin-bottom:32px;
-    }
-    .session-pill .dot {
-      width:6px; height:6px; background:var(--green);
-      border-radius:50%; box-shadow:0 0 0 3px rgba(110,231,183,0.15);
-      animation:pulse 2s infinite;
-    }
-
-    .options-row {
-      display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
-      margin-bottom:36px;
-    }
-    .option-pick {
-      background:var(--bg-2); border:2px solid var(--border);
-      border-radius:var(--radius-lg); padding:24px 18px;
-      cursor:pointer; text-align:center;
-      transition:all 0.22s ease;
-    }
-    .option-pick:hover { border-color:var(--border-pink); transform:translateY(-2px); }
-    .option-pick.active {
-      border-color:var(--pink);
-      background:var(--pink-dim-2);
-      box-shadow:0 4px 16px rgba(255,182,193,0.15);
-    }
-    .option-pick .opt-letter {
-      width:36px; height:36px; border-radius:50%;
-      background:var(--bg-3);
-      color:var(--text-2); font-family:'Cormorant Garamond',serif;
-      font-size:1.2rem; font-weight:600;
-      display:flex; align-items:center; justify-content:center;
-      margin:0 auto 12px;
-      transition:all 0.22s;
-    }
-    .option-pick.active .opt-letter {
-      background:var(--pink); color:#0c0c0e;
-    }
-    .option-pick .opt-icon { font-size:24px; margin-bottom:10px; }
-    .option-pick .opt-title { font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:4px; }
-    .option-pick .opt-sub   { font-size:11.5px; color:var(--text-3); margin-top:3px; line-height:1.55; }
-
-    .form-section {
-      background:var(--bg-2); border:1px solid var(--border);
-      border-radius:var(--radius-xl); padding:36px 32px;
-      margin-bottom:24px; display:none;
-      animation:fadeUp 0.4s ease both;
-    }
-    .form-section.active { display:block; }
-
-    .section-heading {
-      font-family:'Cormorant Garamond',serif;
-      font-size:1.55rem; color:var(--text); margin-bottom:10px;
-    }
-    .section-heading em { font-style:italic; color:var(--pink); }
-    .section-desc {
-      font-size:13.5px; color:var(--text-2); line-height:1.75; margin-bottom:28px;
-    }
-
-    .form-section .field { margin-bottom:20px; }
-    .form-section .form-row { margin-bottom:20px; }
-    .form-section .info-tip { margin-top:20px; }
-    .form-section h3.subhead {
-      font-family:'Cormorant Garamond',serif;
-      font-size:1.15rem; color:var(--text); margin:28px 0 14px;
-      padding-top:20px; border-top:1px solid var(--border);
-    }
-    .form-section h3.subhead em { font-style:italic; color:var(--pink); }
-    .form-section h3.subhead.no-border { border-top:none; padding-top:0; margin-top:18px; }
-
-    .transfer-method {
-      display:grid; grid-template-columns:1fr 1fr; gap:14px;
-      margin-bottom:24px;
-    }
-    .method-card {
-      background:var(--bg-3); border:2px solid var(--border);
-      border-radius:var(--radius-md); padding:20px;
-      cursor:pointer; transition:all 0.2s;
-    }
-    .method-card:hover { border-color:var(--border-pink); }
-    .method-card.active {
-      border-color:var(--pink); background:var(--pink-dim-2);
-    }
-    .method-card .m-num {
-      font-size:10px; font-weight:700; color:var(--pink);
-      letter-spacing:0.1em; margin-bottom:6px;
-    }
-    .method-card .m-title { font-size:13.5px; font-weight:600; color:var(--text); margin-bottom:6px; }
-    .method-card .m-desc  { font-size:12px; color:var(--text-2); line-height:1.65; }
-
-    .transfer-method-detail { display:none; }
-    .transfer-method-detail.active { display:block; animation:fadeUp 0.3s ease both; }
-
-    .submit-bar {
-      margin-top:12px;
-      display:flex; flex-direction:column; gap:14px;
-    }
-    .final-warning {
-      font-size:12px; color:var(--text-3); line-height:1.7;
-      text-align:center;
-    }
-    .final-warning strong { color:var(--text-2); }
-
-    @media(max-width:640px){
-      .options-row { grid-template-columns:1fr; }
-      .transfer-method { grid-template-columns:1fr; }
-      .form-section { padding:26px 22px; }
-    }
-
-    .amount-row { display:grid; grid-template-columns:2fr 1fr; gap:14px; }
-
-    .cap-line {
-      display:flex; align-items:center; gap:10px;
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-sm); padding:10px 14px;
-      font-size:12px; color:var(--text-2); line-height:1.55;
-      margin-top:8px; margin-bottom:20px;
-    }
-    .cap-line strong { color:var(--text); font-family:'Inter',sans-serif; font-weight:600; }
-    .cap-line.over { border-color:var(--red); background:rgba(248,113,113,0.06); color:var(--red); }
-    .cap-line.over strong { color:var(--red); }
-
-    .info-tip {
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-sm); padding:14px 16px;
-      font-size:12.5px; color:var(--text-3); line-height:1.7;
-    }
-    .info-tip strong { color:var(--text); }
-
-    .country-warning {
-      background:var(--amber-dim); border:1px solid rgba(251,191,36,0.2);
-      border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:22px;
-      font-size:12.5px; color:var(--amber); line-height:1.75;
-    }
-    .country-warning strong { color:#fbd38d; }
-
-    .success-screen {
-      text-align:center; padding:60px 30px;
-      background:var(--bg-2); border:1px solid var(--border-pink);
-      border-radius:var(--radius-xl);
-      animation:fadeUp 0.5s ease both;
-    }
-    .success-icon-big {
-      width:72px; height:72px; border-radius:50%;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      display:flex; align-items:center; justify-content:center;
-      font-size:32px; margin:0 auto 24px;
-    }
-
-    .pm-tiles {
-      display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;
-      margin-bottom:18px;
-    }
-    @media(max-width:720px){ .pm-tiles { grid-template-columns:repeat(2,1fr); } }
-    .pm-tile {
-      background:var(--bg-3); border:2px solid var(--border);
-      border-radius:var(--radius-md); padding:14px 10px;
-      cursor:pointer; text-align:center;
-      transition:all 0.2s ease;
-    }
-    .pm-tile:hover { border-color:var(--border-pink); }
-    .pm-tile.active { border-color:var(--pink); background:var(--pink-dim-2); }
-    .pm-tile .pm-icon { font-size:20px; margin-bottom:6px; line-height:1; }
-    .pm-tile .pm-name { font-size:12px; font-weight:600; color:var(--text); }
-    .pm-detail { display:none; }
-    .pm-detail.active { display:block; animation:fadeUp 0.3s ease both; }
-
-    .verify-box {
-      background:var(--bg-3); border:1px dashed var(--border-pink);
-      border-radius:var(--radius-md); padding:20px 18px;
-      margin-bottom:16px;
-    }
-    .verify-box .vb-label {
-      font-size:11px; color:var(--pink); font-weight:600;
-      letter-spacing:0.08em; text-transform:uppercase;
-      margin-bottom:12px;
-    }
-    .verify-box .field { margin-bottom:14px; }
-    .verify-box .field:last-child { margin-bottom:0; }
-    .verify-mismatch {
-      font-size:11.5px; color:var(--red); margin-top:6px;
-    }
-
-    .confirm-row {
-      display:flex; align-items:flex-start; gap:12px;
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-md); padding:14px 16px;
-      cursor:pointer; margin-bottom:18px;
-    }
-    .confirm-row input[type="checkbox"] {
-      margin-top:3px; flex-shrink:0;
-      width:16px; height:16px; cursor:pointer;
-      accent-color:var(--pink);
-    }
-    .confirm-row label {
-      font-size:12.5px; color:var(--text-2); line-height:1.6;
-      cursor:pointer; margin:0;
-    }
-    .confirm-row label strong { color:var(--text); }
-
-    .addr-grid {
-      display:grid; grid-template-columns:2fr 1fr; gap:14px;
-      margin-bottom:16px;
-    }
-    @media(max-width:640px){ .addr-grid { grid-template-columns:1fr; } }
-
-    /* Callout — alternative to .alert with proper icon/body separation
-       (used for the longer informational messages on Option C transfers) */
-    .callout {
-      display:flex; align-items:flex-start; gap:18px;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      border-radius:var(--radius-md);
-      padding:24px 26px;
-    }
-    .callout-icon {
-      flex-shrink:0;
-      width:40px; height:40px; border-radius:50%;
-      background:var(--pink-dim-2); border:1px solid var(--border-pink);
-      display:flex; align-items:center; justify-content:center;
-      font-size:18px; line-height:1;
-    }
-    .callout-body {
-      flex:1; min-width:0;
-      padding-top:2px;
-    }
-    .callout-body .callout-title {
-      font-family:'Inter', system-ui, sans-serif;
-      font-size:14px; font-weight:600; color:var(--pink);
-      letter-spacing:0.01em;
-      margin:0 0 12px 0; line-height:1.4;
-      text-transform:none;
-    }
-    .callout-body p {
-      font-size:13.5px; color:var(--text-2); line-height:1.85;
-      margin:0 0 12px 0;
-      text-wrap:pretty;
-      hyphens:none; word-break:normal; overflow-wrap:break-word;
-    }
-    .callout-body p:last-child { margin-bottom:0; }
-    .callout-body p strong { color:var(--text); font-weight:600; }
-    @media(max-width:560px){
-      .callout { padding:20px 20px; gap:14px; }
-      .callout-icon { width:36px; height:36px; font-size:16px; }
-      .callout-body .callout-title { font-size:13px; margin-bottom:10px; }
-      .callout-body p { font-size:13px; line-height:1.8; }
-    }
-  </style>
 </head>
-<body>
+<body class="pg-wish">
 
   <nav class="topnav">
     <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
@@ -303,80 +25,64 @@
 
       <div id="form-view">
 
-        <div class="wish-eyebrow">
-          <span class="dot-live"></span>
-          Step 4 of 4 · Complete Your Form
-        </div>
+        <ol class="steps" data-step="4" aria-label="Step 4 of 4">
+          <li class="done"><span class="step-n">1</span><span class="step-l">Read</span></li>
+          <li class="done"><span class="step-n">2</span><span class="step-l">Confirm</span></li>
+          <li class="done"><span class="step-n">3</span><span class="step-l">Enter code</span></li>
+          <li class="current" aria-current="step"><span class="step-n">4</span><span class="step-l">Your request</span></li>
+        </ol>
 
         <h1 class="wish-title">Your <em>opportunity</em><br>has been unlocked.</h1>
         <p class="wish-lead">
-          Choose your option below and complete the form. Once submitted, you'll receive confirmation and we will respond personally with next steps.
+          Choose one of the three options below. Each code can be used for one submission, and we respond personally to every one.
         </p>
 
         <div id="form-alert" class="alert alert-error hidden" style="margin-bottom:20px;"></div>
 
-        <div class="options-row">
-          <div class="option-pick" data-option="money" onclick="chooseOption('money')">
-            <div class="opt-letter">A</div>
-            <div class="opt-icon">💰</div>
-            <div class="opt-title">Financial Assistance</div>
-            <div class="opt-sub">Up to $10,000 USD equivalent</div>
-          </div>
-          <div class="option-pick" data-option="relocation" onclick="chooseOption('relocation')">
-            <div class="opt-letter">B</div>
-            <div class="opt-icon">🏡</div>
-            <div class="opt-title">Relocation Service</div>
-            <div class="opt-sub">Full move + 6 mo. expenses</div>
-          </div>
-          <div class="option-pick" data-option="transfer" onclick="chooseOption('transfer')">
-            <div class="opt-letter">C</div>
-            <div class="opt-icon">🔄</div>
-            <div class="opt-title">Transfer to Another</div>
-            <div class="opt-sub">Pass this opportunity on</div>
-          </div>
+        <div class="options-row" role="radiogroup" aria-label="Choose an option">
+          <button type="button" class="option-pick" data-option="money" role="radio" aria-checked="false">
+            <div class="opt-letter">A</div><div class="opt-icon">💰</div>
+            <div class="opt-title">A gift of money</div><div class="opt-sub" id="opt-money-sub">Set by your code</div>
+          </button>
+          <button type="button" class="option-pick" data-option="wish" role="radio" aria-checked="false">
+            <div class="opt-letter">B</div><div class="opt-icon">🌟</div>
+            <div class="opt-title">A wish</div><div class="opt-sub">Anything you need, in your words</div>
+          </button>
+          <button type="button" class="option-pick" data-option="transfer" role="radio" aria-checked="false">
+            <div class="opt-letter">C</div><div class="opt-icon">🔄</div>
+            <div class="opt-title">Pass it on</div><div class="opt-sub">Give it to someone else</div>
+          </button>
         </div>
 
-        <!-- ════════ OPTION A · FINANCIAL ASSISTANCE ════════ -->
+        <!-- ════════ A · MONEY ════════ -->
         <div class="form-section" id="section-money">
-          <h2 class="section-heading">Financial <em>Assistance</em></h2>
-          <p class="section-desc">Tell us how much you need and where to send it. The maximum is the equivalent of <strong>$10,000 USD</strong> — the cap updates automatically based on the currency you choose.</p>
-
-          <div class="amount-row">
-            <div class="field">
-              <label class="field-label">Amount</label>
-              <div class="field-input">
-                <input type="number" id="m-amount" placeholder="e.g. 5000" min="1" step="any" oninput="updateCapLine()"/>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">Currency</label>
-              <div class="field-input">
-                <select id="m-currency" onchange="updateCapLine()"></select>
-              </div>
-            </div>
-          </div>
-          <div class="cap-line" id="cap-line">
-            <span>📐</span>
-            <span>Maximum for this currency: <strong id="cap-max">—</strong></span>
-          </div>
-
-          <h3 class="subhead no-border">Your <em>contact</em></h3>
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Your Name</label>
-              <div class="field-input"><input type="text" id="m-name" placeholder="How should we address you?"/></div>
-            </div>
-            <div class="field">
-              <label class="field-label">Best Way to Reach You</label>
-              <div class="field-input"><input type="text" id="m-contact" placeholder="Email, phone, Signal, or other"/></div>
-            </div>
+          <h2 class="section-heading">A gift of <em>money</em></h2>
+          <div class="amount-hero">
+            <span class="amount-label">Your code is worth</span>
+            <span class="amount-value" id="amount-value">—</span>
+            <span class="amount-note" id="amount-note"></span>
           </div>
 
           <div class="field">
-            <label class="field-label">Country / Region <span class="field-optional">where you're located</span></label>
-            <div class="field-input">
-              <input type="text" id="m-country" placeholder="e.g. United States — California"/>
+            <label class="field-label" for="m-currency">Receive it in</label>
+            <div class="field-input"><select id="m-currency"></select></div>
+            <div class="helper-line" id="m-equiv"></div>
+          </div>
+
+          <h3 class="subhead">Your <em>contact</em></h3>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="m-name">Your name</label>
+              <div class="field-input"><input type="text" id="m-name" placeholder="How should we address you?" autocomplete="off"/></div>
             </div>
+            <div class="field">
+              <label class="field-label" for="m-contact">Best way to reach you <span class="field-required">required</span></label>
+              <div class="field-input"><input type="text" id="m-contact" placeholder="Email, phone, Signal, or other" autocomplete="off"/></div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="m-country">Country or region <span class="field-optional">where you are</span></label>
+            <div class="field-input"><input type="text" id="m-country" placeholder="e.g. United States" autocomplete="off"/></div>
           </div>
 
           <h3 class="subhead">How would you like to <em>receive it?</em></h3>
@@ -563,651 +269,242 @@
             </div>
           </div>
 
-          <!-- Confirmation checkbox -->
           <div class="confirm-row" id="m-confirm-row" style="display:none;">
-            <input type="checkbox" id="m-confirm" onchange="updateMoneySubmitState()"/>
-            <label for="m-confirm"><strong>I confirm</strong> the payment information above is correct. I understand that I am responsible for the accuracy of these details — incorrect information may delay or prevent delivery.</label>
+            <input type="checkbox" id="m-confirm"/>
+            <label for="m-confirm"><strong>I confirm</strong> the payment details above are correct. I understand incorrect details may delay or prevent delivery.</label>
           </div>
 
           <div class="field">
-            <label class="field-label">Additional Details <span class="field-optional">optional</span></label>
-            <div class="field-input">
-              <textarea id="m-notes" rows="4" placeholder="Anything else we should know — preferred timing, recipient details, special instructions, etc."></textarea>
-            </div>
+            <label class="field-label" for="m-notes">Anything else <span class="field-optional">optional</span></label>
+            <div class="field-input"><textarea id="m-notes" rows="3" placeholder="Timing, special instructions, anything that helps us deliver it safely."></textarea></div>
           </div>
-
-          <div class="info-tip">
-            <strong>Privacy:</strong> Don't include sensitive financial details (full account numbers, card numbers, etc.) anywhere in this form. We will request those over a secure channel once we follow up.
-          </div>
+          <div class="info-tip"><strong>Privacy:</strong> Don’t enter full account or card numbers anywhere in this form. If we need them, we’ll ask over a secure channel when we follow up.</div>
         </div>
 
-        <!-- ════════ OPTION B · RELOCATION ════════ -->
-        <div class="form-section" id="section-relocation">
-          <h2 class="section-heading">Relocation <em>Service</em></h2>
-          <p class="section-desc">A complete relocation, fully coordinated. Includes moving your belongings and 6 months of living expenses covered on your behalf.</p>
-
-          <div class="country-warning">
-            ⚐ <strong>Coverage:</strong> We can <strong>guarantee</strong> relocations within and between the United States and Canada. If you're located outside these two countries, please still submit your information — we'll do our best to accommodate based on what's possible in your situation.
-          </div>
-
-          <h3 class="subhead no-border">Your <em>contact</em></h3>
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Your Name</label>
-              <div class="field-input"><input type="text" id="r-name" placeholder="How should we address you?"/></div>
-            </div>
-            <div class="field">
-              <label class="field-label">Best Way to Reach You</label>
-              <div class="field-input"><input type="text" id="r-contact" placeholder="Phone, email, or Signal"/></div>
-            </div>
-          </div>
-
-          <h3 class="subhead">Your <em>current address</em></h3>
-          <p class="section-desc" style="margin-bottom:18px;">A full address helps us plan logistics — packing crews, transport routes, and timing.</p>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Country</label>
-              <div class="field-input">
-                <select id="r-from-country">
-                  <option value="">— Select country —</option>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="MX">Mexico</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="IE">Ireland</option>
-                  <option value="AU">Australia</option>
-                  <option value="NZ">New Zealand</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="ES">Spain</option>
-                  <option value="IT">Italy</option>
-                  <option value="NL">Netherlands</option>
-                  <option value="SE">Sweden</option>
-                  <option value="NO">Norway</option>
-                  <option value="DK">Denmark</option>
-                  <option value="FI">Finland</option>
-                  <option value="JP">Japan</option>
-                  <option value="KR">South Korea</option>
-                  <option value="SG">Singapore</option>
-                  <option value="ZA">South Africa</option>
-                  <option value="BR">Brazil</option>
-                  <option value="OTHER">Other</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">State / Province / Region</label>
-              <div class="field-input"><input type="text" id="r-from-state" placeholder="e.g. California, Ontario"/></div>
-            </div>
-          </div>
-
-          <div class="addr-grid">
-            <div class="field">
-              <label class="field-label">Street address</label>
-              <div class="field-input"><input type="text" id="r-from-street" placeholder="123 Main Street" autocomplete="off"/></div>
-            </div>
-            <div class="field">
-              <label class="field-label">Apt / Unit <span class="field-optional">if applicable</span></label>
-              <div class="field-input"><input type="text" id="r-from-unit" placeholder="Apt 4B" autocomplete="off"/></div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">City</label>
-              <div class="field-input"><input type="text" id="r-from-city" placeholder="City" autocomplete="off"/></div>
-            </div>
-            <div class="field">
-              <label class="field-label">Postal / ZIP code</label>
-              <div class="field-input"><input type="text" id="r-from-postal" placeholder="e.g. 94107 or M5V 3A8" autocomplete="off"/></div>
-            </div>
-          </div>
-
-          <h3 class="subhead">Where you'd like to <em>go</em></h3>
-          <p class="section-desc" style="margin-bottom:18px;">Be as specific as you'd like. If you're flexible or unsure, write that — we'll guide you through it.</p>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Country</label>
-              <div class="field-input">
-                <select id="r-to-country">
-                  <option value="">— Select country —</option>
-                  <option value="US">United States</option>
-                  <option value="CA">Canada</option>
-                  <option value="MX">Mexico</option>
-                  <option value="GB">United Kingdom</option>
-                  <option value="IE">Ireland</option>
-                  <option value="AU">Australia</option>
-                  <option value="NZ">New Zealand</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="ES">Spain</option>
-                  <option value="IT">Italy</option>
-                  <option value="NL">Netherlands</option>
-                  <option value="SE">Sweden</option>
-                  <option value="NO">Norway</option>
-                  <option value="DK">Denmark</option>
-                  <option value="FI">Finland</option>
-                  <option value="JP">Japan</option>
-                  <option value="KR">South Korea</option>
-                  <option value="SG">Singapore</option>
-                  <option value="ZA">South Africa</option>
-                  <option value="BR">Brazil</option>
-                  <option value="FLEX">Flexible — wherever is safe</option>
-                  <option value="OTHER">Other</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">State / Province / Region <span class="field-optional">if known</span></label>
-              <div class="field-input"><input type="text" id="r-to-state" placeholder="e.g. Oregon, Quebec, anywhere"/></div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">City <span class="field-optional">or 'open to suggestions'</span></label>
-              <div class="field-input"><input type="text" id="r-to-city" placeholder="City — or write 'wherever is safe'" autocomplete="off"/></div>
-            </div>
-            <div class="field">
-              <label class="field-label">Neighborhood / area notes <span class="field-optional">optional</span></label>
-              <div class="field-input"><input type="text" id="r-to-neighborhood" placeholder="e.g. small town, near family, away from X" autocomplete="off"/></div>
-            </div>
-          </div>
-
-          <h3 class="subhead">Your <em>household</em></h3>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Number of People Relocating</label>
-              <div class="field-input">
-                <select id="r-people">
-                  <option>Just me</option>
-                  <option>Me + partner</option>
-                  <option>Me + children</option>
-                  <option>Full family (3+ people)</option>
-                  <option>Multiple adults / extended household</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">Children?</label>
-              <div class="field-input">
-                <select id="r-children">
-                  <option>No children</option>
-                  <option>1 child</option>
-                  <option>2 children</option>
-                  <option>3 or more children</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="field">
-              <label class="field-label">Pets?</label>
-              <div class="field-input">
-                <input type="text" id="r-pets" placeholder="e.g. 1 dog, 2 cats — or 'none'"/>
-              </div>
-            </div>
-            <div class="field">
-              <label class="field-label">Volume of Belongings</label>
-              <div class="field-input">
-                <select id="r-volume">
-                  <option>Studio / 1 bedroom</option>
-                  <option>2 bedroom</option>
-                  <option>3 bedroom</option>
-                  <option>4+ bedroom / large household</option>
-                  <option>Just essentials — minimal belongings</option>
-                </select>
-              </div>
-            </div>
-          </div>
+        <!-- ════════ B · A WISH ════════ -->
+        <div class="form-section" id="section-wish">
+          <h2 class="section-heading">A <em>wish</em></h2>
+          <p class="section-desc">There’s no list to choose from. Ask for what you actually need or want — big or small, practical or personal. The fractured Ego team will do everything we can to fulfill it.</p>
 
           <div class="field">
-            <label class="field-label">Desired Timeline</label>
-            <div class="field-input">
-              <select id="r-timeline">
-                <option>Emergency — within 48 hours</option>
-                <option>Within 1 week</option>
-                <option>Within 2–4 weeks</option>
-                <option>Within 1–3 months</option>
-                <option>Flexible / planning ahead</option>
-              </select>
-            </div>
+            <label class="field-label" for="w-wish">What’s your wish? <span class="field-required">required</span></label>
+            <div class="field-input"><textarea id="w-wish" rows="6" maxlength="4000" placeholder="Describe it in your own words. Be as specific as you can."></textarea></div>
           </div>
-
           <div class="field">
-            <label class="field-label">Special Requirements or Concerns</label>
-            <div class="field-input">
-              <textarea id="r-notes" rows="4" placeholder="Accessibility needs, school enrollment, medical considerations, safety concerns, anonymity requirements, anything else we should know..."></textarea>
+            <label class="field-label" for="w-context">What would help us understand it? <span class="field-optional">optional</span></label>
+            <div class="field-input"><textarea id="w-context" rows="3" maxlength="2000" placeholder="Why it matters, what you’ve already tried, anything we should be careful about."></textarea></div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="w-timing">When do you need it?</label>
+              <div class="field-input"><select id="w-timing">
+                <option>No rush</option><option>Within a few months</option><option>Within a month</option>
+                <option>Within a week</option><option>Urgent — within days</option>
+              </select></div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="w-location">Where are you? <span class="field-optional">optional</span></label>
+              <div class="field-input"><input type="text" id="w-location" placeholder="City or region, if it matters" autocomplete="off"/></div>
             </div>
           </div>
 
-          <div class="info-tip">
-            <strong>What's covered:</strong> Professional packing &amp; moving, transportation, new residence arrangement, 6 months of rent + utilities + essential living expenses. <strong>Not provided:</strong> Direct cash payouts.
+          <h3 class="subhead">Your <em>contact</em></h3>
+          <div class="form-row">
+            <div class="field">
+              <label class="field-label" for="w-name">Your name</label>
+              <div class="field-input"><input type="text" id="w-name" placeholder="How should we address you?" autocomplete="off"/></div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="w-contact">Best way to reach you <span class="field-required">required</span></label>
+              <div class="field-input"><input type="text" id="w-contact" placeholder="Email, phone, Signal, or other" autocomplete="off"/></div>
+            </div>
           </div>
+          <div class="info-tip"><strong>How wishes work:</strong> we read every wish personally and talk with you before anything happens. Some wishes can be granted exactly; others in part or in a different way. If what you need is money, choose option A instead.</div>
         </div>
 
-        <!-- ════════ OPTION C · TRANSFER ════════ -->
+        <!-- ════════ C · PASS IT ON ════════ -->
         <div class="form-section" id="section-transfer">
-          <h2 class="section-heading">Transfer to <em>Someone Else</em></h2>
-          <p class="section-desc">You may transfer this opportunity to another person. Choose your method below.</p>
+          <h2 class="section-heading">Pass it <em>on</em></h2>
+          <p class="section-desc">Give this opportunity to someone else. Your current code is used either way.</p>
 
           <div class="transfer-method">
-            <div class="method-card" data-method="direct" onclick="chooseTransferMethod('direct')">
-              <div class="m-num">METHOD 1</div>
-              <div class="m-title">Direct Hand-off</div>
-              <div class="m-desc">You give them the code and the website link yourself.</div>
-            </div>
-            <div class="method-card" data-method="anonymous" onclick="chooseTransferMethod('anonymous')">
-              <div class="m-num">METHOD 2</div>
-              <div class="m-title">Anonymous Referral</div>
-              <div class="m-desc">We contact them anonymously on your behalf.</div>
-            </div>
+            <button type="button" class="method-card" data-method="contact">
+              <div class="m-title">We reach out for you</div>
+              <div class="m-desc">Tell us who they are. We contact them discreetly and never name you unless you ask us to.</div>
+            </button>
+            <button type="button" class="method-card" data-method="new_code">
+              <div class="m-title">A new code, shown once</div>
+              <div class="m-desc" id="newcode-desc">We generate a fresh code of the same value for you to give them yourself.</div>
+            </button>
           </div>
 
-          <div class="transfer-method-detail" id="method-direct">
-            <div class="callout callout-pink" style="margin-bottom:24px;">
-              <div class="callout-icon">✅</div>
-              <div class="callout-body">
-                <div class="callout-title">Direct hand-off</div>
-                <p>Hand off your code and the website (<strong>fracturedego.org</strong>) to the recipient yourself. They'll come here, enter the code, and choose their own option.</p>
-                <p>We'll mark this code as released to them and confirm via your contact info below. Anything you tell us about them stays internal — it just helps us prepare for their arrival.</p>
-              </div>
-            </div>
-
-            <h3 class="subhead no-border">Your <em>contact</em></h3>
+          <div class="transfer-method-detail" id="method-contact">
+            <h3 class="subhead no-border">Who should we <em>contact?</em></h3>
             <div class="form-row">
               <div class="field">
-                <label class="field-label">Your Name</label>
-                <div class="field-input"><input type="text" id="td-name" placeholder="Your name"/></div>
+                <label class="field-label" for="t-rname">Their name <span class="field-required">required</span></label>
+                <div class="field-input"><input type="text" id="t-rname" placeholder="Their full name" autocomplete="off"/></div>
               </div>
               <div class="field">
-                <label class="field-label">Best Way to Reach You</label>
-                <div class="field-input"><input type="text" id="td-contact" placeholder="Email, phone, Signal"/></div>
+                <label class="field-label" for="t-rcontact">Their email or phone <span class="field-required">required</span></label>
+                <div class="field-input"><input type="text" id="t-rcontact" placeholder="How we should reach them" autocomplete="off"/></div>
               </div>
             </div>
-
-            <h3 class="subhead">About the <em>recipient</em></h3>
-            <p class="section-desc" style="margin-bottom:18px;">A few details so we can prepare appropriately when they arrive. None of this is shown to them — it's only for our team.</p>
-
+            <div class="verify-box">
+              <div class="vb-label">Confirm their contact</div>
+              <div class="field">
+                <label class="field-label" for="t-rcontact2">Re-enter their email or phone</label>
+                <div class="field-input"><input type="text" id="t-rcontact2" placeholder="Type it again to make sure it’s right" autocomplete="off"/></div>
+                <div class="verify-mismatch hidden" id="t-rcontact-mismatch">⚠️ The two entries don’t match.</div>
+              </div>
+            </div>
             <div class="form-row">
               <div class="field">
-                <label class="field-label">Recipient's Full Name</label>
-                <div class="field-input"><input type="text" id="td-rname" placeholder="Their full name"/></div>
+                <label class="field-label" for="t-rlocation">Where they are <span class="field-optional">optional</span></label>
+                <div class="field-input"><input type="text" id="t-rlocation" placeholder="City or region" autocomplete="off"/></div>
               </div>
               <div class="field">
-                <label class="field-label">Approximate Age <span class="field-optional">helps us prepare</span></label>
-                <div class="field-input">
-                  <select id="td-rage">
-                    <option value="">— Select —</option>
-                    <option>Under 18</option>
-                    <option>18–24</option>
-                    <option>25–34</option>
-                    <option>35–44</option>
-                    <option>45–54</option>
-                    <option>55–64</option>
-                    <option>65+</option>
-                    <option>Unsure</option>
-                  </select>
-                </div>
+                <label class="field-label" for="t-relationship">They are your…</label>
+                <div class="field-input"><select id="t-relationship">
+                  <option>Family member</option><option>Close friend</option><option>Partner or spouse</option>
+                  <option>Acquaintance</option><option>Someone in need I came across</option><option>Other</option><option>Prefer not to say</option>
+                </select></div>
               </div>
             </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Their Pronouns <span class="field-optional">if known</span></label>
-                <div class="field-input">
-                  <select id="td-rpronouns">
-                    <option value="">— Select —</option>
-                    <option>she / her</option>
-                    <option>he / him</option>
-                    <option>they / them</option>
-                    <option>she / they</option>
-                    <option>he / they</option>
-                    <option>Other / fluid</option>
-                    <option>Prefer not to say</option>
-                    <option>Unsure</option>
-                  </select>
-                </div>
-              </div>
-              <div class="field">
-                <label class="field-label">Their Relationship to You</label>
-                <div class="field-input">
-                  <select id="td-rrelationship">
-                    <option value="">— Select —</option>
-                    <option>Family member</option>
-                    <option>Close friend</option>
-                    <option>Partner / Spouse</option>
-                    <option>Acquaintance</option>
-                    <option>Someone in need I came across</option>
-                    <option>Other</option>
-                    <option>Prefer not to say</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Their City / Region <span class="field-optional">if known</span></label>
-                <div class="field-input"><input type="text" id="td-rlocation" placeholder="City — helps us know what's possible"/></div>
-              </div>
-              <div class="field">
-                <label class="field-label">Country <span class="field-optional">if known</span></label>
-                <div class="field-input"><input type="text" id="td-rcountry" placeholder="e.g. United States"/></div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Preferred Language <span class="field-optional">optional</span></label>
-                <div class="field-input"><input type="text" id="td-rlanguage" placeholder="e.g. English, Spanish"/></div>
-              </div>
-              <div class="field">
-                <label class="field-label">When do you expect them to use the code? <span class="field-optional">approximate</span></label>
-                <div class="field-input">
-                  <select id="td-rtiming">
-                    <option>Within hours</option>
-                    <option>Within a day or two</option>
-                    <option>Within the week</option>
-                    <option>Within the month</option>
-                    <option>Whenever they're ready — no rush</option>
-                    <option>Unsure</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
             <div class="field">
-              <label class="field-label">What kind of help do they likely need? <span class="field-optional">your best guess is fine</span></label>
-              <div class="field-input">
-                <select id="td-rneedtype">
-                  <option value="">— Select —</option>
-                  <option>Financial — short-term cash help</option>
-                  <option>Relocation — needs to leave their current situation</option>
-                  <option>Both financial and relocation</option>
-                  <option>They'll choose what they need themselves</option>
-                  <option>Unsure</option>
-                </select>
-              </div>
+              <label class="field-label" for="t-reason">Why them? <span class="field-optional">optional</span></label>
+              <div class="field-input"><textarea id="t-reason" rows="3" placeholder="A little context helps us approach them well."></textarea></div>
             </div>
-
             <div class="field">
-              <label class="field-label">Their general situation <span class="field-optional">optional, but very helpful</span></label>
-              <div class="field-input">
-                <textarea id="td-rsituation" rows="4" placeholder="What's going on for them? What are they up against? Any context that helps us respond well when they arrive..."></textarea>
-              </div>
-              <div class="field-hint">Examples: financial hardship from job loss · escaping an unsafe relationship · medical emergency in family · between housing situations · etc.</div>
+              <label class="field-label" for="t-safety">Anything we should know before contacting them? <span class="field-optional">optional</span></label>
+              <div class="field-input"><textarea id="t-safety" rows="2" placeholder="e.g. someone else reads their email, call only after 6pm, use a different name."></textarea></div>
             </div>
-
             <div class="field">
-              <label class="field-label">Sensitivities or safety concerns <span class="field-optional">optional but important if relevant</span></label>
-              <div class="field-input">
-                <textarea id="td-rsafety" rows="3" placeholder="e.g. don't reference the referrer when they arrive, partner monitors their phone, prefers to be addressed by a different name, etc."></textarea>
-              </div>
+              <label class="field-label" for="t-naming">May we tell them it came from you?</label>
+              <div class="field-input"><select id="t-naming">
+                <option value="no">No — keep me anonymous</option>
+                <option value="first_name">Yes, you may share my first name</option>
+              </select></div>
             </div>
-
-            <div class="field">
-              <label class="field-label">Anything else we should know? <span class="field-optional">optional</span></label>
-              <div class="field-input">
-                <textarea id="td-notes" rows="3" placeholder="Anything that doesn't fit above..."></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div class="transfer-method-detail" id="method-anonymous">
-            <div class="callout callout-pink" style="margin-bottom:24px;">
-              <div class="callout-icon">📨</div>
-              <div class="callout-body">
-                <div class="callout-title">Anonymous outreach</div>
-                <p>We'll reach out to them anonymously. If they consent, the opportunity becomes theirs and they choose their own option.</p>
-                <p><strong>If they don't consent, we'll email you to let you know</strong> — your code stays in your hands until then.</p>
-              </div>
-            </div>
-
-            <h3 class="subhead no-border">Recipient's <em>information</em></h3>
-            <p class="section-desc" style="margin-bottom:18px;">The more we know, the better we can approach them. Anything you share here stays with our team.</p>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Recipient's Full Name</label>
-                <div class="field-input"><input type="text" id="ta-rname" placeholder="Their full name"/></div>
-              </div>
-              <div class="field">
-                <label class="field-label">Approximate Age <span class="field-optional">optional</span></label>
-                <div class="field-input">
-                  <select id="ta-rage">
-                    <option value="">— Select —</option>
-                    <option>Under 18</option>
-                    <option>18–24</option>
-                    <option>25–34</option>
-                    <option>35–44</option>
-                    <option>45–54</option>
-                    <option>55–64</option>
-                    <option>65+</option>
-                    <option>Unsure</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Email Address <span class="field-optional">if known</span></label>
-                <div class="field-input"><input type="email" id="ta-remail" placeholder="them@example.com" autocomplete="off"/></div>
-              </div>
-              <div class="field">
-                <label class="field-label">Phone Number <span class="field-optional">if known</span></label>
-                <div class="field-input"><input type="text" id="ta-rphone" placeholder="+1 555 555 5555" autocomplete="off"/></div>
-              </div>
-            </div>
-            <div class="field-hint" style="margin-top:-8px;margin-bottom:18px;">Provide whichever you have — at least one is needed so we can reach them.</div>
-
-            <div class="field">
-              <label class="field-label">Best Way to Reach Them</label>
-              <div class="field-input">
-                <select id="ta-rcontactpref">
-                  <option value="">— Select —</option>
-                  <option>Email</option>
-                  <option>Text / SMS</option>
-                  <option>Phone call</option>
-                  <option>Either email or phone</option>
-                  <option>Signal</option>
-                  <option>WhatsApp</option>
-                  <option>Other (note below)</option>
-                  <option>Unsure</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">City / Region <span class="field-optional">if known</span></label>
-                <div class="field-input">
-                  <input type="text" id="ta-rlocation" placeholder="City — helps us reach them appropriately"/>
-                </div>
-              </div>
-              <div class="field">
-                <label class="field-label">Country <span class="field-optional">if known</span></label>
-                <div class="field-input">
-                  <input type="text" id="ta-rcountry" placeholder="e.g. United States"/>
-                </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="field">
-                <label class="field-label">Preferred Language <span class="field-optional">optional</span></label>
-                <div class="field-input">
-                  <input type="text" id="ta-rlanguage" placeholder="e.g. English, Spanish"/>
-                </div>
-              </div>
-              <div class="field">
-                <label class="field-label">Best Time of Day to Reach Them <span class="field-optional">optional</span></label>
-                <div class="field-input">
-                  <select id="ta-rtimebest">
-                    <option value="">— Select —</option>
-                    <option>Morning</option>
-                    <option>Midday / lunchtime</option>
-                    <option>Afternoon</option>
-                    <option>Evening</option>
-                    <option>Late night</option>
-                    <option>Weekends only</option>
-                    <option>Anytime</option>
-                    <option>Unsure</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label">Their Relationship to You</label>
-              <div class="field-input">
-                <select id="ta-relationship">
-                  <option>Family member</option>
-                  <option>Close friend</option>
-                  <option>Partner / Spouse</option>
-                  <option>Colleague / Coworker</option>
-                  <option>Acquaintance</option>
-                  <option>Someone in need I came across</option>
-                  <option>Online connection</option>
-                  <option>Other</option>
-                  <option>Prefer not to say</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label">How should we mention you, if at all?</label>
-              <div class="field-input">
-                <select id="ta-rmention">
-                  <option value="anonymous">Don't mention me at all — keep it fully anonymous</option>
-                  <option value="hint">Hint at a referral but don't name me</option>
-                  <option value="named">You may share my name if it helps them trust the outreach</option>
-                  <option value="ask_first">Check with me before deciding</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label">Why are you transferring to them? <span class="field-required">required</span></label>
-              <div class="field-input">
-                <textarea id="ta-reason" rows="4" placeholder="Briefly tell us why you're choosing them — what they might need, what they're going through, any context that helps us approach them appropriately."></textarea>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="field-label">Sensitivities or safety concerns <span class="field-optional">optional but important if relevant</span></label>
-              <div class="field-input">
-                <textarea id="ta-safety" rows="3" placeholder="e.g. don't contact during work hours, don't leave voicemail, abusive partner monitors phone, prefer text only, etc."></textarea>
-              </div>
-            </div>
-
             <h3 class="subhead">Your <em>contact</em></h3>
-
             <div class="form-row">
               <div class="field">
-                <label class="field-label">Your Name</label>
-                <div class="field-input"><input type="text" id="ta-name" placeholder="Your name"/></div>
+                <label class="field-label" for="t-name">Your name</label>
+                <div class="field-input"><input type="text" id="t-name" placeholder="Your name" autocomplete="off"/></div>
               </div>
               <div class="field">
-                <label class="field-label">Email Address</label>
-                <div class="field-input"><input type="email" id="ta-email" placeholder="Where we should email you if needed"/></div>
+                <label class="field-label" for="t-email">Your email <span class="field-required">required</span></label>
+                <div class="field-input"><input type="email" id="t-email" placeholder="So we can tell you how it went" autocomplete="off"/></div>
               </div>
             </div>
+            <div class="info-tip">If they decline, we’ll email you and help you choose another option.</div>
+          </div>
 
-            <div class="info-tip">
-              We will only contact you if the recipient does not consent, or to confirm successful transfer.
+          <div class="transfer-method-detail" id="method-new_code">
+            <div class="notice-bar" style="margin-top:4px;">🔑 <span id="newcode-warning">After you submit, the new code appears on this screen <strong>one time only</strong>. Copy it or write it down before you leave — it can’t be shown again.</span></div>
+            <div class="field">
+              <label class="field-label" for="n-recipient">Who will you give it to? <span class="field-optional">optional</span></label>
+              <div class="field-input"><input type="text" id="n-recipient" placeholder="A first name or relationship is enough" autocomplete="off"/></div>
             </div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="n-name">Your name <span class="field-optional">optional</span></label>
+                <div class="field-input"><input type="text" id="n-name" placeholder="Your name" autocomplete="off"/></div>
+              </div>
+              <div class="field">
+                <label class="field-label" for="n-contact">Your contact <span class="field-optional">optional</span></label>
+                <div class="field-input"><input type="text" id="n-contact" placeholder="Only if you’d like us able to reach you" autocomplete="off"/></div>
+              </div>
+            </div>
+            <label class="confirm-row" for="n-ack">
+              <input type="checkbox" id="n-ack"/>
+              <span><strong>I understand</strong> the new code will be shown only once, and that I’m responsible for passing it on.</span>
+            </label>
           </div>
         </div>
 
         <div class="submit-bar">
-          <button class="btn btn-primary btn-full btn-lg" id="submit-btn" onclick="submitForm()" disabled>
-            Submit My Request
-          </button>
-          <div class="final-warning">
-            <strong>Once submitted, this is final.</strong> Your code has already been consumed. You will receive a confirmation and we will follow up personally.
-          </div>
+          <button type="button" class="btn btn-primary btn-full btn-lg" id="submit-btn" disabled>Choose an option</button>
+          <div class="final-warning"><strong>Submitting is final.</strong> Your code is used for this one request, and we’ll follow up personally.</div>
         </div>
-
       </div>
 
-      <div id="success-view" style="display:none;">
+      <!-- Success -->
+      <div id="success-view" hidden>
         <div class="success-screen">
           <div class="success-icon-big">✓</div>
-          <h1 class="wish-title" style="margin-bottom:14px;">Your request has been <em>received.</em></h1>
-          <p class="wish-lead" style="max-width:480px;margin:0 auto 24px;">
-            Thank you. Your submission has been logged, and someone will personally review it and respond as soon as possible. You may safely close this window.
-          </p>
-          <div style="font-size:11px;color:var(--text-3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px;">
-            Reference ID: <span id="ref-id" style="color:var(--pink);font-family:monospace;">—</span>
+          <h1 class="wish-title" id="success-title" style="margin-bottom:14px;">Received.</h1>
+          <p class="wish-lead" id="success-text" style="max-width:500px;margin:0 auto 24px;"></p>
+          <div class="code-reveal" id="code-reveal" hidden>
+            <div class="cr-label">Their new code — shown only once</div>
+            <div class="cr-code" id="cr-code" aria-live="polite"></div>
+            <div class="cr-value" id="cr-value"></div>
+            <button type="button" class="btn btn-primary" id="cr-copy">Copy code</button>
+            <p class="cr-note">Give them this code and the address <strong>fracturedego.org</strong>. Once you leave this page, the code can’t be shown again.</p>
           </div>
-          <a href="../index.html" class="btn btn-secondary">Return Home</a>
+          <div class="ref-line">Reference ID <span id="ref-id">—</span></div>
+          <a href="../index.html" class="btn btn-secondary" id="home-btn">Return home</a>
         </div>
       </div>
 
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
   <script>
     const sessionId = sessionStorage.getItem('fe_session_id');
-    const redeemedCode = sessionStorage.getItem('fe_redeemed_code');
-
+    const redeemedCode = sessionStorage.getItem('fe_redeemed_code') || '';
     if (!sessionId || !redeemedCode) {
       alert('Your session has expired. Please start again from the beginning.');
       window.location.href = 'access-info.html';
     }
 
-    let chosenOption = null;
-    let transferMethod = null;
-    let chosenPM = null;
+    const VALUE = codeValueUsd(redeemedCode) || 0;
+    const VALUE_LABEL = VALUE ? '$' + VALUE.toLocaleString('en-US') : '';
+    const DIGITS = redeemedCode.length;
+    const $ = (id) => document.getElementById(id);
+    let chosenOption = null, transferMethod = null, chosenPM = null, done = false, codeCopied = true;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const sel = document.getElementById('m-currency');
-      if (sel && typeof CURRENCY_RATES !== 'undefined') {
-        const order = ['USD','EUR','GBP','CAD','AUD','JPY','CHF','MXN','INR','BRL','ZAR','CNY','KRW','SGD','HKD','NZD','SEK','NOK'];
-        sel.innerHTML = order.map(code =>
-          `<option value="${code}">${code} — ${(typeof CURRENCY_NAMES !== 'undefined' && CURRENCY_NAMES[code]) || code}</option>`
-        ).join('');
-      }
-      updateCapLine();
-    });
+    // ── Setup ──
+    (function init() {
+      $('opt-money-sub').textContent = VALUE ? `${VALUE_LABEL} with your ${DIGITS}-digit code` : 'Set by your code';
+      $('amount-value').textContent = VALUE_LABEL || '—';
+      $('amount-note').textContent = DIGITS === 10 ? 'US dollars · an older 10-digit code, honored at this value'
+                                                   : `US dollars · set by your ${DIGITS}-digit code`;
+      $('newcode-desc').textContent = `We generate a fresh ${VALUE_LABEL || ''} code for you to give them yourself.`.replace('  ', ' ');
+      const order = ['USD','EUR','GBP','CAD','AUD','JPY','CHF','MXN','INR','BRL','ZAR','CNY','KRW','SGD','HKD','NZD','SEK','NOK'];
+      $('m-currency').innerHTML = order.map((c) => `<option value="${c}">${c} — ${(CURRENCY_NAMES && CURRENCY_NAMES[c]) || c}</option>`).join('');
+      updateEquivalent();
+    })();
+
+    function updateEquivalent() {
+      const c = $('m-currency').value;
+      if (c === 'USD' || !VALUE) { $('m-equiv').textContent = 'Sent in US dollars.'; return; }
+      const approx = Math.round(VALUE * (CURRENCY_RATES[c] || 1));
+      $('m-equiv').textContent = `About ${formatCurrencyAmount(approx, c)} at our reference rate. We confirm the exact figure when we follow up.`;
+    }
+    $('m-currency').addEventListener('change', updateEquivalent);
 
     function chooseOption(opt) {
       chosenOption = opt;
-      document.querySelectorAll('.option-pick').forEach(c => {
-        c.classList.toggle('active', c.dataset.option === opt);
+      document.querySelectorAll('.option-pick').forEach((c) => {
+        const on = c.dataset.option === opt; c.classList.toggle('active', on); c.setAttribute('aria-checked', on);
       });
-      document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
-      document.getElementById('section-' + opt).classList.add('active');
-
-      if (opt !== 'transfer') {
-        transferMethod = null;
-        document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.transfer-method-detail').forEach(d => d.classList.remove('active'));
-      }
-
+      document.querySelectorAll('.form-section').forEach((s) => s.classList.toggle('active', s.id === 'section-' + opt));
       updateSubmitState();
-      setTimeout(() => {
-        document.getElementById('section-' + opt).scrollIntoView({ behavior:'smooth', block:'start' });
-      }, 100);
+      setTimeout(() => $('section-' + opt).scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
     }
+    document.querySelectorAll('.option-pick').forEach((b) => b.addEventListener('click', () => chooseOption(b.dataset.option)));
 
-    function chooseTransferMethod(method) {
-      transferMethod = method;
-      document.querySelectorAll('.method-card').forEach(c => {
-        c.classList.toggle('active', c.dataset.method === method);
-      });
-      document.querySelectorAll('.transfer-method-detail').forEach(d => d.classList.remove('active'));
-      document.getElementById('method-' + method).classList.add('active');
+    function chooseTransferMethod(m) {
+      transferMethod = m;
+      document.querySelectorAll('.method-card').forEach((c) => c.classList.toggle('active', c.dataset.method === m));
+      document.querySelectorAll('.transfer-method-detail').forEach((d) => d.classList.toggle('active', d.id === 'method-' + m));
       updateSubmitState();
     }
+    document.querySelectorAll('.method-card').forEach((b) => b.addEventListener('click', () => chooseTransferMethod(b.dataset.method)));
 
     function choosePM(pm) {
       chosenPM = pm;
@@ -1228,73 +525,6 @@
       else mismatchEl.classList.add('hidden');
       updateMoneySubmitState();
     }
-
-    function updateCapLine() {
-      const sel = document.getElementById('m-currency');
-      const amtInput = document.getElementById('m-amount');
-      const capEl = document.getElementById('cap-max');
-      const capLine = document.getElementById('cap-line');
-      if (!sel || !sel.value || typeof maxAmountInCurrency === 'undefined') return;
-      const max = maxAmountInCurrency(sel.value);
-      capEl.textContent = `${formatCurrencyAmount(max, sel.value)} ${sel.value}`;
-      const amt = parseFloat(amtInput.value);
-      if (!isNaN(amt) && amt > max) {
-        capLine.classList.add('over');
-        capEl.textContent = `${formatCurrencyAmount(max, sel.value)} ${sel.value} — over the cap`;
-      } else {
-        capLine.classList.remove('over');
-      }
-      updateMoneySubmitState();
-    }
-
-    function moneyFormValid() {
-      const amt = parseFloat(document.getElementById('m-amount').value);
-      const currency = document.getElementById('m-currency').value;
-      if (isNaN(amt) || amt <= 0) return false;
-      if (typeof maxAmountInCurrency !== 'undefined' && amt > maxAmountInCurrency(currency)) return false;
-      const contact = document.getElementById('m-contact').value.trim();
-      if (!contact) return false;
-      if (!chosenPM) return false;
-
-      const pairs = {
-        cashapp:['pm-cashapp-1','pm-cashapp-2'],
-        zelle:  ['pm-zelle-1','pm-zelle-2'],
-        paypal: ['pm-paypal-1','pm-paypal-2'],
-        venmo:  ['pm-venmo-1','pm-venmo-2'],
-        crypto: ['pm-crypto-1','pm-crypto-2'],
-        other:  ['pm-other-1','pm-other-2'],
-      };
-      if (pairs[chosenPM]) {
-        const [a,b] = pairs[chosenPM].map(id => document.getElementById(id).value.trim());
-        if (!a || !b || a !== b) return false;
-      } else if (chosenPM === 'bank') {
-        if (!document.getElementById('pm-bank-holder').value.trim()) return false;
-      } else if (chosenPM === 'cash') {
-        if (!document.getElementById('pm-cash-city').value.trim()) return false;
-      }
-
-      if (!document.getElementById('m-confirm').checked) return false;
-      return true;
-    }
-
-    function updateMoneySubmitState() {
-      if (chosenOption !== 'money') return;
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = !moneyFormValid();
-    }
-
-    function updateSubmitState() {
-      const btn = document.getElementById('submit-btn');
-      let ready = false;
-      if (chosenOption === 'money') ready = moneyFormValid();
-      else if (chosenOption === 'relocation') ready = true;
-      else if (chosenOption === 'transfer' && transferMethod) ready = true;
-      btn.disabled = !ready;
-    }
-
-    document.addEventListener('input', () => {
-      if (chosenOption === 'money') updateMoneySubmitState();
-    });
 
     function buildPMData() {
       switch(chosenPM) {
@@ -1342,206 +572,116 @@
       }
     }
 
-    async function submitForm() {
+    // Kept for the payment section's existing handlers
+    function updateMoneySubmitState() { updateSubmitState(); }
+
+    const val = (id) => ($(id)?.value || '').trim();
+    function moneyValid() {
+      if (!VALUE || !val('m-contact') || !chosenPM) return false;
+      const pairs = { cashapp: 1, zelle: 1, paypal: 1, venmo: 1, crypto: 1, other: 1 };
+      if (pairs[chosenPM]) { const a = val('pm-' + chosenPM + '-1'), b = val('pm-' + chosenPM + '-2'); if (!a || a !== b) return false; }
+      if (chosenPM === 'bank' && !val('pm-bank-holder')) return false;
+      if (chosenPM === 'cash' && !val('pm-cash-city')) return false;
+      return $('m-confirm').checked;
+    }
+    function wishValid() { return val('w-wish').length >= 10 && !!val('w-contact'); }
+    function transferValid() {
+      if (transferMethod === 'contact') {
+        const a = val('t-rcontact'), b = val('t-rcontact2');
+        $('t-rcontact-mismatch').classList.toggle('hidden', !b || a === b);
+        return !!val('t-rname') && !!a && a === b && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('t-email'));
+      }
+      if (transferMethod === 'new_code') return $('n-ack').checked;
+      return false;
+    }
+    const LABELS = { money: 'Request my gift', wish: 'Send my wish', transfer: 'Pass it on' };
+    function updateSubmitState() {
+      const btn = $('submit-btn');
+      btn.textContent = chosenOption ? LABELS[chosenOption] : 'Choose an option';
+      btn.disabled = !(chosenOption === 'money' ? moneyValid() : chosenOption === 'wish' ? wishValid() : chosenOption === 'transfer' ? transferValid() : false);
+    }
+    document.addEventListener('input', updateSubmitState);
+    document.addEventListener('change', updateSubmitState);
+
+    // ── Submit ──
+    $('submit-btn').addEventListener('click', async () => {
       hideAlert('form-alert');
-
-      if (!chosenOption) {
-        showAlert('form-alert', 'Please choose an option above.'); return;
-      }
-
-      let optionData = {};
-      let summaryName = '';
-      let summaryContact = '';
-      let urgency = '';
-      let summaryRequest = '';
-
+      let payload;
       if (chosenOption === 'money') {
-        const amount = document.getElementById('m-amount').value.trim();
-        const currency = document.getElementById('m-currency').value;
-        summaryName = document.getElementById('m-name').value.trim();
-        summaryContact = document.getElementById('m-contact').value.trim();
-        const country = document.getElementById('m-country').value.trim();
-        const notes = document.getElementById('m-notes').value.trim();
-
-        if (!amount || !summaryContact) {
-          showAlert('form-alert', 'Please enter an amount and your contact info.'); return;
-        }
-        const amtNum = parseFloat(amount);
-        if (amtNum <= 0) {
-          showAlert('form-alert', 'Amount must be greater than zero.'); return;
-        }
-        if (typeof maxAmountInCurrency !== 'undefined' && amtNum > maxAmountInCurrency(currency)) {
-          showAlert('form-alert', `Amount exceeds the $10,000 USD equivalent cap for ${currency}.`); return;
-        }
-        if (!chosenPM) {
-          showAlert('form-alert', 'Please choose a payment method.'); return;
-        }
-        if (!document.getElementById('m-confirm').checked) {
-          showAlert('form-alert', 'Please confirm your payment details by checking the box.'); return;
-        }
-        optionData = {
-          amount, currency, country, notes,
-          payment: buildPMData(),
-          confirmed: true,
+        if (!moneyValid()) return;
+        const currency = $('m-currency').value;
+        payload = {
+          option: 'money', name: val('m-name'), contact: val('m-contact'), urgency: 'Standard',
+          summary: `Gift of money: ${VALUE_LABEL} USD${currency !== 'USD' ? ` (prefers ${currency})` : ''} via ${chosenPM}. Located in ${val('m-country') || 'unspecified'}.${val('m-notes') ? ' Notes: ' + val('m-notes') : ''}`,
+          data: { payout_currency: currency, country: val('m-country'), notes: val('m-notes'), payment: buildPMData(), confirmed: true },
         };
-        urgency = 'Standard';
-        summaryRequest = `Financial assistance: ${amount} ${currency} via ${chosenPM}. Located in ${country || 'unspecified'}. ${notes ? 'Notes: ' + notes : ''}`;
-      }
-
-      else if (chosenOption === 'relocation') {
-        summaryName = document.getElementById('r-name').value.trim();
-        summaryContact = document.getElementById('r-contact').value.trim();
-        const fromCountry = document.getElementById('r-from-country').value;
-        const fromState = document.getElementById('r-from-state').value.trim();
-        const fromStreet = document.getElementById('r-from-street').value.trim();
-        const fromUnit = document.getElementById('r-from-unit').value.trim();
-        const fromCity = document.getElementById('r-from-city').value.trim();
-        const fromPostal = document.getElementById('r-from-postal').value.trim();
-        const toCountry = document.getElementById('r-to-country').value;
-        const toState = document.getElementById('r-to-state').value.trim();
-        const toCity = document.getElementById('r-to-city').value.trim();
-        const toNeighborhood = document.getElementById('r-to-neighborhood').value.trim();
-        const people = document.getElementById('r-people').value;
-        const children = document.getElementById('r-children').value;
-        const pets = document.getElementById('r-pets').value.trim();
-        const volume = document.getElementById('r-volume').value;
-        const timeline = document.getElementById('r-timeline').value;
-        const notes = document.getElementById('r-notes').value.trim();
-
-        if (!summaryName || !summaryContact || !fromCountry || !fromCity || !toCountry) {
-          showAlert('form-alert', 'Please fill in your name, contact, current country & city, and destination country.'); return;
-        }
-        const guaranteed = (fromCountry === 'US' || fromCountry === 'CA') && (toCountry === 'US' || toCountry === 'CA' || toCountry === 'FLEX');
-        optionData = {
-          guaranteed_coverage: guaranteed,
-          from: { country: fromCountry, state: fromState, street: fromStreet, unit: fromUnit, city: fromCity, postal: fromPostal },
-          to:   { country: toCountry, state: toState, city: toCity, neighborhood: toNeighborhood },
-          people, children, pets, volume, timeline, notes,
+      } else if (chosenOption === 'wish') {
+        if (!wishValid()) return;
+        payload = {
+          option: 'wish', name: val('w-name'), contact: val('w-contact'), urgency: $('w-timing').value,
+          summary: val('w-wish'),
+          data: { wish: val('w-wish'), context: val('w-context'), timing: $('w-timing').value, location: val('w-location') },
         };
-        urgency = timeline;
-        const fromStr = `${fromCity}${fromState ? ', ' + fromState : ''}, ${fromCountry}`;
-        const toStr = `${toCity || 'flexible'}${toState ? ', ' + toState : ''}, ${toCountry}`;
-        summaryRequest = `Relocation from ${fromStr} to ${toStr}. ${people}. Volume: ${volume}. Timeline: ${timeline}. Coverage: ${guaranteed ? 'guaranteed (US/Canada)' : 'best-effort (outside US/Canada)'}. ${notes ? 'Notes: ' + notes : ''}`;
-      }
-
-      else if (chosenOption === 'transfer') {
-        if (!transferMethod) { showAlert('form-alert', 'Please choose a transfer method.'); return; }
-
-        if (transferMethod === 'direct') {
-          summaryName = document.getElementById('td-name').value.trim();
-          summaryContact = document.getElementById('td-contact').value.trim();
-          const recipientName     = document.getElementById('td-rname').value.trim();
-          const recipientAge      = document.getElementById('td-rage').value;
-          const recipientPronouns = document.getElementById('td-rpronouns').value;
-          const recipientRel      = document.getElementById('td-rrelationship').value;
-          const recipientLocation = document.getElementById('td-rlocation').value.trim();
-          const recipientCountry  = document.getElementById('td-rcountry').value.trim();
-          const recipientLanguage = document.getElementById('td-rlanguage').value.trim();
-          const recipientTiming   = document.getElementById('td-rtiming').value;
-          const recipientNeedType = document.getElementById('td-rneedtype').value;
-          const recipientSituation= document.getElementById('td-rsituation').value.trim();
-          const recipientSafety   = document.getElementById('td-rsafety').value.trim();
-          const notes             = document.getElementById('td-notes').value.trim();
-          if (!summaryContact) { showAlert('form-alert', 'Please provide your contact info.'); return; }
-          optionData = {
-            method: 'direct',
-            recipient_name: recipientName || null,
-            recipient_age: recipientAge || null,
-            recipient_pronouns: recipientPronouns || null,
-            recipient_relationship: recipientRel || null,
-            recipient_location: recipientLocation || null,
-            recipient_country: recipientCountry || null,
-            recipient_language: recipientLanguage || null,
-            expected_timing: recipientTiming || null,
-            need_type: recipientNeedType || null,
-            recipient_situation: recipientSituation || null,
-            recipient_safety: recipientSafety || null,
-            notes,
-          };
-          urgency = 'Direct hand-off';
-          summaryRequest = `Direct transfer to ${recipientName || 'unnamed recipient'}${recipientRel ? ' (' + recipientRel + ')' : ''}${recipientLocation ? ' in ' + recipientLocation : ''}. Need: ${recipientNeedType || 'unspecified'}. Expected timing: ${recipientTiming || 'unspecified'}. ${recipientSituation ? 'Situation: ' + recipientSituation + '. ' : ''}${recipientSafety ? 'Safety: ' + recipientSafety + '. ' : ''}${notes ? 'Notes: ' + notes : ''}`;
-        } else {
-          summaryName = document.getElementById('ta-name').value.trim();
-          summaryContact = document.getElementById('ta-email').value.trim();
-          const recipientName     = document.getElementById('ta-rname').value.trim();
-          const recipientAge      = document.getElementById('ta-rage').value;
-          const recipientEmail    = document.getElementById('ta-remail').value.trim();
-          const recipientPhone    = document.getElementById('ta-rphone').value.trim();
-          const recipientCPref    = document.getElementById('ta-rcontactpref').value;
-          const recipientLocation = document.getElementById('ta-rlocation').value.trim();
-          const recipientCountry  = document.getElementById('ta-rcountry').value.trim();
-          const recipientLang     = document.getElementById('ta-rlanguage').value.trim();
-          const recipientTimeBest = document.getElementById('ta-rtimebest').value;
-          const relationship      = document.getElementById('ta-relationship').value;
-          const mention           = document.getElementById('ta-rmention').value;
-          const reason            = document.getElementById('ta-reason').value.trim();
-          const safety            = document.getElementById('ta-safety').value.trim();
-
-          if (!recipientName || !summaryContact) {
-            showAlert('form-alert', 'Please fill in the recipient\'s name and your email.'); return;
-          }
-          if (!recipientEmail && !recipientPhone) {
-            showAlert('form-alert', 'Please provide at least an email or phone for the recipient.'); return;
-          }
-          if (!reason) {
-            showAlert('form-alert', 'Please tell us why you\'re transferring to them.'); return;
-          }
-          optionData = {
-            method: 'anonymous',
-            recipient_name: recipientName,
-            recipient_age: recipientAge || null,
-            recipient_email: recipientEmail || null,
-            recipient_phone: recipientPhone || null,
-            recipient_contact_pref: recipientCPref || null,
-            recipient_location: recipientLocation || null,
-            recipient_country: recipientCountry || null,
-            recipient_language: recipientLang || null,
-            recipient_best_time: recipientTimeBest || null,
-            relationship,
-            mention_preference: mention,
-            reason,
-            safety_notes: safety || null,
-          };
-          urgency = 'Anonymous referral';
-          summaryRequest = `Anonymous referral to ${recipientName} (${recipientEmail || recipientPhone}). Relationship: ${relationship}. Mention preference: ${mention}. Reason: ${reason}${safety ? ' / Safety: ' + safety : ''}`;
-        }
-      }
+      } else if (chosenOption === 'transfer') {
+        if (!transferValid()) return;
+        payload = transferMethod === 'contact' ? {
+          option: 'transfer', name: val('t-name'), contact: val('t-email'), urgency: 'Reach out for me',
+          summary: `Pass it on — please contact ${val('t-rname')} (${val('t-rcontact')}). Relationship: ${$('t-relationship').value}.${val('t-reason') ? ' Why: ' + val('t-reason') : ''}`,
+          data: { method: 'contact', recipient_name: val('t-rname'), recipient_contact: val('t-rcontact'), recipient_location: val('t-rlocation'),
+                  relationship: $('t-relationship').value, reason: val('t-reason'), recipient_safety: val('t-safety'), may_name_sender: $('t-naming').value },
+        } : {
+          option: 'transfer', name: val('n-name'), contact: val('n-contact'), urgency: 'New code issued',
+          summary: `Pass it on — new ${VALUE_LABEL} code issued to the submitter${val('n-recipient') ? ' for ' + val('n-recipient') : ''}.`,
+          data: { method: 'new_code', intended_recipient: val('n-recipient'), acknowledged_shown_once: true },
+        };
+      } else return;
 
       setLoading('submit-btn', true);
       try {
-        await submitWish({
-          name: summaryName || 'Anonymous',
-          contact: summaryContact,
-          request: summaryRequest,
-          urgency,
-          access_code: redeemedCode,
-          session_id: sessionId,
-          option_chosen: chosenOption,
-          option_data: optionData,
-          status: 'new',
-        });
-
-        sessionStorage.removeItem('fe_session_id');
-        sessionStorage.removeItem('fe_redeemed_code');
-        sessionStorage.removeItem('fe_code_type');
-
-        document.getElementById('ref-id').textContent = sessionId.split('-')[0].toUpperCase();
-        document.getElementById('form-view').style.display = 'none';
-        document.getElementById('success-view').style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      } catch(e) {
-        console.error(e);
-        showAlert('form-alert', 'Could not submit. Please check your connection and try again.');
-        setLoading('submit-btn', false, 'Submit My Request');
+        const res = await submitWish({ sessionId, ...payload });
+        done = true;
+        ['fe_session_id', 'fe_redeemed_code', 'fe_code_type'].forEach((k) => sessionStorage.removeItem(k));
+        showSuccess(res, payload);
+      } catch (err) {
+        console.error(err);
+        showAlert('form-alert', err.message || 'Your request couldn’t be submitted. Check your connection and try again.');
+        setLoading('submit-btn', false, LABELS[chosenOption]);
       }
+    });
+
+    function showSuccess(res, payload) {
+      const copy = {
+        money: ['Your request is in.', `We’ll contact you at ${payload.contact} to arrange your ${VALUE_LABEL} gift.`],
+        wish: ['Your wish has been received.', 'We’ll read it personally and reach out before anything happens.'],
+        contact: ['We’ll reach out to them.', `We’ll contact ${payload.data.recipient_name || 'them'} discreetly and email you if they decline.`],
+        new_code: ['Here is their new code.', 'Copy it now, then share it with them along with the website address.'],
+      };
+      const key = payload.option === 'transfer' ? payload.data.method : payload.option;
+      $('success-title').textContent = copy[key][0];
+      $('success-text').textContent = copy[key][1];
+      $('ref-id').textContent = res.reference || sessionId.split('-')[0].toUpperCase();
+      if (res.issued_code) {
+        codeCopied = false;
+        $('code-reveal').hidden = false;
+        $('cr-code').textContent = res.issued_code;
+        $('cr-value').textContent = `${codeValueLabel(res.issued_code)} · ${res.issued_code.length} digits`;
+        $('home-btn').addEventListener('click', (e) => {
+          if (!codeCopied && !confirm('Have you saved the new code? It can’t be shown again.')) e.preventDefault();
+        });
+      }
+      $('form-view').hidden = true; $('success-view').hidden = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    $('cr-copy').addEventListener('click', async () => {
+      const code = $('cr-code').textContent;
+      try { await navigator.clipboard.writeText(code); } catch (_) {
+        const r = document.createRange(); r.selectNodeContents($('cr-code')); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      }
+      codeCopied = true; $('cr-copy').textContent = 'Copied';
+    });
 
     window.addEventListener('beforeunload', (e) => {
-      if (chosenOption && document.getElementById('form-view').style.display !== 'none') {
-        e.preventDefault();
-        e.returnValue = '';
-      }
+      if ((chosenOption && !done) || !codeCopied) { e.preventDefault(); e.returnValue = ''; }
     });
   </script>
 </body>

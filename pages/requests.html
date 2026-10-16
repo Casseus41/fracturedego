@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <title>My Requests — fractured Ego</title>
@@ -10,41 +10,15 @@
   <style>body{display:flex;flex-direction:column;min-height:100vh;}</style>
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to content</a>
 
-  <nav class="topnav">
-    <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
-    <div class="nav-right">
-      <div class="nav-user-pill">
-        <div class="avatar" id="nav-avatar">?</div>
-        <span id="nav-name">Loading…</span>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign Out</button>
-    </div>
-  </nav>
+  <nav class="topnav" data-shell="topnav"></nav>
 
   <div class="app-wrap">
 
-    <aside class="sidebar">
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Overview</div>
-        <a href="dashboard.html"      class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
-        <a href="requests.html"       class="sidebar-link active"><span class="icon">📋</span> My Requests</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Member Tools</div>
-        <a href="request.html"        class="sidebar-link"><span class="icon">✨</span> New Request</a>
-        <a href="my-codes.html"       class="sidebar-link"><span class="icon">🔑</span> My Access Codes</a>
-        <a href="invite-request.html" class="sidebar-link"><span class="icon">✉️</span> Invite Someone</a>
-      </div>
-      <div class="sidebar-section">
-        <div class="sidebar-heading">Account</div>
-        <a href="contact-sibeth.html" class="sidebar-link"><span class="icon">📇</span> Contact Sibeth</a>
-        <a href="account.html"        class="sidebar-link"><span class="icon">⚙️</span> Settings</a>
-        <a href="admin.html"          class="sidebar-link hidden" id="admin-link"><span class="icon">🔧</span> Admin Panel</a>
-      </div>
-    </aside>
+    <aside class="sidebar" data-shell="sidebar" data-active="requests"></aside>
 
-    <main class="main fade-up">
+    <main id="main" class="main fade-up">
 
       <div class="page-header" style="margin-bottom:18px;">
         <div class="page-eyebrow">Concierge Activity</div>
@@ -57,8 +31,8 @@
         <select id="status-filter" class="btn btn-ghost btn-sm" style="padding:8px 12px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border);color:var(--text-2);" onchange="renderList()">
           <option value="all">All statuses</option>
           <option value="pending">Pending</option>
-          <option value="in_progress">In progress</option>
-          <option value="resolved">Resolved</option>
+          <option value="in-progress">In progress</option>
+          <option value="complete">Complete</option>
           <option value="cancelled">Cancelled</option>
         </select>
       </div>
@@ -83,8 +57,11 @@
     <div class="footer-meta">© 2026 — A private concierge network</div>
   </footer>
 
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
+  <script src="../js/shell.js"></script>
   <script>
   let allRequests = [];
   let myProfile = null;

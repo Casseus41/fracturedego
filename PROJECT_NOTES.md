@@ -445,3 +445,165 @@ When Cass ran `migration-v3-patch2.sql`, Postgres rejected it with `ERROR: 42703
 Re-run **`migration-v3-patch2.sql`** — it's idempotent, will add only the missing columns, and will succeed this time because it no longer references columns that may not exist. Then re-deploy the Edge Function (or re-paste it into the dashboard) and you're set.
 
 _Hotfix added by Claude on 2026-05-08._
+
+---
+
+## 13b. Hotfix — 2026-05-08 ("Failed to fetch" diagnostics)
+
+After patch2 ran cleanly, Cass clicked Send Invite and got the browser-level error **"✕ Failed to fetch."** That generic error means the request never reached Supabase at all — almost always indicates the Edge Function isn't actually deployed (Supabase's gateway returns a 404 without CORS headers on missing functions, which browsers translate as "Failed to fetch").
+
+### What changed
+- **`js/app.js` `sendInvites()`** — replaced raw `fetch()` with `sb.functions.invoke('send-invite', { body: opts })`. The Supabase SDK distinguishes between:
+  - `FunctionsHttpError`  — function exists but returned non-2xx
+  - `FunctionsRelayError` — gateway issue (function probably missing)
+  - `FunctionsFetchError` — network failure
+  Each produces a clearer error message than the generic "Failed to fetch."
+- When the error message looks like a network failure, we now translate it inline to: *"Edge Function 'send-invite' not reachable — check that it's deployed in Supabase (Dashboard → Edge Functions → send-invite)."*
+- When the error is a non-2xx server response, the actual error body is parsed and surfaced.
+
+### Deployment diagnostic checklist
+If Cass still hits errors after this round:
+1. Supabase Dashboard → Edge Functions — confirm `send-invite` appears in the list
+2. Click into it → check "Logs" — see what happened on the last invocation
+3. Click "Edit" — confirm the source matches `supabase/functions/send-invite/index.ts`
+4. Project Settings → Edge Functions → Secrets — confirm `RESEND_API_KEY` is set
+
+_Diagnostic hotfix added by Claude on 2026-05-08._
+
+---
+
+## 14. Session — v4 "Community" + site-wide redesign pass
+
+### Decisions from Cass
+1. Every active member is automatically connected to every other member (no follow/friend graph).
+2. Member profiles are visible to all active members.
+3. Admins can and should see everything — including edited/deleted content.
+
+### Architecture
+- **Privacy boundary:** public identity lives in `member_profiles` (display name, pronouns, headline, location, bio, interests, avatar). Email, phone and legal name stay in the private `profiles` table — the directory can never leak them. Display name defaults to "First L." and is kept in sync by a trigger until the member customizes it.
+- **New tables (12):** member_profiles, member_restrictions, member_blocks, posts, post_comments, post_reactions, conversations, conversation_participants, messages, reports, notifications, content_archive.
+- **Admin visibility:** every table has an admin-ALL policy. `content_archive` captures the original text of every edited/deleted post, comment and message (triggers). Deleted messages are blanked for participants but preserved for admins. Members are told in the Messages UI that the admin team can access conversations.
+- **Blocking:** mutual and silent — hides posts/comments in both directions, prevents starting or continuing conversations, and surfaces as "member unavailable" so the blocked person can't detect it.
+- **Restrictions:** admins can pause posting and/or messaging per member (`member_restrictions`); members can see but not change their own.
+- **Reports:** members file; only admins read. A trigger stamps the reporter, snapshots the content, and rejects reports on content the reporter can't see (prevents fishing for private messages).
+- **Notifications:** comment, reaction (de-duplicated), announcement, plus existing-feature events — code request approved/denied, invite request updates, concierge request status changes. Triggers on pre-existing tables are wrapped so they can never block the original write.
+- **Column-level grants:** members can only UPDATE specific columns (e.g. body, deleted_at) — they cannot rewrite author_id, conversation_id, user_id, etc. even on their own rows.
+- **Storage:** private bucket `social-media`, files under `<user_id>/…`, read via 1-hour signed URLs (cached in sessionStorage). Images are re-encoded client-side, which resizes them AND strips EXIF/GPS metadata.
+- **Realtime:** `messages`, `notifications`, `posts` are in the `supabase_realtime` publication. The shell holds one channel and re-broadcasts DOM events (`fe:message`, `fe:notification`, `fe:post`). 45s/20s polling acts as a safety net.
+
+### Verification performed
+- Migration executed against a local Postgres 16 mock of Supabase (auth.uid(), anon/authenticated/service_role, storage schema, realtime publication, existing tables) — applies cleanly and is idempotent on re-run.
+- 60+ RLS assertions impersonating admin, members, an outsider, a deactivated member and anon — all pass (test script kept out of the repo; recreate from this description if needed).
+- Every new/migrated page loaded in jsdom against a fake Supabase client — zero runtime errors; rendering verified. Found and fixed one race (profile ?edit=1).
+- All PostgREST join hints verified against real FK constraint names.
+
+### Front-end structure (new)
+- `js/safety.js` — Quick Exit (button + Esc×3 → neutral site, clears sessionStorage, replaces history). On every page. Disable with `QUICK_EXIT_ENABLED = false`; per page with `<body data-quick-exit="off">`.
+- `js/social.js` — all community data access + shared rendering (posts, comments, avatars), media pipeline, `toast()`, `openDialog()`, `uiConfirm()`, report dialog.
+- `js/shell.js` — **single source of truth for member navigation.** Pages declare `<nav class="topnav" data-shell="topnav">` and `<aside class="sidebar" data-shell="sidebar" data-active="KEY">`. Renders top bar (messages + notifications + avatar), sidebar, mobile drawer and bottom tab bar. Exposes `FE.ready` → `{user, profile, member, isAdmin}`. Keeps hidden legacy IDs (nav-name, nav-avatar, sb-*) so older page scripts don't break.
+  - To add a member page: copy the head/footer from `pages/feed.html`, set `data-active`, add the item to `NAV` in shell.js.
+- New pages: `feed.html`, `members.html`, `profile.html` (view + edit via `?edit=1`), `messages.html` (`?c=<conversation>` or `?to=<member>`), `/404.html`.
+- Rebuilt: `dashboard.html`.
+- Migrated to shell: requests, request, my-codes, invite-request, account, contact-sibeth.
+- `admin.html`: new 🌙 Community tab — Reports (review dialog: remove content, pause posting/messaging, status, notes), Posts (pin/remove), Conversations (open read-only in Messages), Archive, Restrictions, and "Post announcement".
+
+### Site-wide fixes in this pass
+- supabase-js pinned to **2.117.2** on every page (was unpinned, across two different CDNs).
+- `.loading-state` was used by several pages but never defined — now styled.
+- requests.html status filter used `in_progress`/`resolved`, but real statuses are `in-progress`/`complete` — fixed.
+- Global keyboard focus rings, reduced-motion support, skip-to-content links, safe-area viewport for notched phones.
+
+### Deployment order
+1. Run `supabase/migration-v4-social.sql` in the SQL editor. The final result grid should show six rows reading **OK**.
+2. Deploy the changed files (see delivery notes).
+3. Test with **two** member accounts (one admin, one regular) — post, comment, react, message, block, report.
+
+### If a verification row says NEEDS ATTENTION
+- **Storage bucket / Storage policies:** Dashboard → Storage → New bucket `social-media`, **Private**, 5 MB limit, MIME `image/jpeg, image/png, image/webp`. Then re-run the migration (it will add the policies).
+- **Realtime tables:** Dashboard → Database → Publications → `supabase_realtime` → enable `messages`, `notifications`, `posts`. The site still works without this via polling.
+- **Member profiles backfilled:** re-run the migration; it's idempotent.
+
+### Expected new Security Advisor warnings (by design)
+"Signed-In Users Can Execute SECURITY DEFINER Function" for the new RLS helpers and RPCs (member_is_active, is_active_member, can_post, can_message, is_blocked_between, is_conversation_participant, conversation_has_block, start_conversation). They must be callable for RLS to evaluate; each is scoped to auth.uid() or returns only a boolean. No new anon-executable functions; no new always-true policies.
+
+### Recommended next (not built)
+- Privacy policy / community terms page — now strongly advisable: the site stores user-generated content and admins can read private messages; members should have that in writing.
+- Idle auto-lock (sign out after N minutes of inactivity) for shared/monitored devices.
+- Group conversations (schema already supports `is_group`).
+- Profile pictures in admin Members table (data now available via member_profiles).
+
+_v4 session notes added by Claude._
+
+---
+
+## 15. Session — v5 visual redesign
+
+### Concept
+**Kintsugi** — the Japanese art of repairing broken pottery with gold. The site is named *fractured Ego* and serves people moving through broken chapters, and the palette already carried an unused gold (`#c9a96e`). The gold **seam** is the one memorable device, used only where things join or begin:
+- Landing hero — drawn once on load under "You are not alone." (the site's only orchestrated animation)
+- Top rim of sign-in / code-entry / confirmation / contact cards
+- The step rail connecting the four access-code steps (fills with gold as steps complete)
+- Divider before "Request Membership"; the 404 "0"
+
+### Rules (keep these when adding pages)
+- **Pink = action and state only**: buttons, active nav, current step, unread dots, the brand E. Never decorative.
+- **Headings**: Cormorant italic `<em>` is fine, but it renders in the text color (rule in the v5 layer). Don't add inline `color:var(--pink)` to `<em>`.
+- **Labels are sentence case**, never forced uppercase. Context lines above titles (`.page-eyebrow`) are quiet and muted.
+- **Motion** only for the page entrance and in response to an action. No staggered card fade-ins.
+- **Seam usage**: `<div class="seam"></div>` or `background: var(--seam)`. Don't put it on ordinary cards — it marks joins and beginnings.
+- **Step rail**: `<ol class="steps" data-step="N">` with `li.done` / `li.current` (see any access-flow page).
+
+### What changed
+- `css/styles.css`
+  - New "v5 visual redesign layer" at the end governs the whole site.
+  - New "Page-specific styles" section: the inline `<style>` blocks from wish, admin, access-info, access-confirm and contact-sibeth moved here, scoped by body class (`body.pg-wish`, `.pg-admin`, `.pg-access-info`, `.pg-access-confirm`, `.pg-contact`). Edit page styles there, not in the HTML.
+  - The landing page (`index.html`) keeps its own inline styles; it's the only page that uses them.
+- **Wordmark bug fixed**: every page rendered "fracturedEgo" — flex layout was swallowing the space. Fixed via `white-space: pre` on `.nav-brand` / `.auth-logo` (requires single-line markup, which all pages now have).
+- **Landing**: dark "doors" with one clear pink action each (replacing solid pink slabs with low-contrast buttons); clearer door copy ("Members" / "I have a code"); hero phrase in porcelain italic; drawn seam; orphaned "be." fixed.
+- **Access-code flow**: shared numbered step rail (Read → Confirm → Enter code → Your request) replaces the per-page "Step N of 4" pills.
+- **Admin**: sidebar is now the single navigation (tracks the active section, shows pending counts); the duplicate tab strip is hidden.
+- **Quick Exit**: moved bottom-right (it was covering the sidebar's Sign out); compact "✕ Exit" on phones.
+- Dashboard greeting no longer shows a double period for display names ending in ".".
+
+### Verification
+- Every page rendered in headless Chromium with the real fonts (desktop 1440 and phone 390) and critiqued from screenshots.
+- All 22 pages load with zero runtime errors in a real browser; jsdom functional suite (14 runs) still passes.
+
+### To revert a specific choice
+- Pink heading emphasis: delete the `:is(...) em { color: inherit; }` rule in the v5 layer.
+- Quick Exit position: `.quick-exit { left: 16px; right: auto; }`.
+
+_v5 notes added by Claude._
+
+---
+
+## 16. Session — v6 access-code options + security fixes
+
+### New options (Cass)
+1. **A gift of money** — amount set by code length: **4 digits = $1,000**, **7 digits = $10,000**. Legacy 10-digit codes are honored at $10,000. Recipient may state a preferred currency (reference-rate equivalent shown); payout method + double-entry verification + confirmation checkbox unchanged.
+2. **A wish** — open-ended request, fulfilled to the best of the team's ability. Replaces the relocation option (and the US/Canada copy).
+3. **Pass it on** — (a) the team contacts the recipient (recipient contact is double-entered), or (b) a new code of the same value is generated and **shown once** on the success screen, with a copy button and a leave-page warning until copied.
+
+### Security fixes (important)
+- `bulk_generate_codes` (original access-code SQL) had **no admin check** and returned the codes it created. After patch 4 limited it to signed-in users, any member could still mint and read valid codes. It now requires `is_admin()`. Note: the patch-4 comment claiming it already checked admin was wrong.
+- Wishes were inserted directly from the browser under an always-true policy, with the money amount supplied by the page. Direct inserts are now closed. Everything goes through `submit_wish()`, which:
+  - validates the redeemed code's session (12-hour window);
+  - allows one submission per code;
+  - sets the amount from the code's length on the server;
+  - mints the transfer code in the same transaction.
+
+### Database — `supabase/migration-v6-codes.sql`
+`code_value_usd()`, `generate_7digit_code()`, admin-only `bulk_generate_codes` (4-digit | 7-digit, 1–500), `submit_wish()`, format check on new codes (4/7/legacy 10 digits, NOT VALID so existing rows are untouched), wishes insert policy dropped.
+- Verified against a faithful recreation of the original access-code schema. The member code-minting hole was reproduced first, then confirmed closed.
+- 20 new tests pass, including that a 4-digit code pays $1,000 even if the page claims $10,000. The community suite (55) still passes.
+
+### Front end
+- `wish.html` rebuilt (payment-method section reused).
+- `access-info.html` option copy rewritten.
+- `access.html` accepts 4/7 (legacy 10) digits.
+- `app.js`: `submitWish()` now calls the RPC; `codeValueUsd()` / `codeValueLabel()`; new `OPTION_MAP`.
+- `admin.html`: generate/add 4-digit ($1,000) or 7-digit ($10,000) codes, value column and filters, new field labels in wish details.
+- `my-codes.html` shows each code's value.
+- Expected Security Advisor change: `submit_wish` is anon-callable SECURITY DEFINER by design (like `redeem_access_code`). The always-true wishes policy warning disappears.
+
+_v6 notes added by Claude._

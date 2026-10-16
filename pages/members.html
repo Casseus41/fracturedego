@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow"/>
+  <meta name="theme-color" content="#0c0c0e"/>
+  <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
+  <link rel="apple-touch-icon" href="../logo.svg"/>
+  <title>Members — fractured Ego</title>
+  <link rel="stylesheet" href="../css/styles.css"/>
+  <style>
+    body { display:flex; flex-direction:column; min-height:100vh; }
+    .dir-bar { display:flex; gap:12px; align-items:center; margin-bottom:22px; flex-wrap:wrap; }
+    .dir-bar .text-input { flex:1; min-width:220px; max-width:440px; }
+    .dir-bar select { background:var(--bg-3); border:1.5px solid var(--border); border-radius:var(--radius-full); color:var(--text-2); padding:10px 16px; font:13px 'Inter',sans-serif; outline:none; cursor:pointer; }
+    .dir-count { font-size:12px; color:var(--text-3); margin-left:auto; }
+    .you-chip { font-size:9.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#0c0c0e; background:var(--pink); padding:2px 7px; border-radius:999px; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <nav class="topnav" data-shell="topnav"></nav>
+  <div class="app-wrap">
+    <aside class="sidebar" data-shell="sidebar" data-active="members"></aside>
+    <main class="main fade-up" id="main">
+
+      <div class="page-header">
+        <div class="page-eyebrow">The Circle</div>
+        <h1 class="page-title">Our <em>Members</em></h1>
+        <p class="page-subtitle">Everyone here is connected. Profiles show only what each member chooses to share — never email, phone or legal name.</p>
+      </div>
+
+      <div class="dir-bar">
+        <input type="search" class="text-input" id="q" placeholder="Search by name, interest, or place…" aria-label="Search members"/>
+        <select id="sort" aria-label="Sort members">
+          <option value="active">Recently active</option>
+          <option value="name">Name A–Z</option>
+          <option value="newest">Newest members</option>
+        </select>
+        <span class="dir-count" id="count"></span>
+      </div>
+
+      <div id="grid" class="member-grid"><div class="loading-state"><div class="spinner"></div><span>Gathering the circle…</span></div></div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-mark">fractured <span class="accent">E</span>go</div>
+    <div class="footer-meta">© 2026 — A private concierge network</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
+  <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
+  <script src="../js/shell.js"></script>
+  <script>
+  (async function () {
+    const grid = document.getElementById('grid');
+    const me = await FE.ready;
+    let members = [];
+    const isOnline = (m) => m.last_seen_at && Date.now() - new Date(m.last_seen_at) < 10 * 60000;
+
+    function render() {
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      const sort = document.getElementById('sort').value;
+      let list = members.filter((m) => !q || [m.display_name, m.headline, m.location, m.pronouns, ...(m.interests || [])]
+        .filter(Boolean).join(' ').toLowerCase().includes(q));
+      list.sort((a, b) => sort === 'name' ? a.display_name.localeCompare(b.display_name)
+        : sort === 'newest' ? new Date(b.created_at) - new Date(a.created_at)
+        : new Date(b.last_seen_at || 0) - new Date(a.last_seen_at || 0));
+      document.getElementById('count').textContent = `${list.length} member${list.length === 1 ? '' : 's'}`;
+      if (!list.length) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🔍</div><div class="empty-title">No one matches that</div><div class="empty-text">Try a different word or clear the search.</div></div>`;
+        return;
+      }
+      grid.innerHTML = list.map((m, i) => `
+        <a class="member-card" href="profile.html?id=${m.id}" style="animation-delay:${Math.min(i, 12) * 30}ms">
+          ${avatarHTML(m, 'lg')}
+          <span class="member-name">${esc(m.display_name)}${isOnline(m) ? ' <span class="online-dot" title="Active now"></span>' : ''}${m.id === me.user.id ? ' <span class="you-chip">You</span>' : ''}</span>
+          ${m.pronouns ? `<span class="member-pronouns">${esc(m.pronouns)}</span>` : ''}
+          ${m.headline ? `<span class="member-headline">${esc(m.headline)}</span>` : ''}
+          ${m.location ? `<span class="member-loc">📍 ${esc(m.location)}</span>` : ''}
+          ${(m.interests || []).length ? `<span class="chip-row">${m.interests.slice(0, 3).map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</span>` : ''}
+        </a>`).join('');
+      hydrateMedia(grid);
+    }
+
+    try { members = await listMembers(); render(); }
+    catch (e) { console.error(e); grid.innerHTML = '<div class="alert alert-warn" style="grid-column:1/-1;">Members couldn’t load. Please refresh.</div>'; }
+    document.getElementById('q').addEventListener('input', render);
+    document.getElementById('sort').addEventListener('change', render);
+  })();
+  </script>
+</body>
+</html>

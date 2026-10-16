@@ -2,147 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <link rel="icon" type="image/svg+xml" href="../logo.svg"/>
   <link rel="apple-touch-icon" href="../logo.svg"/>
   <title>Admin — </title>
   <link rel="stylesheet" href="../css/styles.css"/>
-  <style>
-    body { display:flex; flex-direction:column; min-height:100vh; }
-    .admin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:28px; }
-    .admin-stat { background:var(--bg-2); border:1px solid var(--border); border-radius:var(--radius-md); padding:20px; }
-    .admin-stat .val { font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--pink); }
-    .admin-stat .lbl { font-size:11px; color:var(--text-3); margin-top:4px; font-weight:600; }
-    .wish-detail { background:var(--bg-3); border-radius:var(--radius-sm); padding:14px; margin-top:10px; font-size:13px; color:var(--text-2); line-height:1.7; border-left:2px solid var(--border-pink); }
-
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:500; display:none; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
-    .modal-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
-    .modal { background:var(--bg-2); border:1px solid var(--border-2); border-radius:var(--radius-xl); width:100%; max-width:660px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow-xl); animation:fadeUp 0.3s ease; }
-    .modal-header { padding:24px 28px 18px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
-    .modal-title-wrap { flex:1; min-width:0; }
-    .modal-eyebrow { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--pink); margin-bottom:4px; }
-    .modal-title { font-family:'Cormorant Garamond',serif; font-size:1.55rem; color:var(--text); line-height:1.2; }
-    .modal-close { background:var(--bg-3); border:1px solid var(--border); color:var(--text-2); width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.2s; flex-shrink:0; }
-    .modal-close:hover { background:var(--bg-4); color:var(--text); border-color:var(--border-2); }
-    .modal-body { padding:24px 28px; }
-    .modal-body .section { margin-bottom:22px; }
-    .modal-body .section:last-child { margin-bottom:0; }
-    .field-row { display:grid; grid-template-columns:140px 1fr; gap:14px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.04); align-items:start; }
-    .field-row:last-of-type { border-bottom:none; }
-    .field-row .k { font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3); padding-top:1px; }
-    .field-row .v { font-size:13px; color:var(--text); line-height:1.65; word-break:break-word; }
-    .field-row .v.long { white-space:pre-wrap; background:var(--bg-3); padding:12px; border-radius:var(--radius-sm); border-left:2px solid var(--border-pink); }
-    .modal-footer { padding:18px 28px; border-top:1px solid var(--border); background:var(--bg-3); display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
-
-    /* Reference ID banner — shown at top of wish/request modals */
-    .ref-banner {
-      display:flex; align-items:baseline; justify-content:space-between;
-      gap:14px; flex-wrap:wrap;
-      background:var(--pink-dim); border:1px solid var(--border-pink);
-      border-radius:var(--radius-md);
-      padding:14px 18px; margin-bottom:18px;
-    }
-    .ref-banner-label {
-      font-size:10px; font-weight:700; letter-spacing:0.12em;
-      text-transform:uppercase; color:var(--pink);
-    }
-    .ref-banner-value {
-      font-family:'Courier New', monospace;
-      font-size:1.4rem; font-weight:700; letter-spacing:0.1em;
-      color:var(--pink);
-    }
-
-    /* Nested-data sub-block (e.g. relocation 'from' / 'to' / payment) */
-    .data-subblock {
-      background:var(--bg-3); border:1px solid var(--border);
-      border-radius:var(--radius-sm);
-      padding:14px 16px 8px;
-      margin:10px 0 14px;
-    }
-    .data-subblock-title {
-      font-family:'Cormorant Garamond', serif; font-style:italic;
-      font-size:1.05rem; color:var(--pink);
-      margin-bottom:8px; padding-bottom:8px;
-      border-bottom:1px solid rgba(255,255,255,0.06);
-    }
-    .data-subblock .field-row {
-      grid-template-columns:130px 1fr; padding:6px 0;
-    }
-    .data-subblock .data-subblock {
-      background:var(--bg-4);
-      margin-left:8px;
-    }
-
-    @media(max-width:560px){
-      .field-row { grid-template-columns:1fr; gap:4px; }
-      .modal-footer { justify-content:stretch; }
-      .modal-footer .btn { flex:1; }
-      .data-subblock .field-row { grid-template-columns:1fr; }
-    }
-
-    .data-table tbody tr { cursor:pointer; }
-    .data-table tbody tr.no-click { cursor:default; }
-
-    .invite-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:16px; padding:16px 18px; background:var(--bg-3); border:1px solid var(--border); border-radius:var(--radius-md); }
-
-    /* Access codes specific */
-    .code-tabs-row {
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-bottom:18px;
-    }
-    .code-filter-btn {
-      background:var(--bg-3); border:1px solid var(--border);
-      color:var(--text-3); font-family:'Inter',sans-serif;
-      font-size:11px; font-weight:600; letter-spacing:0.04em;
-      padding:6px 14px; border-radius:var(--radius-full);
-      cursor:pointer; transition:all 0.2s;
-    }
-    .code-filter-btn.active {
-      background:var(--pink-dim); color:var(--pink); border-color:var(--border-pink);
-    }
-    .code-filter-btn:hover { border-color:var(--border-2); color:var(--text-2); }
-    .code-filter-btn.active:hover { color:var(--pink); }
-
-    .code-mono {
-      font-family:'Courier New',monospace; font-weight:600;
-      background:var(--bg-3); padding:3px 10px; border-radius:5px;
-      font-size:13px; color:var(--text); letter-spacing:0.08em;
-    }
-    .code-mono.unused { color:var(--green); }
-    .code-mono.used   { color:var(--text-3); text-decoration:line-through; }
-    .code-mono.revoked{ color:var(--red); text-decoration:line-through; }
-
-    .copy-btn {
-      background:none; border:none; cursor:pointer;
-      color:var(--text-3); font-size:13px; padding:2px 6px;
-      transition:color 0.2s;
-    }
-    .copy-btn:hover { color:var(--pink); }
-
-    .gen-row {
-      display:grid; grid-template-columns:1fr 1fr 2fr auto; gap:10px; align-items:end;
-    }
-    @media(max-width:700px){
-      .gen-row { grid-template-columns:1fr 1fr; }
-    }
-
-    .codes-summary {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
-      gap:10px; margin-bottom:18px;
-    }
-    .code-summary-card {
-      background:var(--bg-2); border:1px solid var(--border);
-      border-radius:var(--radius-md); padding:14px 16px;
-    }
-    .code-summary-card .num { font-family:'Cormorant Garamond',serif; font-size:1.5rem; }
-    .code-summary-card .lbl { font-size:10px; color:var(--text-3); font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
-    .code-summary-card.green .num { color:var(--green); }
-    .code-summary-card.amber .num { color:var(--amber); }
-    .code-summary-card.red   .num { color:var(--red); }
-    .code-summary-card.pink  .num { color:var(--pink); }
-  </style>
 </head>
-<body>
+<body class="pg-admin">
   <nav class="topnav">
     <a href="../index.html" class="nav-brand"><img src="../logo.svg" alt="" class="brand-logo"/>fractured <span class="accent">E</span>go</a>
     <div class="nav-right">
@@ -158,7 +24,7 @@
       <div class="sidebar-section">
         <div class="sidebar-heading">Admin</div>
         <a href="contact-sibeth.html" class="sidebar-link"><span class="icon">📇</span> Contact Sibeth</a>
-        <a href="admin.html" class="sidebar-link active"><span class="icon">🔧</span> Admin Panel</a>
+        <a href="admin.html" class="sidebar-link"><span class="icon">🔧</span> Admin Panel</a>
         <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
       </div>
       <div class="sidebar-section">
@@ -168,9 +34,10 @@
         <button class="sidebar-link" onclick="switchTab('requests')"><span class="icon">📋</span> Requests</button>
         <button class="sidebar-link" onclick="switchTab('wishes')"><span class="icon">🌙</span> Wishes</button>
         <button class="sidebar-link" onclick="switchTab('codes')"><span class="icon">🔑</span> Access Codes</button>
-        <button class="sidebar-link" onclick="switchTab('code-requests')"><span class="icon">📨</span> Code Requests</button>
-        <button class="sidebar-link" onclick="switchTab('invite-requests')"><span class="icon">💌</span> Invite Requests</button>
-        <button class="sidebar-link" onclick="switchTab('membership-requests')"><span class="icon">🌹</span> Membership Requests</button>
+        <button class="sidebar-link" onclick="switchTab('code-requests')"><span class="icon">📨</span> Code Requests<span class="count" data-mirror="cr-pill" hidden></span></button>
+        <button class="sidebar-link" onclick="switchTab('invite-requests')"><span class="icon">💌</span> Invite Requests<span class="count" data-mirror="ir-pill" hidden></span></button>
+        <button class="sidebar-link" onclick="switchTab('membership-requests')"><span class="icon">🌹</span> Membership Requests<span class="count" data-mirror="mr-pill" hidden></span></button>
+        <button class="sidebar-link" onclick="switchTab('community')"><span class="icon">🌙</span> Community<span class="count" data-mirror="cm-pill" hidden></span></button>
         <button class="sidebar-link" onclick="switchTab('invite')"><span class="icon">✉️</span> Invitations</button>
         <button class="sidebar-link" onclick="switchTab('login-activity')"><span class="icon">🛡️</span> Login Activity</button>
       </div>
@@ -200,6 +67,7 @@
         <button class="tab-btn" data-tab="code-requests" onclick="switchTab('code-requests')">📨 Code Requests <span class="tab-pill" id="cr-pill"></span></button>
         <button class="tab-btn" data-tab="invite-requests" onclick="switchTab('invite-requests')">💌 Invite Requests <span class="tab-pill" id="ir-pill"></span></button>
         <button class="tab-btn" data-tab="membership-requests" onclick="switchTab('membership-requests')">🌹 Membership Requests <span class="tab-pill" id="mr-pill"></span></button>
+        <button class="tab-btn" data-tab="community" onclick="switchTab('community')">🌙 Community <span class="tab-pill" id="cm-pill"></span></button>
         <button class="tab-btn" data-tab="invite" onclick="switchTab('invite')">✉️ Invitations</button>
         <button class="tab-btn" data-tab="login-activity" onclick="switchTab('login-activity')">🛡️ Login Activity</button>
       </div>
@@ -279,7 +147,7 @@
             <div class="field" style="margin:0;">
               <label class="field-label">Type</label>
               <div class="field-input">
-                <select id="gen-type"><option value="4-digit">4-digit</option><option value="10-digit">10-digit</option></select>
+                <select id="gen-type"><option value="4-digit">4-digit · $1,000</option><option value="7-digit">7-digit · $10,000</option></select>
               </div>
             </div>
             <div class="field" style="margin:0;">
@@ -294,12 +162,12 @@
           <div class="gen-row">
             <div class="field" style="margin:0;">
               <label class="field-label">Code</label>
-              <div class="field-input"><input type="text" id="add-code" placeholder="4 or 10 digits" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
+              <div class="field-input"><input type="text" id="add-code" placeholder="4 or 7 digits" maxlength="7" oninput="this.value=this.value.replace(/\D/g,'')"/></div>
             </div>
             <div class="field" style="margin:0;">
               <label class="field-label">Type</label>
               <div class="field-input">
-                <select id="add-type"><option value="4-digit">4-digit</option><option value="10-digit">10-digit</option></select>
+                <select id="add-type"><option value="4-digit">4-digit · $1,000</option><option value="7-digit">7-digit · $10,000</option></select>
               </div>
             </div>
             <div class="field" style="margin:0;">
@@ -321,13 +189,14 @@
           <button class="code-filter-btn" data-filter="unused" onclick="setCodeFilter('unused')">Unused</button>
           <button class="code-filter-btn" data-filter="used" onclick="setCodeFilter('used')">Used</button>
           <button class="code-filter-btn" data-filter="revoked" onclick="setCodeFilter('revoked')">Revoked</button>
-          <button class="code-filter-btn" data-filter="4-digit" onclick="setCodeFilter('4-digit')">4-digit</button>
-          <button class="code-filter-btn" data-filter="10-digit" onclick="setCodeFilter('10-digit')">10-digit</button>
+          <button class="code-filter-btn" data-filter="4-digit" onclick="setCodeFilter('4-digit')">$1,000 · 4-digit</button>
+          <button class="code-filter-btn" data-filter="7-digit" onclick="setCodeFilter('7-digit')">$10,000 · 7-digit</button>
+          <button class="code-filter-btn" data-filter="10-digit" onclick="setCodeFilter('10-digit')">Legacy 10-digit</button>
         </div>
 
         <div class="table-wrap">
           <table class="data-table">
-            <thead><tr><th>Code</th><th>Type</th><th>Status</th><th>Notes</th><th>Created</th><th>Used</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Code</th><th>Value</th><th>Status</th><th>Notes</th><th>Created</th><th>Used</th><th>Actions</th></tr></thead>
             <tbody id="codes-body"><tr class="no-click"><td colspan="7" style="color:var(--text-3);">Loading...</td></tr></tbody>
           </table>
         </div>
@@ -432,6 +301,30 @@
             <tbody id="membership-requests-body"><tr class="no-click"><td colspan="6" style="color:var(--text-3);">Loading...</td></tr></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- COMMUNITY (v4) -->
+      <div class="tab-panel" id="tab-community">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+          <div>
+            <div class="page-eyebrow" style="margin-bottom:6px;">Community Moderation</div>
+            <p style="font-size:13px;color:var(--text-3);line-height:1.7;margin:0;max-width:640px;">Reports, posts, conversations and the edit/delete archive. Everything members delete is preserved here for review.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary btn-sm" onclick="cmAnnounce()">📣 Post announcement</button>
+            <a class="btn btn-secondary btn-sm" href="feed.html">Open feed</a>
+          </div>
+        </div>
+        <div class="code-tabs-row" style="margin-bottom:16px;" id="cm-views">
+          <button class="code-filter-btn active" data-cm="reports" onclick="cmView('reports')">🚩 Reports</button>
+          <button class="code-filter-btn" data-cm="posts" onclick="cmView('posts')">📝 Posts</button>
+          <button class="code-filter-btn" data-cm="convos" onclick="cmView('convos')">💬 Conversations</button>
+          <button class="code-filter-btn" data-cm="archive" onclick="cmView('archive')">🗄️ Archive</button>
+          <button class="code-filter-btn" data-cm="restrictions" onclick="cmView('restrictions')">⏸️ Restrictions</button>
+        </div>
+        <div id="cm-sub" style="margin-bottom:12px;"></div>
+        <div class="table-wrap"><table class="data-table"><thead id="cm-head"></thead>
+          <tbody id="cm-body"><tr class="no-click"><td style="color:var(--text-3);">Loading…</td></tr></tbody></table></div>
       </div>
 
       <!-- LOGIN ACTIVITY -->
@@ -666,8 +559,10 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
   <script src="../js/app.js"></script>
+  <script src="../js/safety.js"></script>
+  <script src="../js/social.js"></script>
   <script>
     let currentRequestId = null;
     let currentWishId = null;
@@ -686,6 +581,8 @@
     })();
 
     function switchTab(name) {
+      document.querySelectorAll('.sidebar [onclick^="switchTab("]').forEach((b) =>
+        b.classList.toggle('active', b.getAttribute('onclick') === "switchTab('" + name + "')"));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
       if (name === 'overview') loadOverview();
@@ -697,6 +594,7 @@
       if (name === 'code-requests')   loadCodeRequests();
       if (name === 'invite-requests') loadInviteRequests();
       if (name === 'membership-requests') loadMembershipRequests();
+      if (name === 'community') loadCommunity();
       if (name === 'login-activity')  loadLoginActivity();
     }
 
@@ -929,6 +827,18 @@
     function prettyKey(k) {
       // Custom labels for common keys, fallback to title-case
       const map = {
+        amount_usd: 'Amount (USD)',
+        code_value_usd: 'Code value (USD)',
+        code_length: 'Code length',
+        payout_currency: 'Receive in',
+        issued_code: 'New code issued (shown once to submitter)',
+        issued_code_id: 'Issued code ID',
+        intended_recipient: 'Intended recipient',
+        acknowledged_shown_once: 'Acknowledged code is shown once',
+        may_name_sender: 'May name the sender',
+        wish: 'Their wish',
+        context: 'Context',
+        timing: 'When they need it',
         guaranteed_coverage: 'Guaranteed Coverage (US/CA)',
         from: 'Origin Address',
         to: 'Destination',
@@ -1005,8 +915,9 @@
       let codes = allCodes;
       if (codeFilter === 'unused' || codeFilter === 'used' || codeFilter === 'revoked') {
         codes = codes.filter(c => c.status === codeFilter);
-      } else if (codeFilter === '4-digit' || codeFilter === '10-digit') {
-        codes = codes.filter(c => c.code_type === codeFilter);
+      } else if (['4-digit', '7-digit', '10-digit'].includes(codeFilter)) {
+        const len = parseInt(codeFilter, 10);
+        codes = codes.filter(c => String(c.code).length === len);
       }
       if (!codes.length) {
         tbody.innerHTML = '<tr class="no-click"><td colspan="7" style="color:var(--text-3);">No codes match this filter.</td></tr>';
@@ -1015,7 +926,7 @@
       tbody.innerHTML = codes.map(c => `
         <tr onclick="openCodeModal('${c.id}')">
           <td><span class="code-mono ${c.status}">${escapeHtml(c.code)}</span> <button class="copy-btn" onclick="event.stopPropagation();copyCode('${escapeHtml(c.code)}')" title="Copy">📋</button></td>
-          <td style="font-size:12px;">${escapeHtml(c.code_type)}</td>
+          <td style="font-size:12px;white-space:nowrap;">${escapeHtml(codeValueLabel(c.code))}<div style="color:var(--text-3);font-size:11px;">${String(c.code).length}-digit</div></td>
           <td>${codeStatusBadge(c.status)}</td>
           <td style="font-size:12px;color:var(--text-3);">${escapeHtml(c.notes||'—')}</td>
           <td style="font-size:12px;">${formatDate(c.created_at)}</td>
@@ -1037,7 +948,7 @@
       document.getElementById('cm-title').textContent = c.code;
       document.getElementById('cm-fields').innerHTML = `
         <div class="field-row"><div class="k">Code</div><div class="v"><span class="code-mono ${c.status}">${escapeHtml(c.code)}</span></div></div>
-        <div class="field-row"><div class="k">Type</div><div class="v">${escapeHtml(c.code_type)}</div></div>
+        <div class="field-row"><div class="k">Value</div><div class="v">${escapeHtml(codeValueLabel(c.code))} · ${String(c.code).length}-digit</div></div>
         <div class="field-row"><div class="k">Status</div><div class="v">${codeStatusBadge(c.status)}</div></div>
         <div class="field-row"><div class="k">Notes</div><div class="v">${escapeHtml(c.notes||'—')}</div></div>
         <div class="field-row"><div class="k">Created</div><div class="v">${formatDateTime(c.created_at)}</div></div>
@@ -1086,7 +997,7 @@
       const type  = document.getElementById('add-type').value;
       const notes = document.getElementById('add-notes').value.trim() || null;
       hideAlert('gen-alert');
-      const expectedLen = type === '4-digit' ? 4 : 10;
+      const expectedLen = type === '4-digit' ? 4 : 7;
       if (code.length !== expectedLen) {
         showAlert('gen-alert', `${type} codes must be exactly ${expectedLen} digits.`); return;
       }
@@ -1348,7 +1259,7 @@
           sel.innerHTML = '<option value="">No unused codes — generate some first</option>';
         } else {
           sel.innerHTML = '<option value="">— Choose a code —</option>' + unused.map(c =>
-            `<option value="${c.id}">${escapeHtml(c.code)} (${c.code_type}${c.notes ? ' — ' + escapeHtml(c.notes) : ''})</option>`
+            `<option value="${c.id}">${escapeHtml(c.code)} — ${codeValueLabel(c.code)}${c.notes ? ' — ' + escapeHtml(c.notes) : ''}</option>`
           ).join('');
         }
       } catch (e) { sel.innerHTML = '<option value="">Could not load codes</option>'; }
@@ -1570,10 +1481,12 @@
           if (!el) return;
           el.textContent = n ? n : '';
           el.style.display = n ? '' : 'none';
+          document.querySelectorAll(`[data-mirror="${id}"]`).forEach((m) => { m.textContent = n || ''; m.hidden = !n; });
         };
         setPill('cr-pill', crPending);
         setPill('ir-pill', irPending);
         setPill('mr-pill', mrPending);
+        try { setPill('cm-pill', (await adminListReports('pending')).length); } catch (_) {}
       } catch (e) { /* silent */ }
     }
     // Refresh pill badges on initial load
@@ -1737,6 +1650,182 @@
     function countryLabel(code) {
       return COUNTRY_LABELS[code] || code || '—';
     }
+
+    // ════════════════════════════════════════════════
+    // COMMUNITY MODERATION (v4)
+    // ════════════════════════════════════════════════
+    let cmCurrent = 'reports', cmReportFilter = 'pending', cmNames = {}, cmEmails = {}, cmReports = [];
+    const cmName = (id) => id ? (cmNames[id] || 'Unknown member') : '—';
+    const cmClip = (t, n = 110) => { t = String(t || ''); return esc(t.length > n ? t.slice(0, n) + '…' : t); };
+    const cmSet = (headCells, rowsHTML, empty) => {
+      document.getElementById('cm-head').innerHTML = '<tr>' + headCells.map((h) => `<th>${h}</th>`).join('') + '</tr>';
+      document.getElementById('cm-body').innerHTML = rowsHTML || `<tr class="no-click"><td colspan="${headCells.length}" style="color:var(--text-3);">${empty}</td></tr>`;
+    };
+
+    async function cmLoadNames() {
+      const [mps, profs] = await Promise.all([listMembers().catch(() => []), getAllProfiles().catch(() => [])]);
+      mps.forEach((m) => { cmNames[m.id] = m.display_name; });
+      profs.forEach((p) => { cmEmails[p.id] = p.email; if (!cmNames[p.id]) cmNames[p.id] = `${p.first_name || ''} ${p.last_name || ''}`.trim() || p.email; });
+    }
+    async function loadCommunity() {
+      try { await cmLoadNames(); cmView(cmCurrent); }
+      catch (e) { cmSet(['Error'], '', 'Community data unavailable — run supabase/migration-v4-social.sql first.'); }
+    }
+    function cmView(v) {
+      cmCurrent = v;
+      document.querySelectorAll('#cm-views .code-filter-btn').forEach((b) => b.classList.toggle('active', b.dataset.cm === v));
+      document.getElementById('cm-sub').innerHTML = '';
+      ({ reports: cmReportsView, posts: cmPostsView, convos: cmConvosView, archive: cmArchiveView, restrictions: cmRestrictionsView })[v]()
+        .catch((e) => { console.error(e); cmSet(['Error'], '', esc(e.message || 'Could not load.')); });
+    }
+
+    // ── Reports ──
+    async function cmReportsView() {
+      document.getElementById('cm-sub').innerHTML = ['pending', 'reviewing', 'actioned', 'dismissed', 'all'].map((f) =>
+        `<button class="code-filter-btn${f === cmReportFilter ? ' active' : ''}" style="padding:5px 12px;font-size:11px;" onclick="cmReportFilter='${f}';cmReportsView()">${f[0].toUpperCase() + f.slice(1)}</button>`).join(' ');
+      cmReports = await adminListReports(cmReportFilter);
+      cmSet(['Filed', 'Type', 'Reported member', 'Reason', 'Content', 'Status', ''],
+        cmReports.map((r) => `<tr class="no-click">
+          <td style="font-size:12px;white-space:nowrap;">${formatDateTime(r.created_at)}</td>
+          <td><span class="badge badge-neutral">${esc(r.target_type)}</span></td>
+          <td class="cell-name">${esc(cmName(r.target_user_id))}</td>
+          <td style="font-size:12px;">${esc(REPORT_REASONS[r.reason] || r.reason)}</td>
+          <td style="font-size:12px;color:var(--text-2);max-width:280px;">${cmClip(r.content_snapshot)}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td><button class="btn btn-primary btn-sm" onclick="cmReview('${r.id}')">Review</button></td></tr>`).join(''),
+        `No ${cmReportFilter === 'all' ? '' : cmReportFilter + ' '}reports.`);
+    }
+    async function cmReview(id) {
+      const r = cmReports.find((x) => x.id === id); if (!r) return;
+      const restr = (await adminListRestrictions()).find((x) => x.user_id === r.target_user_id) || {};
+      const canRemove = ['post', 'comment', 'message'].includes(r.target_type);
+      const vals = await openDialog({
+        eyebrow: `Report · ${r.target_type}`, title: `Review report about <em>${esc(cmName(r.target_user_id))}</em>`, confirmLabel: 'Save decision',
+        bodyHTML: `
+          <div class="field-row" style="display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:12.5px;margin-bottom:8px;"><span style="color:var(--text-3);">Reported by</span><span>${esc(cmName(r.reporter_id))}${cmEmails[r.reporter_id] ? ' · ' + esc(cmEmails[r.reporter_id]) : ''}</span></div>
+          <div class="field-row" style="display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:12.5px;margin-bottom:8px;"><span style="color:var(--text-3);">Member</span><span>${esc(cmName(r.target_user_id))}${cmEmails[r.target_user_id] ? ' · ' + esc(cmEmails[r.target_user_id]) : ''}</span></div>
+          <div class="field-row" style="display:grid;grid-template-columns:110px 1fr;gap:10px;font-size:12.5px;margin-bottom:12px;"><span style="color:var(--text-3);">Reason</span><span>${esc(REPORT_REASONS[r.reason] || r.reason)}</span></div>
+          ${r.details ? `<div style="font-size:12.5px;color:var(--text-2);margin-bottom:10px;"><strong>Reporter’s note:</strong> ${esc(r.details)}</div>` : ''}
+          <div style="background:var(--bg-3);border-left:2px solid var(--border-pink);border-radius:8px;padding:12px;font-size:13px;line-height:1.65;white-space:pre-wrap;max-height:200px;overflow:auto;margin-bottom:14px;">${esc(r.content_snapshot || '(no content captured)')}</div>
+          <div class="field"><label class="field-label">Status</label><div class="field-input"><select name="status">
+            ${['pending', 'reviewing', 'actioned', 'dismissed'].map((s) => `<option value="${s}"${s === r.status ? ' selected' : ''}>${s}</option>`).join('')}</select></div></div>
+          ${canRemove ? `<label class="confirm-row" style="margin-bottom:8px;"><input type="checkbox" name="remove"/> <span>Remove the reported ${esc(r.target_type)} (original kept in Archive)</span></label>` : ''}
+          <label class="confirm-row" style="margin-bottom:8px;"><input type="checkbox" name="pausePost"${restr.posting_suspended ? ' checked' : ''}/> <span>Pause this member’s posting &amp; replies</span></label>
+          <label class="confirm-row" style="margin-bottom:12px;"><input type="checkbox" name="pauseMsg"${restr.messaging_suspended ? ' checked' : ''}/> <span>Pause this member’s messaging</span></label>
+          <div class="field"><label class="field-label">Admin notes <span class="field-optional">internal</span></label><div class="field-input"><textarea name="notes" rows="2">${esc(r.admin_notes || '')}</textarea></div></div>`,
+      });
+      if (!vals) return;
+      try {
+        if (vals.remove) {
+          if (r.target_type === 'post') await deletePost(r.target_id);
+          else if (r.target_type === 'comment') await deleteComment(r.target_id);
+          else if (r.target_type === 'message') { const { error } = await sb.from('messages').update({ deleted_at: new Date().toISOString() }).eq('id', r.target_id); if (error) throw error; }
+        }
+        const wantPost = !!vals.pausePost, wantMsg = !!vals.pauseMsg;
+        if (wantPost !== !!restr.posting_suspended || wantMsg !== !!restr.messaging_suspended) {
+          await adminSetRestriction(r.target_user_id, { posting: wantPost, messaging: wantMsg, reason: `Report ${r.id.slice(0, 8)}: ${REPORT_REASONS[r.reason] || r.reason}` });
+        }
+        await adminUpdateReport(r.id, { status: vals.status, admin_notes: vals.notes || null });
+        toast('Decision saved.', 'success'); cmReportsView(); updatePillBadges();
+      } catch (e) { toast(e.message || 'Could not save.', 'error'); }
+    }
+
+    // ── Posts ──
+    async function cmPostsView() {
+      const posts = await adminListPosts(150);
+      cmSet(['Posted', 'Author', 'Content', 'Flags', ''],
+        posts.map((p) => `<tr class="no-click">
+          <td style="font-size:12px;white-space:nowrap;">${formatDateTime(p.created_at)}</td>
+          <td class="cell-name">${esc(p.author?.display_name || cmName(p.author_id))}</td>
+          <td style="font-size:12.5px;color:var(--text-2);max-width:360px;">${p.body ? cmClip(p.body, 160) : '📷 Photo'}${p.image_path && p.body ? ' · 📷' : ''}</td>
+          <td style="white-space:nowrap;">${p.is_announcement ? '<span class="badge badge-gold">Announcement</span> ' : ''}${p.is_pinned ? '<span class="badge badge-pink">Pinned</span>' : ''}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;">
+            <a class="btn btn-secondary btn-sm" href="feed.html?post=${p.id}" target="_blank" rel="noopener">Open</a>
+            <button class="btn btn-secondary btn-sm" onclick="cmPin('${p.id}', ${!p.is_pinned})">${p.is_pinned ? 'Unpin' : 'Pin'}</button>
+            <button class="btn btn-danger btn-sm" onclick="cmDeletePost('${p.id}')">Remove</button></td></tr>`).join(''),
+        'No posts yet.');
+    }
+    async function cmPin(id, on) { try { await updatePost(id, { is_pinned: on }); toast(on ? 'Pinned.' : 'Unpinned.', 'success'); cmPostsView(); } catch (e) { toast(e.message, 'error'); } }
+    async function cmDeletePost(id) {
+      if (!(await uiConfirm('Remove this post?', 'It disappears from the feed. The original stays in the Archive.', { confirmLabel: 'Remove', danger: true }))) return;
+      try { await deletePost(id); toast('Post removed.', 'success'); cmPostsView(); } catch (e) { toast(e.message, 'error'); }
+    }
+    async function cmAnnounce() {
+      const vals = await openDialog({
+        eyebrow: 'Announcement', title: 'Speak to the <em>whole circle</em>', confirmLabel: 'Post & notify everyone',
+        bodyHTML: `<p class="fe-dialog-text">Every active member gets a notification. Announcements appear with a gold frame in the feed.</p>
+          <div class="field"><div class="field-input"><textarea name="body" rows="6" maxlength="4000" required placeholder="What would you like everyone to know?"></textarea></div></div>
+          <label class="confirm-row"><input type="checkbox" name="pin" checked/> <span>Pin to the top of the feed and the dashboard</span></label>`,
+      });
+      if (!vals || !vals.body.trim()) return;
+      try { await createPost({ body: vals.body.trim(), isAnnouncement: true, isPinned: !!vals.pin }); toast('Announcement posted.', 'success'); if (cmCurrent === 'posts') cmPostsView(); }
+      catch (e) { toast(e.message || 'Could not post.', 'error'); }
+    }
+
+    // ── Conversations ──
+    async function cmConvosView() {
+      const convos = await adminListConversations();
+      cmSet(['Last activity', 'Participants', 'Started', ''],
+        convos.map((c) => `<tr class="no-click">
+          <td style="font-size:12px;white-space:nowrap;">${formatDateTime(c.last_message_at)}</td>
+          <td class="cell-name">${(c.conversation_participants || []).map((p) => esc(p.member?.display_name || cmName(p.user_id))).join(' ↔ ')}</td>
+          <td style="font-size:12px;">${formatDate(c.created_at)}</td>
+          <td><a class="btn btn-secondary btn-sm" href="messages.html?c=${c.id}" target="_blank" rel="noopener">View (read-only)</a></td></tr>`).join(''),
+        'No conversations yet.');
+    }
+
+    // ── Archive ──
+    async function cmArchiveView() {
+      const rows = await adminListArchive(250);
+      cmSet(['When', 'Type', 'Action', 'Author', 'Original content', 'By'],
+        rows.map((a) => `<tr class="no-click">
+          <td style="font-size:12px;white-space:nowrap;">${formatDateTime(a.archived_at)}</td>
+          <td><span class="badge badge-neutral">${esc(a.source_type)}</span></td>
+          <td>${a.action === 'delete' ? '<span class="badge badge-red">deleted</span>' : '<span class="badge badge-amber">edited</span>'}</td>
+          <td class="cell-name">${esc(cmName(a.author_id))}</td>
+          <td style="font-size:12.5px;color:var(--text-2);max-width:380px;white-space:pre-wrap;">${cmClip(a.body, 400)}${a.image_path ? ' [image]' : ''}</td>
+          <td style="font-size:12px;">${a.actor_id && a.actor_id !== a.author_id ? 'Admin · ' + esc(cmName(a.actor_id)) : 'Author'}</td></tr>`).join(''),
+        'Nothing archived yet — edits and deletions will appear here.');
+    }
+
+    // ── Restrictions ──
+    async function cmRestrictionsView() {
+      document.getElementById('cm-sub').innerHTML = `<button class="btn btn-secondary btn-sm" onclick="cmEditRestriction()">＋ Restrict a member</button>`;
+      const rows = await adminListRestrictions();
+      cmSet(['Member', 'Posting', 'Messaging', 'Reason', 'Updated', ''],
+        rows.map((r) => `<tr class="no-click">
+          <td class="cell-name">${esc(cmName(r.user_id))}</td>
+          <td>${r.posting_suspended ? '<span class="badge badge-red">Paused</span>' : '<span class="badge badge-green">Allowed</span>'}</td>
+          <td>${r.messaging_suspended ? '<span class="badge badge-red">Paused</span>' : '<span class="badge badge-green">Allowed</span>'}</td>
+          <td style="font-size:12px;color:var(--text-2);">${cmClip(r.reason, 120)}</td>
+          <td style="font-size:12px;">${formatDate(r.updated_at)}</td>
+          <td style="display:flex;gap:6px;"><button class="btn btn-secondary btn-sm" onclick="cmEditRestriction('${r.user_id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="cmLift('${r.user_id}')">Lift</button></td></tr>`).join(''),
+        'No members are restricted.');
+    }
+    async function cmEditRestriction(userId) {
+      const existing = userId ? (await adminListRestrictions()).find((x) => x.user_id === userId) || {} : {};
+      const options = Object.entries(cmNames).sort((a, b) => a[1].localeCompare(b[1]))
+        .map(([id, n]) => `<option value="${id}"${id === userId ? ' selected' : ''}>${esc(n)}${cmEmails[id] ? ' — ' + esc(cmEmails[id]) : ''}</option>`).join('');
+      const vals = await openDialog({
+        eyebrow: 'Restriction', title: 'Pause community access', confirmLabel: 'Save',
+        bodyHTML: `<p class="fe-dialog-text">Restricted members can still read the feed, use concierge services and contact the team.</p>
+          <div class="field"><label class="field-label">Member</label><div class="field-input"><select name="user"${userId ? ' disabled' : ''}>${options}</select></div></div>
+          ${userId ? `<input type="hidden" name="user" value="${userId}"/>` : ''}
+          <label class="confirm-row" style="margin-bottom:8px;"><input type="checkbox" name="post"${existing.posting_suspended ? ' checked' : ''}/> <span>Pause posting &amp; replies</span></label>
+          <label class="confirm-row" style="margin-bottom:12px;"><input type="checkbox" name="msg"${existing.messaging_suspended ? ' checked' : ''}/> <span>Pause messaging</span></label>
+          <div class="field"><label class="field-label">Reason <span class="field-optional">internal</span></label><div class="field-input"><input name="reason" value="${esc(existing.reason || '')}"/></div></div>`,
+      });
+      if (!vals || !vals.user) return;
+      try { await adminSetRestriction(vals.user, { posting: !!vals.post, messaging: !!vals.msg, reason: vals.reason }); toast('Restriction saved.', 'success'); cmRestrictionsView(); }
+      catch (e) { toast(e.message || 'Could not save.', 'error'); }
+    }
+    async function cmLift(userId) {
+      if (!(await uiConfirm('Lift all restrictions?', `${cmName(userId)} will be able to post and message again.`, { confirmLabel: 'Lift' }))) return;
+      try { await adminSetRestriction(userId, { posting: false, messaging: false }); toast('Restrictions lifted.', 'success'); cmRestrictionsView(); }
+      catch (e) { toast(e.message, 'error'); }
+    }
+    document.querySelector(`.sidebar [onclick="switchTab('overview')"]`)?.classList.add('active');
   </script>
 </body>
 </html>

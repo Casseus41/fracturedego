@@ -1,0 +1,189 @@
+-- ════════════════════════════════════════════════════════════════════
+--  fractured Ego — migration v6: access-code options & security fixes
+-- ════════════════════════════════════════════════════════════════════
+--  Run after migration-v4-social.sql. Idempotent: safe to re-run.
+--
+--  New access-code options (Cass):
+--    A. Money — amount set by code length: 4 digits = $1,000, 7 digits = $10,000
+--       (legacy 10-digit codes are honored at $10,000)
+--    B. A wish — open-ended, fulfilled to the best of the team's ability
+--    C. Pass it on — (1) the team contacts the recipient, or
+--                    (2) a new code of the same value is generated and shown once
+--
+--  Security fixes:
+--    • bulk_generate_codes had no admin check and returned the codes it
+--      created, so any signed-in member could mint redeemable codes.
+--      It is now admin-only.
+--    • Wishes were inserted straight from the browser under an always-true
+--      policy, with the amount supplied by the page. All submissions now go
+--      through submit_wish(), which validates the redeemed code's session,
+--      allows one submission per code, and sets the amount server-side.
+-- ════════════════════════════════════════════════════════════════════
+
+
+-- ── 1. Code value by length ─────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.code_value_usd(p_code text)
+RETURNS integer LANGUAGE sql IMMUTABLE SET search_path = public, pg_temp AS $$
+  SELECT CASE length(btrim(coalesce(p_code, '')))
+           WHEN 4  THEN 1000
+           WHEN 7  THEN 10000
+           WHEN 10 THEN 10000      -- legacy codes
+           ELSE NULL END
+$$;
+
+
+-- ── 2. 7-digit generator ────────────────────────────────────────────
+CREATE OR REPLACE FUNCTION public.generate_7digit_code()
+RETURNS text LANGUAGE plpgsql SET search_path = public, pg_temp AS $$
+DECLARE v_code text; v_attempts int := 0;
+BEGIN
+  LOOP
+    -- first digit 1–9 so the code never loses a leading zero anywhere it's handled
+    v_code := (1 + floor(random() * 9))::int::text || lpad((floor(random() * 1000000))::int::text, 6, '0');
+    EXIT WHEN NOT EXISTS (SELECT 1 FROM public.access_codes WHERE code = v_code);
+    v_attempts := v_attempts + 1;
+    IF v_attempts > 200 THEN RAISE EXCEPTION 'Could not generate a unique 7-digit code'; END IF;
+  END LOOP;
+  RETURN v_code;
+END $$;
+
+
+-- ── 3. Bulk generation — admins only; 4-digit or 7-digit ────────────
+CREATE OR REPLACE FUNCTION public.bulk_generate_codes(p_count integer, p_type text DEFAULT '4-digit', p_notes text DEFAULT NULL)
+RETURNS SETOF public.access_codes LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
+DECLARE i int; v_code text;
+BEGIN
+  IF NOT public.is_admin() THEN
+    RAISE EXCEPTION 'Only administrators can generate codes' USING ERRCODE = '42501';
+  END IF;
+  IF p_type NOT IN ('4-digit', '7-digit') THEN
+    RAISE EXCEPTION 'Code type must be 4-digit or 7-digit';
+  END IF;
+  IF p_count IS NULL OR p_count < 1 OR p_count > 500 THEN
+    RAISE EXCEPTION 'Generate between 1 and 500 codes at a time';
+  END IF;
+  FOR i IN 1..p_count LOOP
+    v_code := CASE p_type WHEN '4-digit' THEN public.generate_4digit_code() ELSE public.generate_7digit_code() END;
+    RETURN QUERY
+      INSERT INTO public.access_codes (code, code_type, status, notes, created_by)
+      VALUES (v_code, p_type, 'unused', p_notes, auth.uid())
+      RETURNING *;
+  END LOOP;
+END $$;
+
+-- New codes must be 4, 7 (or legacy 10) digits. NOT VALID = existing rows untouched.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'access_codes_format_chk') THEN
+    ALTER TABLE public.access_codes
+      ADD CONSTRAINT access_codes_format_chk CHECK (code ~ '^([0-9]{4}|[0-9]{7}|[0-9]{10})$') NOT VALID;
+  END IF;
+END $$;
+
+
+-- ── 4. The only way to submit after redeeming a code ────────────────
+CREATE OR REPLACE FUNCTION public.submit_wish(
+  p_session_id uuid,
+  p_option     text,
+  p_name       text,
+  p_contact    text,
+  p_summary    text,
+  p_urgency    text,
+  p_data       jsonb
+) RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
+DECLARE
+  v_code     public.access_codes%ROWTYPE;
+  v_value    integer;
+  v_data     jsonb := coalesce(p_data, '{}'::jsonb);
+  v_new_code text;
+  v_new_id   uuid;
+  v_wish_id  uuid;
+BEGIN
+  IF p_session_id IS NULL OR p_option NOT IN ('money', 'wish', 'transfer') THEN
+    RETURN jsonb_build_object('success', false, 'reason', 'invalid_request');
+  END IF;
+
+  -- The session must belong to a code that was redeemed recently
+  SELECT * INTO v_code FROM public.access_codes
+   WHERE used_session = p_session_id AND status = 'used'
+   FOR UPDATE;
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('success', false, 'reason', 'invalid_session');
+  END IF;
+  IF v_code.used_at < now() - interval '12 hours' THEN
+    RETURN jsonb_build_object('success', false, 'reason', 'session_expired');
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.wishes WHERE session_id = p_session_id) THEN
+    RETURN jsonb_build_object('success', false, 'reason', 'already_submitted');
+  END IF;
+
+  v_value := public.code_value_usd(v_code.code);
+  -- Server-owned facts overwrite anything the browser sent with the same names
+  v_data := v_data - 'amount_usd' - 'code_value_usd' - 'issued_code' - 'issued_code_id';
+  v_data := v_data || jsonb_build_object('code_value_usd', v_value, 'code_length', length(v_code.code));
+
+  IF p_option = 'money' THEN
+    IF v_value IS NULL THEN
+      RETURN jsonb_build_object('success', false, 'reason', 'unknown_code_value');
+    END IF;
+    v_data := v_data || jsonb_build_object('amount_usd', v_value);
+  ELSIF p_option = 'transfer' AND v_data->>'method' = 'new_code' THEN
+    IF v_value IS NULL THEN
+      RETURN jsonb_build_object('success', false, 'reason', 'unknown_code_value');
+    END IF;
+    v_new_code := CASE WHEN length(v_code.code) = 4 THEN public.generate_4digit_code() ELSE public.generate_7digit_code() END;
+    INSERT INTO public.access_codes (code, code_type, status, notes)
+    VALUES (v_new_code, CASE WHEN length(v_new_code) = 4 THEN '4-digit' ELSE '7-digit' END, 'unused',
+            'Issued by transfer of code ' || v_code.code || ' on ' || to_char(now(), 'YYYY-MM-DD'))
+    RETURNING id INTO v_new_id;
+    v_data := v_data || jsonb_build_object('issued_code', v_new_code, 'issued_code_id', v_new_id);
+  ELSIF p_option = 'transfer' AND coalesce(v_data->>'method', '') <> 'contact' THEN
+    RETURN jsonb_build_object('success', false, 'reason', 'invalid_request');
+  END IF;
+
+  INSERT INTO public.wishes (name, contact, request, urgency, access_code, session_id, option_chosen, option_data, status)
+  VALUES (left(coalesce(nullif(btrim(p_name), ''), 'Anonymous'), 120),
+          left(btrim(coalesce(p_contact, '')), 300),
+          left(coalesce(nullif(btrim(p_summary), ''), '(no summary)'), 8000),
+          left(p_urgency, 120),
+          v_code.code, p_session_id, p_option, v_data, 'new')
+  RETURNING id INTO v_wish_id;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'wish_id', v_wish_id,
+    'reference', upper(split_part(p_session_id::text, '-', 1)),
+    'amount_usd', CASE WHEN p_option = 'money' THEN v_value END,
+    'issued_code', v_new_code
+  );
+END $$;
+
+
+-- ── 5. Close direct inserts into wishes ─────────────────────────────
+DROP POLICY IF EXISTS wish_anyone_insert ON public.wishes;
+DROP POLICY IF EXISTS "Anyone can insert a wish" ON public.wishes;
+REVOKE INSERT ON public.wishes FROM anon, authenticated;
+
+
+-- ── 6. Permissions ──────────────────────────────────────────────────
+REVOKE EXECUTE ON FUNCTION public.generate_7digit_code() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.bulk_generate_codes(integer, text, text) FROM PUBLIC, anon;
+GRANT  EXECUTE ON FUNCTION public.bulk_generate_codes(integer, text, text) TO authenticated;  -- admin check is inside
+REVOKE EXECUTE ON FUNCTION public.submit_wish(uuid, text, text, text, text, text, jsonb) FROM PUBLIC;
+GRANT  EXECUTE ON FUNCTION public.submit_wish(uuid, text, text, text, text, text, jsonb) TO anon, authenticated;
+GRANT  EXECUTE ON FUNCTION public.code_value_usd(text) TO anon, authenticated;
+
+NOTIFY pgrst, 'reload schema';
+
+
+-- ── 7. Verification — every row should read OK ──────────────────────
+SELECT check_name, CASE WHEN ok THEN 'OK' ELSE 'NEEDS ATTENTION' END AS result FROM (
+  SELECT 1 AS ord, 'Code values (4→1000, 7→10000)' AS check_name,
+         public.code_value_usd('1234') = 1000 AND public.code_value_usd('1234567') = 10000 AS ok
+  UNION ALL SELECT 2, 'submit_wish installed',
+         EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'submit_wish')
+  UNION ALL SELECT 3, 'Open wish inserts closed',
+         NOT EXISTS (SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'wishes' AND cmd = 'INSERT')
+  UNION ALL SELECT 4, 'Code generation admin-only',
+         pg_get_functiondef('public.bulk_generate_codes(integer, text, text)'::regprocedure) LIKE '%is_admin()%'
+) c ORDER BY ord;
